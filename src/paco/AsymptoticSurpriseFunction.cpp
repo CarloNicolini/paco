@@ -25,7 +25,6 @@
 
 #include "QualityFunction.h"
 #include "AsymptoticSurpriseFunction.h"
-#include "KLDivergence.h"
 #include "igraph_utils.h"
 
 AsymptoticSurpriseFunction::AsymptoticSurpriseFunction() {}
@@ -33,11 +32,7 @@ AsymptoticSurpriseFunction::AsymptoticSurpriseFunction() {}
 void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights) const
 {
     size_t n = igraph_vcount(g);
-    double m = igraph_ecount(g);
-
-    if (weights)
-        m = igraph_vector_sum(weights);
-
+    size_t m = igraph_ecount(g);
     size_t p = n*(n-1)/2;
 
     if (n != igraph_vector_size(memb) )
@@ -59,12 +54,9 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
     for (igraph_integer_t edge_id=0; edge_id<m; edge_id++)
     {
         igraph_edge(g, (igraph_integer_t) edge_id, &from, &to);
-        igraph_real_t w = 1;
-        if (weights)
-            w = weights->stor_begin[edge_id];
         igraph_integer_t comm_from=*(memb->stor_begin+from); // Community node "from" belongs
         igraph_integer_t comm_to=*(memb->stor_begin+to);  // Community node "to" belongs
-        mzeta += size_t(comm_from==comm_to)*w;
+        mzeta += size_t(comm_from==comm_to);
     }
 
     // Sum the count of vertex pairs in every community
@@ -73,7 +65,7 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
         size_t vertices_count = std::count(memb->stor_begin, memb->stor_end, c);
         pzeta += vertices_count*(vertices_count-1)/2;
     }
-    quality = m*KL(mzeta/m,pzeta/p);
+    quality = computeAsymptoticSurprise(p,pzeta,m,mzeta);
 }
 
 void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
@@ -83,6 +75,5 @@ void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
     double m = par->get_graph_total_weight();
     double mi = par->get_total_incomm_weight();
 
-    //quality = m*KL(mi/m,pi/p);
-    quality = computeSurprise(p,pi,m,mi);
+    quality = computeAsymptoticSurprise(p,pi,m,mi);
 }
