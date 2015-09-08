@@ -4,8 +4,10 @@ project(Paco)
 set(PACO_SRCS
 Graph.cpp
 Community.cpp
+Surprise.cpp
 igraph_utils.cpp
 SurpriseFunction.cpp
+AsymptoticSurprise.cpp
 AsymptoticSurpriseFunction.cpp
 ModularityFunction.cpp
 SignificanceFunction.cpp
@@ -13,14 +15,17 @@ RandomOptimizer.cpp
 AnnealOptimizer.cpp
 PartitionHelper.cpp
 AgglomerativeOptimizer.cpp
+KLDivergence.cpp
 )
 
 set(PACO_HDRS
 Graph.h
 Community.h
+Surprise.h
 igraph_utils.h
 QualityFunction.h
 SurpriseFunction.h
+AsymptoticSurprise.h
 AsymptoticSurpriseFunction.h
 SignificanceFunction.h
 ModularityFunction.h
@@ -29,12 +34,11 @@ RandomOptimizer.h
 AnnealOptimizer.h
 PartitionHelper.h
 AgglomerativeOptimizer.h
+KLDivergence.h
 )
 
 add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
-
-add_executable(test_graph test_graph.cpp)
-target_link_libraries(test_graph PACO)
+target_link_libraries(PACO ${IGRAPH_LIBRARIES})
 
 add_executable(test_graphc test_graphc.cpp)
 target_link_libraries(test_graphc PACO)
