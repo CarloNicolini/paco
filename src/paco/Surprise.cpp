@@ -1,8 +1,9 @@
-/* This file is part of FAGSO, a program to find network partitions
+/* This file is part of PACO-PArtitioning Clustering Optimization a program
+* to find network partitions using modular solvers and quality functions.
 *
-*  Copyright (C) 2014-2015 Carlo Nicolini <carlo.nicolini@iit.it>
+*  Copyright (C) 2015 Carlo Nicolini <carlo.nicolini@iit.it>
 *
-*  FAGSO is free software; you can redistribute it and/or
+*  PACO is free software; you can redistribute it and/or
 *  modify it under the terms of the GNU Lesser General Public
 *  License as published by the Free Software Foundation; either
 *  version 3 of the License, or (at your option) any later version.
@@ -12,16 +13,15 @@
 *  published by the Free Software Foundation; either version 2 of
 *  the License, or (at your option) any later version.
 *
-*  FAGSO is distributed in the hope that it will be useful, but WITHOUT ANY
+*  PACO is distributed in the hope that it will be useful, but WITHOUT ANY
 *  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 *  FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
 *  GNU General Public License for more details.
 *
 *  You should have received a copy of the GNU Lesser General Public
 *  License and a copy of the GNU General Public License along with
-*  FAGSO. If not, see <http://www.gnu.org/licenses/>.
+*  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 /****************************************************************************
 * Copyright (C) 2012 Rodrigo Aldecoa and Ignacio Marín *
@@ -53,6 +53,7 @@ PLoS ONE 6(9): e24195
 #include <cmath>
 #include <limits>
 
+#include "AsymptoticSurprise.h"
 #include "KLDivergence.h"
 #include "Surprise.h"
 
@@ -163,7 +164,6 @@ long double computeSurprise(const long p, const long pi,
  * @param mi
  * @return
  */
-#include "AsymptoticSurprise.h"
 long double computeAsymptoticSurprise(const long p, const long pi, const long m, const long mi)
 {
     try

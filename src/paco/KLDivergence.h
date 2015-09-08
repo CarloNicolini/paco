@@ -1,4 +1,5 @@
-/* This file is part of PACO-PArtitioning Clustering Optimization a program to find network partitions using modular solvers and quality functions.
+/* This file is part of PACO-PArtitioning Clustering Optimization a program
+* to find network partitions using modular solvers and quality functions.
 *
 *  Copyright (C) 2015 Carlo Nicolini <carlo.nicolini@iit.it>
 *
@@ -21,7 +22,6 @@
 *  License and a copy of the GNU General Public License along with
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 #ifndef _KLDIVERGENCE_H_
 #define _KLDIVERGENCE_H_
