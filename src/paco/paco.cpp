@@ -330,25 +330,16 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     if (is_weighted && pars.qual == QualitySurprise)
         mexErrMsgTxt("Can't optimize discrete surprise on weighted graph. Use AsymptoticSurprise instead.");
 
+    double finalqual = 0;
     try
     {
         for (int i=0; i<pars.nrep; ++i)
         {
             if (!is_weighted)
-                opt->optimize(G->get_igraph(),*fun,c.get_membership());
+                finalqual = opt->optimize(G->get_igraph(),*fun,c.get_membership());
             else
-                opt->optimize(G->get_igraph(),*fun,c.get_membership(),G->get_edge_weights());
+                finalqual = opt->optimize(G->get_igraph(),*fun,c.get_membership(),G->get_edge_weights());
         }
-        /*
-        RandomOptimizer ropt;
-        for (int i=0; i<pars.nrep; ++i)
-        {
-            if (!is_weighted)
-                ropt.optimize(G->get_igraph(),*fun,c.get_membership());
-            else
-                ropt.optimize(G->get_igraph(),*fun,c.get_membership(),G->get_edge_weights());
-        }
-        */
     }
     catch(std::exception &e)
     {
@@ -368,10 +359,8 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     outputArgs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
     double *q = mxGetPr(outputArgs[1]);
 
-    if (!is_weighted || pars.qual == QualitySurprise)
-        q[0] = (*fun)(opt->get_partition_helper());
-    else
-        q[0] = (*fun)(opt->get_partition_helper());
+    // Copy final quality value
+    q[0] = finalqual;
 
 
     // Cleanup the memory (follow this order)

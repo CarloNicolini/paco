@@ -83,5 +83,6 @@ void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
     double m = par->get_graph_total_weight();
     double mi = par->get_total_incomm_weight();
 
-    quality = m*KL(mi/m,pi/p);
+    //quality = m*KL(mi/m,pi/p);
+    quality = computeSurprise(p,pi,m,mi);
 }

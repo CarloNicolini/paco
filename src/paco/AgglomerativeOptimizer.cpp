@@ -66,7 +66,7 @@ void AgglomerativeOptimizer::set_edges_order(const vector<int> &value)
     edges_order = value;
 }
 
-bool AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const  igraph_vector_t *memb,const igraph_vector_t *weights)
+double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const  igraph_vector_t *memb,const igraph_vector_t *weights)
 {
     par->init(g,memb,weights);
     if (edges_order.empty())
@@ -96,7 +96,8 @@ bool AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction &
             diff_move(g,fun,memb,vert2,dest_comm);
         }
     }
-    par->reindex(memb);
+    //par->reindex(memb);
+    return fun(g,memb,weights);
 #ifdef _DEBUG
     par->print();
     printf(ANSI_COLOR_RED "AGGLOMERATIVE Final Qual=%g\n" ANSI_COLOR_RESET,fun(par));

@@ -36,7 +36,7 @@ public:
     inline QualityOptimizer();
     inline QualityOptimizer(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL);
     inline virtual ~QualityOptimizer();
-    virtual bool optimize(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL) = 0;
+    virtual double optimize(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL) = 0;
     const PartitionHelper* get_partition_helper() const;
 
 protected:

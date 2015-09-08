@@ -57,7 +57,7 @@ double AnnealOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun,
         return 0;
 }
 
-bool AnnealOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const  igraph_vector_t *memb, const igraph_vector_t *weights)
+double AnnealOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const  igraph_vector_t *memb, const igraph_vector_t *weights)
 {
     par->init(g,memb);
     igraph_rng_seed(igraph_rng_default(), time(0));
@@ -138,9 +138,10 @@ bool AnnealOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, co
             break;
         }
     }
-    par->reindex(memb);
+    //par->reindex(memb);
     // Copy the best solution to final membership
     for (size_t i=0; i<igraph_vector_size(memb); ++i)
         VECTOR(*memb)[i] = VECTOR(best_memb)[i];
     igraph_vector_destroy(&best_memb); // dispose memory
+    return fun(g,memb,weights);
 }

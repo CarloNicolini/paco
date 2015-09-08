@@ -34,7 +34,7 @@ public:
     AgglomerativeOptimizer() {}
     AgglomerativeOptimizer(const igraph_t *g, const QualityFunction &fun, const  igraph_vector_t *memb,const igraph_vector_t *weights=NULL);
     virtual ~AgglomerativeOptimizer();
-    bool optimize(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL);
+    double optimize(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL);
     void set_edges_order(const vector<int> &value);
 
 protected:

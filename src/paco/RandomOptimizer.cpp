@@ -56,7 +56,7 @@ double RandomOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun,
         return 0;
 }
 
-bool RandomOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights)
+double RandomOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights)
 {
     par->init(g,memb,weights);
 #ifdef _DEBUG
@@ -73,9 +73,10 @@ bool RandomOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, co
 
         diff_move(g,fun,memb,vert1,dest_comm);
     }
-    par->reindex(memb);
+    //par->reindex(memb);
     #ifdef _DEBUG
     par->print();
     printf(ANSI_COLOR_RED "RANDOM Final Qual=%g\n" ANSI_COLOR_RESET,fun(par));
 #endif
+    return fun(g,memb,weights);
 }
