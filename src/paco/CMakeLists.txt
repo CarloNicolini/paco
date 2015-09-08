@@ -9,7 +9,6 @@ igraph_utils.cpp
 SurpriseFunction.cpp
 AsymptoticSurprise.cpp
 AsymptoticSurpriseFunction.cpp
-ModularityFunction.cpp
 SignificanceFunction.cpp
 RandomOptimizer.cpp
 AnnealOptimizer.cpp
@@ -28,7 +27,6 @@ SurpriseFunction.h
 AsymptoticSurprise.h
 AsymptoticSurpriseFunction.h
 SignificanceFunction.h
-ModularityFunction.h
 QualityOptimizer.h
 RandomOptimizer.h
 AnnealOptimizer.h
