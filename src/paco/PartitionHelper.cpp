@@ -251,10 +251,10 @@ bool PartitionHelper::move_vertex(const igraph_t *g, const igraph_vector_t * mem
     incomm_weight.at(dest_comm) += w_to;
 
     // Update community num_vertices after movement of vertex source to dest_comm
-    //int old_n_source = incomm_nvert.at(source_comm);
-    //int old_n_dest = incomm_nvert.at(dest_comm);
-    //int old_p_source = num_pairs(old_n_source);
-    //int old_p_dest = num_pairs(old_n_dest);
+    size_t old_n_source = incomm_nvert.at(source_comm);
+    size_t old_n_dest = incomm_nvert.at(dest_comm);
+    int old_p_source = num_pairs(old_n_source);
+    int old_p_dest = num_pairs(old_n_dest); // important to use int otherwise values are casted and -1 in pairs doesn't work
 
     incomm_nvert.at(source_comm) -= 1;//communities.at(source_comm).size(); // this is faster that set.size()
     incomm_nvert.at(dest_comm) +=1;// communities.at(dest_comm).size();
@@ -266,11 +266,11 @@ bool PartitionHelper::move_vertex(const igraph_t *g, const igraph_vector_t * mem
     // Update total intracluster weight
     this->total_incomm_weight += w_to - w_in;
 
-    // Update total intracluster pairs
-    this->total_incomm_pairs = mapvalue_sum<size_t>(incomm_pairs); // XXX in qualche modo può essere reso più efficiente
+    // Update total intracluster pairs, by computing delta_num_pairs for move_vertex
+    int deltap = ( incomm_pairs.at(dest_comm)-old_p_source) + (incomm_pairs.at(source_comm)-old_p_dest);
+    total_incomm_pairs += deltap;
 
     // Finally do the movement!
-
     memb->stor_begin[source] = dest_comm;
     // Assign current membership pointer
     this->curmemb = memb;

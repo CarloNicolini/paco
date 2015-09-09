@@ -39,9 +39,12 @@ using std::ofstream;
  * @param x
  * @return
  */
-inline size_t num_pairs(size_t x)
+inline int num_pairs(int x)
 {
-    return x*(x-1)/2;
+    if (x<=1)
+        return 0;
+    else
+        return x*(x-1)/2;
 }
 
 

@@ -32,7 +32,7 @@
 #include "igraph_utils.h"
 #include "Common.h"
 
-typedef unordered_map<size_t,size_t> IntMap;
+typedef unordered_map<size_t,size_t> SizeTMap;
 typedef unordered_map<size_t,double> DoubleMap;
 typedef unordered_map<size_t, set<size_t> > CommMap;
 typedef unordered_map<size_t, set<size_t> >::iterator CommMapIter;
@@ -91,7 +91,7 @@ public:
         return num_comms;
     }
 
-    const IntMap &get_incomm_nvert() const
+    const SizeTMap &get_incomm_nvert() const
     {
         return incomm_nvert;
     }
@@ -101,7 +101,7 @@ public:
         return incomm_weight;
     }
 
-    const IntMap &get_incomm_pairs() const
+    const SizeTMap &get_incomm_pairs() const
     {
         return incomm_pairs;
     }
@@ -120,8 +120,8 @@ protected:
     igraph_vector_t all_degrees;
     igraph_vector_t all_strenght;
 
-    IntMap incomm_nvert;
-    IntMap incomm_pairs;
+    SizeTMap incomm_nvert;
+    SizeTMap incomm_pairs;
     DoubleMap incomm_weight;
     DoubleMap incomm_deg;
 
