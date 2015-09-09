@@ -166,12 +166,6 @@ void PartitionHelper::fill_communities(const igraph_vector_t *memb)
         communities[memb->stor_begin[c]].insert(c); // insert node c into community memb[c]
 
     this->num_comms = communities.size();
-#ifndef _USE_STL_PARTITION
-    if (igraph_vector_max(memb)+1 != num_comms)
-    {
-        throw std::logic_error("Non continuous membership vector. Please call this->reindex on it");
-    }
-#endif
 }
 
 /**
@@ -257,8 +251,12 @@ bool PartitionHelper::move_vertex(const igraph_t *g, const igraph_vector_t * mem
     incomm_weight.at(dest_comm) += w_to;
 
     // Update community num_vertices after movement of vertex source to dest_comm
-    // XXX to optimize, basta aggiungere e sottrarre 1
-    incomm_nvert.at(source_comm) -= 1;//communities.at(source_comm).size();
+    //int old_n_source = incomm_nvert.at(source_comm);
+    //int old_n_dest = incomm_nvert.at(dest_comm);
+    //int old_p_source = num_pairs(old_n_source);
+    //int old_p_dest = num_pairs(old_n_dest);
+
+    incomm_nvert.at(source_comm) -= 1;//communities.at(source_comm).size(); // this is faster that set.size()
     incomm_nvert.at(dest_comm) +=1;// communities.at(dest_comm).size();
 
     // Update number of pairs in communities
@@ -266,12 +264,13 @@ bool PartitionHelper::move_vertex(const igraph_t *g, const igraph_vector_t * mem
     incomm_pairs.at(dest_comm) = num_pairs(incomm_nvert.at(dest_comm));
 
     // Update total intracluster weight
-    this->total_incomm_weight = this->total_incomm_weight - w_in + w_to;
+    this->total_incomm_weight += w_to - w_in;
 
     // Update total intracluster pairs
-    this->total_incomm_pairs =  mapvalue_sum<size_t>(incomm_pairs); // XXX in qualche modo può essere reso più efficiente
+    this->total_incomm_pairs = mapvalue_sum<size_t>(incomm_pairs); // XXX in qualche modo può essere reso più efficiente
 
     // Finally do the movement!
+
     memb->stor_begin[source] = dest_comm;
     // Assign current membership pointer
     this->curmemb = memb;

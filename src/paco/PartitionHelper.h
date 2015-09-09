@@ -26,27 +26,17 @@
 #ifndef PARTITIONHELPER_H
 #define PARTITIONHELPER_H
 
-#include <vector>
-#include <set>
-#include <map>
 #include <algorithm> // for std::count
-
-#include <unordered_map>
-#include <unordered_set>
-
 #include <igraph.h>
+
 #include "igraph_utils.h"
 #include "Common.h"
 
-#define _USE_STL_PARTITION
-using std::map;
-using std::set;
-
-typedef map<size_t,size_t> IntMap;
-typedef map<size_t,double> DoubleMap;
-typedef map<size_t, set<size_t> > CommMap;
-typedef map<size_t, set<size_t> >::iterator CommMapIter;
-typedef map<size_t, set<size_t> >::const_iterator CommMapCIter;
+typedef unordered_map<size_t,size_t> IntMap;
+typedef unordered_map<size_t,double> DoubleMap;
+typedef unordered_map<size_t, set<size_t> > CommMap;
+typedef unordered_map<size_t, set<size_t> >::iterator CommMapIter;
+typedef unordered_map<size_t, set<size_t> >::const_iterator CommMapCIter;
 
 class PartitionHelper
 {

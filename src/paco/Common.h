@@ -6,6 +6,8 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 
 
 // http://stackoverflow.com/questions/3219393/stdlib-and-colored-output-in-c
@@ -23,6 +25,8 @@ using std::cerr;
 
 using std::vector;
 using std::map;
+using std::unordered_map;
+using std::unordered_set;
 using std::ostream;
 using std::pair;
 using std::set;
@@ -51,6 +55,15 @@ T mapvalue_sum(const map<size_t,T> &m)
 {
     T sum = 0;
     for ( typename map<size_t,T>::const_iterator i = m.begin(); i!=m.end(); ++i)
+        sum+= i->second;
+    return sum;
+}
+
+template <class T>
+T mapvalue_sum(const unordered_map<size_t,T> &m)
+{
+    T sum = 0;
+    for ( typename unordered_map<size_t,T>::const_iterator i = m.begin(); i!=m.end(); ++i)
         sum+= i->second;
     return sum;
 }

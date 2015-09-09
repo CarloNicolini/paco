@@ -34,7 +34,7 @@
 #include "RandomOptimizer.h"
 #include "AnnealOptimizer.h"
 #include "AgglomerativeOptimizer.h"
-
+#include "Timer.h"
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -50,10 +50,13 @@ int main(int argc, char *argv[])
     c.sort_edges();
 
     AgglomerativeOptimizer opt;
-    AsymptoticSurpriseFunction fun;
+    SurpriseFunction fun;
     opt.set_edges_order(c.get_sorted_edges_indices());
-    for (int i=0; i<5;++i)
-        cout << opt.optimize(h.get_igraph(),fun,c.get_membership()) << endl;
+
+    Timer timer;timer.start();
+    for (int i=0; i<100;++i)
+        opt.optimize(h.get_igraph(),fun,c.get_membership());
+    cout << timer.getElapsedTimeInMicroSec() << endl;
     c.reindex_membership();
 
     cout << "S=" << fun(h.get_igraph(),c.get_membership()) << endl;

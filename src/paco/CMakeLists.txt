@@ -15,6 +15,7 @@ AnnealOptimizer.cpp
 PartitionHelper.cpp
 AgglomerativeOptimizer.cpp
 KLDivergence.cpp
+Timer.cpp
 )
 
 set(PACO_HDRS
@@ -33,6 +34,7 @@ AnnealOptimizer.h
 PartitionHelper.h
 AgglomerativeOptimizer.h
 KLDivergence.h
+Timer.h
 )
 
 add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
