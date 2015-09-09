@@ -39,7 +39,6 @@
 #include <igraph.h>
 #include "Common.h"
 #include "igraph_utils.h"
-
 #include "FileLogger.h"
 
 
@@ -61,6 +60,11 @@ public:
     bool read_gml(const std::string &filename);
     bool read_weights_from_file(const string &filename);
     void set_edge_weights(const std::vector<igraph_real_t> &w);
+
+    void compute_vertex_strenghts(bool loops=false);
+    void compute_vertex_degrees(bool loops=false);
+    const igraph_vector_t *get_strenghts() const;
+    const igraph_vector_t *get_degrees() const;
 
     size_t number_of_nodes() const;
     size_t number_of_edges() const;
@@ -95,6 +99,12 @@ protected:
     // Weights storage
     vector<igraph_real_t> weights;
     igraph_vector_t edge_weights;
+
+    vector<igraph_real_t> strengths;
+    igraph_vector_t vertices_degrees;
+
+    vector<igraph_real_t> degrees;
+    igraph_vector_t vertices_strenghts;
 
     bool _is_weighted;
     bool _is_directed;

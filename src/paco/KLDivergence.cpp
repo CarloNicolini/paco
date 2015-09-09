@@ -33,10 +33,10 @@
  */
 double KL(double q, double p)
 {
-    double D = 0.0;
+    double KL = 0.0;
     if (q > 0.0 && p > 0.0)
-        D += q*log(q/p);
+        KL += q*log(q/p);
     if (q < 1.0 && p < 1.0)
-        D += (1.0-q)*log((1.0-q)/(1.0-p));
-    return D;
+        KL += (1.0-q)*log((1.0-q)/(1.0-p));
+    return KL;
 }

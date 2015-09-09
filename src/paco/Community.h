@@ -45,16 +45,18 @@ public:
     ~CommunityStructure();
     void init(const GraphC *pgraph);
     void set_random_seed(int seed=-1); // XXX da spostare...
-    void read_membership_from_file(const std::string &filename);
 
-    void reindex_membership();
-    void print_membership();
-    void sort_edges();
+    // Methods that work on membership
+    void read_membership_from_file(const std::string &filename);
     const igraph_vector_t* get_membership() const;
     size_t get_membership(size_t i) const;
-    vector<int> get_sorted_edges_indices();
-
+    void reindex_membership();
+    void print_membership();
     void save_membership(const char *filename, const igraph_vector_t *m=NULL);
+
+    // Methods needed by agglomerative optimizer
+    void sort_edges();
+    vector<int> get_sorted_edges_indices();
 
 protected:
     void compute_pairwise_similarities();
@@ -71,7 +73,7 @@ private:
     // Random number generator
     igraph_rng_t rng;
 
-    // Utilities
+    // Needed by agglomerative optimizer
     igraph_vector_t edges_sim;
     std::vector < std::pair<int, igraph_real_t> > sorted_edges;
 };

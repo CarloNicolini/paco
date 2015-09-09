@@ -116,7 +116,41 @@ void GraphC::init(const Eigen::MatrixXd &W)
 
 const igraph_vector_t* GraphC::get_edge_weights() const
 {
-    return &this->edge_weights;
+    if (_is_weighted)
+        return &this->edge_weights;
+    else
+        throw std::logic_error("Graph is not weighted. Invalid call to get_edge_weights()");
+}
+
+void GraphC::compute_vertex_degrees(bool loops)
+{
+    igraph_degree(&ig,&vertices_degrees,igraph_vss_all(),IGRAPH_ALL,loops);
+}
+
+void GraphC::compute_vertex_strenghts(bool loops)
+{
+    if (is_weighted())
+    {
+        igraph_strength(&ig,&vertices_strenghts,igraph_vss_all(),IGRAPH_ALL,loops,&edge_weights);
+    }
+    else
+    {
+        compute_vertex_degrees(loops);
+        cerr << "Vertex strenght = vertex degree on unweighted graph" << endl;
+    }
+}
+
+const igraph_vector_t* GraphC::get_degrees() const
+{
+    return &vertices_degrees;
+}
+
+const igraph_vector_t* GraphC::get_strenghts() const
+{
+    if ( is_weighted())
+        return &vertices_strenghts;
+    else
+        return &vertices_degrees;
 }
 
 /**

@@ -174,7 +174,7 @@ long double computeAsymptoticSurprise(const long p, const long pi, const long m,
     }
     catch ( std::exception &e)
     {
-        throw e.what();
+        throw e;
     }
     return asymptoticSurprise(p,pi,m,mi);
 }

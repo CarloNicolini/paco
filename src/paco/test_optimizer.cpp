@@ -40,21 +40,20 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     GraphC h;
-    h.read_gml(argv[1]);
-    //h.read_weights_from_file(argv[2]);
+    h.read_gml(string(argv[1]));
+    //h.read_weights_from_file(string(argv[2]));
 
     CommunityStructure c(&h);
     c.set_random_seed();
 
-    //if (argc<=2)
-      //  c.read_membership_from_file(argv[3]);
     c.reindex_membership();
     c.sort_edges();
 
     AgglomerativeOptimizer opt;
     AsymptoticSurpriseFunction fun;
     opt.set_edges_order(c.get_sorted_edges_indices());
-    opt.optimize(h.get_igraph(),fun,c.get_membership());
+    for (int i=0; i<5;++i)
+        cout << opt.optimize(h.get_igraph(),fun,c.get_membership()) << endl;
     c.reindex_membership();
 
     cout << "S=" << fun(h.get_igraph(),c.get_membership()) << endl;

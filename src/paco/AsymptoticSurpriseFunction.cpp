@@ -26,6 +26,7 @@
 #include "QualityFunction.h"
 #include "AsymptoticSurpriseFunction.h"
 #include "igraph_utils.h"
+#include "KLDivergence.h"
 
 AsymptoticSurpriseFunction::AsymptoticSurpriseFunction() {}
 
@@ -65,7 +66,7 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
         size_t vertices_count = std::count(memb->stor_begin, memb->stor_end, c);
         pzeta += vertices_count*(vertices_count-1)/2;
     }
-    quality = computeAsymptoticSurprise(p,pzeta,m,mzeta);
+    quality = m*KL(double(mzeta)/double(m),double(pzeta)/double(p));
 }
 
 void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
@@ -75,5 +76,5 @@ void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
     double m = par->get_graph_total_weight();
     double mi = par->get_total_incomm_weight();
 
-    quality = computeAsymptoticSurprise(p,pi,m,mi);
+    quality = m*KL(mi/m,pi/p);
 }

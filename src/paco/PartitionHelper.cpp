@@ -151,7 +151,7 @@ void PartitionHelper::init(const igraph_t*graph, const igraph_vector_t *memb, co
 
     // Sum total intracluster pairs
     total_incomm_pairs = mapvalue_sum<size_t>(incomm_pairs);
-    total_incomm_weight = mapvalue_sum<double>(incomm_weight);
+    //total_incomm_weight = mapvalue_sum<double>(incomm_weight); //already computed
 }
 
 /**
@@ -258,20 +258,12 @@ bool PartitionHelper::move_vertex(const igraph_t *g, const igraph_vector_t * mem
 
     // Update community num_vertices after movement of vertex source to dest_comm
     // XXX to optimize, basta aggiungere e sottrarre 1
-    incomm_nvert.at(source_comm) = communities.at(source_comm).size();
-    incomm_nvert.at(dest_comm) = communities.at(dest_comm).size();
+    incomm_nvert.at(source_comm) -= 1;//communities.at(source_comm).size();
+    incomm_nvert.at(dest_comm) +=1;// communities.at(dest_comm).size();
 
     // Update number of pairs in communities
     incomm_pairs.at(source_comm) = num_pairs(incomm_nvert.at(source_comm));
     incomm_pairs.at(dest_comm) = num_pairs(incomm_nvert.at(dest_comm));
-
-#ifdef NEW_FASTER
-    sincomm_nvertices[source_comm] -= 1;
-    sincomm_nvertices[dest_comm] += 1;
-
-    sincomm_nvertices[source_comm] = num_pairs(sincomm_nvertices[source_comm]);
-    sincomm_nvertices[dest_comm] = num_pairs(sincomm_nvertices[dest_comm]);
-#endif
 
     // Update total intracluster weight
     this->total_incomm_weight = this->total_incomm_weight - w_in + w_to;
