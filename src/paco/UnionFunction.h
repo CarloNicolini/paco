@@ -14,7 +14,7 @@ class UnionFunction : public QualityFunctionImpl
     ~UnionFunction()
     { delete f1; delete f2; }
 
-  protected:
+  //protected:
     QualityFunctionImpl* f1;
     QualityFunctionImpl* f2;
 };

@@ -1,12 +1,12 @@
-#include "SurpriseFunction2.h"
+#include "AsymptoticSurpriseFunction2.h"
 #include "Surprise.h"
 
-SurpriseFunction2::SurpriseFunction2()
+AsymptoticSurpriseFunction2::AsymptoticSurpriseFunction2()
 {
 
 }
 
-void SurpriseFunction2::eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights) const
+void AsymptoticSurpriseFunction2::eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights) const
 {
     size_t n = igraph_vcount(g);
     size_t m = igraph_ecount(g);
@@ -45,7 +45,7 @@ void SurpriseFunction2::eval(const igraph_t *g, const igraph_vector_t *memb, con
     quality = computeSurprise(p,pzeta,m,mzeta);
 }
 
-void SurpriseFunction2::eval(const PartitionHelper *par) const
+void AsymptoticSurpriseFunction2::eval(const PartitionHelper *par) const
 {
     double p = par->get_graph_total_pairs();
     double pi = par->get_total_incomm_pairs();
@@ -55,7 +55,7 @@ void SurpriseFunction2::eval(const PartitionHelper *par) const
     quality = computeSurprise(p,pi,m,mi);
 }
 
-QualityFunctionImpl* SurpriseFunction2::clone() const
+QualityFunctionImpl* AsymptoticSurpriseFunction2::clone() const
 {
-    return new SurpriseFunction2;
+    return new AsymptoticSurpriseFunction2;
 }

@@ -37,7 +37,7 @@ public:
 
     virtual QualityFunctionImpl* clone() const = 0;
 
-protected:
+//protected:
     mutable double quality; // mutable keyword allows to modify quality even in const methods.
     virtual void eval(const igraph_t *g, const igraph_vector_t *m, const igraph_vector_t *weights=NULL) const = 0;
     virtual void eval(const PartitionHelper *par) const = 0;

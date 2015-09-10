@@ -41,9 +41,12 @@ Timer.h
 set(PACO_SRCS_EXPERIMENTAL
 Graph.cpp
 Community.cpp
+AsymptoticSurprise.cpp
+KLDivergence.cpp
 Surprise.cpp
 igraph_utils.cpp
-SurpriseFunctionPImpl.cpp
+SurpriseFunction2.cpp
+AsymptoticSurpriseFunction2.cpp
 )
 
 set(PACO_HDRS_EXPERIMENTAL
@@ -52,7 +55,8 @@ Community.h
 Surprise.h
 igraph_utils.cpp
 QualityFunctionImpl.h
-SurpriseFunctionPImpl.h
+SurpriseFunction2.h
+AsymptoticSurpriseFunction2.h
 UnionFunction.h
 SumFunction.h
 QualityFunction2.h
@@ -60,8 +64,6 @@ QualityFunction2.h
 
 add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
 target_link_libraries(PACO ${IGRAPH_LIBRARIES})
-
-add_library(PACO_EXPERIMENTAL ${PACO_SRCS_EXPERIMENTAL} ${PACO_HDRS_EXPERIMENTAL})
 
 add_executable(test_graphc test_graphc.cpp)
 target_link_libraries(test_graphc PACO)
@@ -86,3 +88,10 @@ endif(MATLAB_SUPPORT)
 if(OCTAVE_SUPPORT)
     octave_add_oct(paco_oct SOURCES paco.cpp LINK_LIBRARIES PACO EXTENSION "mex")
 endif(OCTAVE_SUPPORT)
+
+### EXPERIMENTAL FEATURES ##
+add_library(PACO_EXPERIMENTAL ${PACO_SRCS_EXPERIMENTAL} ${PACO_HDRS_EXPERIMENTAL})
+target_link_libraries(PACO_EXPERIMENTAL ${IGRAPH_LIBRARIES})
+add_executable(test_paco_exp test_paco_exp.cpp)
+target_link_libraries(test_paco_exp PACO_EXPERIMENTAL)
+###

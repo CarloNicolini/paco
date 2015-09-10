@@ -1,9 +1,9 @@
 #ifndef SUMFUNCTION_H
 #define SUMFUNCTION_H
 
+#include <iostream>
 #include "QualityFunctionImpl.h"
 #include "UnionFunction.h"
-#include <iostream>
 
 class SumFunction : public UnionFunction
 {
@@ -16,11 +16,16 @@ class SumFunction : public UnionFunction
 
     void eval(const igraph_t *g, const igraph_vector_t *m, const igraph_vector_t *weights=NULL) const
     {
-      std::cout << "(";
+      std::cout << "( ";
       quality = (*f1)(g,m,weights);
-      std::cout << "+";
+      std::cout << quality << " + ";
       quality += (*f2)(g,m,weights);
-      std::cout << ")";
+      std::cout << " )";
+    }
+
+    void eval(const PartitionHelper *par) const
+    {
+        quality = f1->operator ()(par) + f2->operator ()(par);
     }
 
     QualityFunctionImpl* clone() const
