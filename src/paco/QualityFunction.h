@@ -26,14 +26,8 @@
 #ifndef QUALITYFUNCTION
 #define QUALITYFUNCTION
 
-#include <iostream>
-#include <algorithm>
-#include <stdexcept>
-#include <memory>
-
-#include <igraph.h>
+#include "QualityFunctionImpl.h"
 #include "igraph_utils.h"
-
 #include "PartitionHelper.h"
 
 using std::cout;

@@ -25,6 +25,7 @@
 
 #ifndef _IGRAPH_ADDITIONAL_UTILS_
 #define _IGRAPH_ADDITIONAL_UTILS_
+
 #include <igraph.h>
 #include <igraph_error.h>
 #include <stdexcept>
@@ -35,7 +36,7 @@
     std::stringstream ss; ss << __result; \
     if (__result != 0)\
 {\
-    throw std::runtime_error("Igraph Error " + ss.str());\
+    throw std::runtime_error("IGRAPH Error " + ss.str());\
     } \
     }
 

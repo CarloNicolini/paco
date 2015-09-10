@@ -25,6 +25,7 @@
 
 
 #include "PartitionHelper.h"
+#include "igraph_utils.h"
 
 /**
  * @brief PartitionHelper::PartitionHelper

@@ -3,6 +3,5 @@ project(Paco)
 
 # Include Eigen matrix libraries
 include_directories(eigen)
-include_directories(paco)
 
 add_subdirectory(paco)

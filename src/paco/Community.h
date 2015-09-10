@@ -35,9 +35,6 @@
 
 #include "Graph.h"
 
-typedef std::map<igraph_integer_t, igraph_vs_t> CommunityVertexMap;
-typedef std::map<igraph_integer_t, igraph_vs_t>::iterator CommunityVertexMapIterator;
-
 class CommunityStructure
 {
 public:

@@ -28,8 +28,6 @@
 
 #include <algorithm> // for std::count
 #include <igraph.h>
-
-#include "igraph_utils.h"
 #include "Common.h"
 
 typedef unordered_map<size_t,size_t> SizeTMap;

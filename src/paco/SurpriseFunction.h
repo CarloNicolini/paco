@@ -33,7 +33,7 @@ class SurpriseFunction : public QualityFunction
 {
 public:
     SurpriseFunction();
-    ~SurpriseFunction() {};
+    ~SurpriseFunction() {}
 
 protected:
     void eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL) const;
