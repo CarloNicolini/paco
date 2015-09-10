@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 {
     GraphC h;
     h.read_gml(string(argv[1]));
-    //h.read_weights_from_file(string(argv[2]));
+    h.read_weights_from_file(string(argv[2]));
 
     CommunityStructure c(&h);
     c.set_random_seed();

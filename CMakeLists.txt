@@ -20,7 +20,7 @@ endif()
 
 # Specify if matlab support and python wrappers are to be compiled. Default OFF
 # MATLAB support needs MEX (Tested on Ubuntu 14.04, Matlab R2013a)
-option(MATLAB_SUPPORT "Mex with MATLAB" OFF)
+option(MATLAB_SUPPORT "Mex with MATLAB" ON)
 option(OCTAVE_SUPPORT "Oct with Octave mkoctfile" OFF)
 
 # PYTHON_SUPPORT needs Cython (install it via "pip install cython")
