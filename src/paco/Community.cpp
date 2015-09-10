@@ -133,12 +133,10 @@ void CommunityStructure::set_random_seed(int seed)
         QueryPerformanceCounter(&endCount);
         std::srand(startCount.QuadPart);
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__) 
         struct timeval start;
         gettimeofday(&start, NULL);
         std::srand(start.tv_usec);
-#else
-#assert("ERROR")
 #endif
         IGRAPH_TRY(igraph_rng_seed(&this->rng,start.tv_usec));
     }
