@@ -16,7 +16,6 @@ PartitionHelper.cpp
 AgglomerativeOptimizer.cpp
 KLDivergence.cpp
 Timer.cpp
-#SurpriseFunctionPImpl.cpp
 )
 
 set(PACO_HDRS
@@ -38,29 +37,6 @@ KLDivergence.h
 Timer.h
 )
 
-set(PACO_SRCS_EXPERIMENTAL
-Graph.cpp
-Community.cpp
-AsymptoticSurprise.cpp
-KLDivergence.cpp
-Surprise.cpp
-igraph_utils.cpp
-SurpriseFunction2.cpp
-AsymptoticSurpriseFunction2.cpp
-)
-
-set(PACO_HDRS_EXPERIMENTAL
-Graph.h
-Community.h
-Surprise.h
-igraph_utils.cpp
-QualityFunctionImpl.h
-SurpriseFunction2.h
-AsymptoticSurpriseFunction2.h
-UnionFunction.h
-SumFunction.h
-QualityFunction2.h
-)
 
 add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
 target_link_libraries(PACO ${IGRAPH_LIBRARIES})
@@ -90,8 +66,33 @@ if(OCTAVE_SUPPORT)
 endif(OCTAVE_SUPPORT)
 
 ### EXPERIMENTAL FEATURES ##
-add_library(PACO_EXPERIMENTAL ${PACO_SRCS_EXPERIMENTAL} ${PACO_HDRS_EXPERIMENTAL})
-target_link_libraries(PACO_EXPERIMENTAL ${IGRAPH_LIBRARIES})
-add_executable(test_paco_exp test_paco_exp.cpp)
-target_link_libraries(test_paco_exp PACO_EXPERIMENTAL)
+if (EXPERIMENTAL)
+	set(PACO_SRCS_EXPERIMENTAL
+	Graph.cpp
+	Community.cpp
+	AsymptoticSurprise.cpp
+	KLDivergence.cpp
+	Surprise.cpp
+	igraph_utils.cpp
+	SurpriseFunction2.cpp
+	AsymptoticSurpriseFunction2.cpp
+	)
+
+	set(PACO_HDRS_EXPERIMENTAL
+	Graph.h
+	Community.h
+	Surprise.h
+	igraph_utils.cpp
+	QualityFunctionImpl.h
+	SurpriseFunction2.h
+	AsymptoticSurpriseFunction2.h
+	UnionFunction.h
+	SumFunction.h
+	QualityFunction2.h
+	)
+	add_library(PACO_EXPERIMENTAL ${PACO_SRCS_EXPERIMENTAL} ${PACO_HDRS_EXPERIMENTAL})
+	target_link_libraries(PACO_EXPERIMENTAL ${IGRAPH_LIBRARIES})
+	add_executable(test_paco_exp test_paco_exp.cpp)
+	target_link_libraries(test_paco_exp PACO_EXPERIMENTAL)
+endif(EXPERIMENTAL)
 ###
