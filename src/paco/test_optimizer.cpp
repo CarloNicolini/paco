@@ -51,15 +51,13 @@ int main(int argc, char *argv[])
     c.sort_edges();
     try
     {
-        c.optimize(QualitySurprise,MethodAgglomerative,1);
+        c.optimize(QualityAsymptoticSurprise,MethodAgglomerative,10);
         c.print_membership();
     }
     catch (std::exception &e)
     {
         cerr << e.what() << endl;
     }
-    SurpriseFunction fun;
-    cout << fun(h.get_igraph(),c.get_membership()) << endl;
     /*
     AgglomerativeOptimizer opt;
     opt.set_edges_order(c.get_sorted_edges_indices());

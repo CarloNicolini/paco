@@ -231,7 +231,7 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     {
         graph_weights= pgraph->get_edge_weights();
     }
-    catch (std::exception &e)
+    catch ( ... )
     {
         graph_weights=NULL;
     }
@@ -242,6 +242,7 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
         for (int i=0; i<nrep; ++i)
         {
             finalqual = opt->optimize(pgraph->get_igraph(),*fun,&membership,graph_weights);
+            cout << finalqual << endl;
         }
     }
     catch ( std::exception &e )
