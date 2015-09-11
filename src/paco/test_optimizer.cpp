@@ -41,16 +41,27 @@ int main(int argc, char *argv[])
 {
     GraphC h;
     h.read_gml(string(argv[1]));
-    h.read_weights_from_file(string(argv[2]));
+    cout << h.is_weighted() << endl;
+    //h.read_weights_from_file(string(argv[2]));
 
     CommunityStructure c(&h);
     c.set_random_seed();
 
     c.reindex_membership();
     c.sort_edges();
-
-    AgglomerativeOptimizer opt;
+    try
+    {
+        c.optimize(QualitySurprise,MethodAgglomerative,1);
+        c.print_membership();
+    }
+    catch (std::exception &e)
+    {
+        cerr << e.what() << endl;
+    }
     SurpriseFunction fun;
+    cout << fun(h.get_igraph(),c.get_membership()) << endl;
+    /*
+    AgglomerativeOptimizer opt;
     opt.set_edges_order(c.get_sorted_edges_indices());
 
     Timer timer;timer.start();
@@ -58,8 +69,8 @@ int main(int argc, char *argv[])
         opt.optimize(h.get_igraph(),fun,c.get_membership());
     cout << timer.getElapsedTimeInMicroSec() << endl;
     c.reindex_membership();
-
-    cout << "S=" << fun(h.get_igraph(),c.get_membership()) << endl;
+    */
+    //cout << "S=" << fun(h.get_igraph(),c.get_membership()) << endl;
 
     return 0;
 }

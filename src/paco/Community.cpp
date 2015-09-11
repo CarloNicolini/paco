@@ -26,6 +26,16 @@
 #include <igraph.h>
 #include "Community.h"
 
+#include "QualityFunction.h"
+#include "SurpriseFunction.h"
+#include "AsymptoticSurpriseFunction.h"
+#include "SignificanceFunction.h"
+
+#include "QualityOptimizer.h"
+#include "AnnealOptimizer.h"
+#include "AgglomerativeOptimizer.h"
+#include "RandomOptimizer.h"
+
 /**
  * @brief CommunityStructure::CommunityStructure
  * @param G
@@ -156,6 +166,92 @@ void CommunityStructure::reindex_membership()
     int minC = igraph_vector_min(&this->membership);
     for (size_t i=0; i<nVertices; ++i)
         VECTOR(membership)[i] -= minC;
+}
+
+double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, int nrep)
+{
+    QualityOptimizer *opt;
+    QualityFunction *fun;
+
+    // Select the optimization method
+    switch (optmethod)
+    {
+    case MethodAgglomerative:
+    {
+        opt = dynamic_cast<AgglomerativeOptimizer*>( new AgglomerativeOptimizer);
+        dynamic_cast<AgglomerativeOptimizer*>(opt)->set_edges_order(this->get_sorted_edges_indices());
+        break;
+    }
+    case MethodRandom:
+    {
+        opt = dynamic_cast<RandomOptimizer*>(new RandomOptimizer);
+        break;
+    }
+    case MethodAnneal:
+    {
+        opt = dynamic_cast<AnnealOptimizer*>(new AnnealOptimizer);
+        break;
+    }
+    default:
+    {
+        throw std::logic_error("Non supported optimization method");
+    }
+    }
+
+    // Select the quality function
+    switch (qual)
+    {
+    case QualitySurprise:
+    {
+        if (pgraph->is_weighted())
+            throw std::logic_error("Can't optimize discrete surprise on weighted graph. Use AsymptoticSurprise instead.");
+        else
+            fun = dynamic_cast<SurpriseFunction*>(new SurpriseFunction);
+        break;
+    }
+    case QualitySignificance:
+    {
+        fun = dynamic_cast<SignificanceFunction*>(new SignificanceFunction);
+        break;
+    }
+    case QualityAsymptoticSurprise:
+    {
+        fun = dynamic_cast<AsymptoticSurpriseFunction*>(new AsymptoticSurpriseFunction);
+        break;
+    }
+    default:
+    {
+        throw std::logic_error("Non supported quality function");
+    }
+    }
+
+    // Finally optimize the partition
+    const igraph_vector_t *graph_weights;
+    try
+    {
+        graph_weights= pgraph->get_edge_weights();
+    }
+    catch (std::exception &e)
+    {
+        graph_weights=NULL;
+    }
+
+    double finalqual = 0;
+    try
+    {
+        for (int i=0; i<nrep; ++i)
+        {
+            finalqual = opt->optimize(pgraph->get_igraph(),*fun,&membership,graph_weights);
+        }
+    }
+    catch ( std::exception &e )
+    {
+        throw e;
+    }
+
+    delete opt;
+    delete fun;
+    return finalqual;
 }
 
 /**

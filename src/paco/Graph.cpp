@@ -177,6 +177,7 @@ bool GraphC::read_pajek(const std::string &filename)
     FILE *f = fopen(filename.c_str(),"r");
     IGRAPH_TRY(igraph_read_graph_pajek(&this->ig,f));
     fclose(f);
+    this->_is_weighted = false;
     return true;
 }
 
@@ -192,6 +193,7 @@ bool GraphC::read_edge_list(const std::string &filename, int nvertices)
     FILE *f = fopen(filename.c_str(),"r");
     IGRAPH_TRY(igraph_read_graph_edgelist(&this->ig,f,nvertices,0));
     fclose(f);
+    this->_is_weighted = false;
     return true;
 }
 
@@ -228,7 +230,7 @@ bool GraphC::read_weights_from_file(const string &filename)
         throw std::logic_error("Edge weights vector not consistent with number of graph edges");
 
     size_t num_different_edge_weight_values = set<double>(weights.begin(),weights.end()).size();
-    _is_weighted = num_different_edge_weight_values!=2;
+    _is_weighted = num_different_edge_weight_values!=2; // set if the graph is weighted or just has two different weights
     igraph_vector_view(&edge_weights,weights.data(),weights.size()); // copy to weights vector
 }
 
@@ -256,6 +258,7 @@ bool GraphC::read_gml(const string &filename)
     FILE *f = fopen(filename.c_str(),"r");
     IGRAPH_TRY(igraph_read_graph_gml(&this->ig,f));
     fclose(f);
+    this->_is_weighted = false;
     return true;
 }
 

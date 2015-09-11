@@ -35,6 +35,20 @@
 
 #include "Graph.h"
 
+enum OptimizerType
+{
+    MethodAgglomerative = 0,
+    MethodRandom = 1,
+    MethodAnneal = 2,
+};
+
+enum QualityType
+{
+    QualitySurprise = 0,
+    QualitySignificance = 1,
+    QualityAsymptoticSurprise = 2
+};
+
 class CommunityStructure
 {
 public:
@@ -54,6 +68,7 @@ public:
     // Methods needed by agglomerative optimizer
     void sort_edges();
     vector<int> get_sorted_edges_indices();
+    double optimize(QualityType qual, OptimizerType opt, int nrep=1);
 
 protected:
     void compute_pairwise_similarities();

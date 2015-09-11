@@ -57,42 +57,48 @@ add_executable(test_optimizer test_optimizer.cpp)
 target_link_libraries(test_optimizer PACO)
 
 if(MATLAB_SUPPORT)
-    add_mex(paco_mx paco.cpp ${PACO_SRCS} ${PACO_HDRS})
-    target_link_libraries(paco_mx ${MATLAB_LIBRARIES})
+    # To avoid a stupid linking problem with incompatible libstdc++ versions
+    # http://stackoverflow.com/questions/19386651/how-to-fix-usr-lib-libstdc-so-6-version-glibcxx-3-4-15-not-found
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
+    add_mex(paco_mx paco.cpp)
+    target_link_libraries(paco_mx PACO ${MATLAB_LIBRARIES})
 endif(MATLAB_SUPPORT)
 
 if(OCTAVE_SUPPORT)
     octave_add_oct(paco_oct SOURCES paco.cpp LINK_LIBRARIES PACO EXTENSION "mex")
 endif(OCTAVE_SUPPORT)
 
-### EXPERIMENTAL FEATURES ##
+### EXPERIMENTAL FEATURES, TO ALLOW LINEAR COMBINATIONS OF QUALITY FUNCTIONS ##
 if (EXPERIMENTAL)
-	set(PACO_SRCS_EXPERIMENTAL
-	Graph.cpp
-	Community.cpp
-	AsymptoticSurprise.cpp
-	KLDivergence.cpp
-	Surprise.cpp
-	igraph_utils.cpp
-	SurpriseFunction2.cpp
-	AsymptoticSurpriseFunction2.cpp
-	)
+        set(PACO_SRCS_EXPERIMENTAL
+        ${PACO_SRCS}
+        Graph.cpp
+        Community.cpp
+        AsymptoticSurprise.cpp
+        KLDivergence.cpp
+        Surprise.cpp
+        igraph_utils.cpp
+        SurpriseFunction2.cpp
+        AsymptoticSurpriseFunction2.cpp
+        )
 
-	set(PACO_HDRS_EXPERIMENTAL
-	Graph.h
-	Community.h
-	Surprise.h
-	igraph_utils.cpp
-	QualityFunctionImpl.h
-	SurpriseFunction2.h
-	AsymptoticSurpriseFunction2.h
-	UnionFunction.h
-	SumFunction.h
-	QualityFunction2.h
-	)
-	add_library(PACO_EXPERIMENTAL ${PACO_SRCS_EXPERIMENTAL} ${PACO_HDRS_EXPERIMENTAL})
-	target_link_libraries(PACO_EXPERIMENTAL ${IGRAPH_LIBRARIES})
-	add_executable(test_paco_exp test_paco_exp.cpp)
-	target_link_libraries(test_paco_exp PACO_EXPERIMENTAL)
+        set(PACO_HDRS_EXPERIMENTAL
+        ${PACO_HDRS}
+        Graph.h
+        Community.h
+        Surprise.h
+        igraph_utils.cpp
+        QualityFunctionImpl.h
+        SurpriseFunction2.h
+        AsymptoticSurpriseFunction2.h
+        UnionFunction.h
+        SumFunction.h
+        QualityFunction2.h
+        )
+
+        add_library(PACO_EXPERIMENTAL ${PACO_SRCS_EXPERIMENTAL} ${PACO_HDRS_EXPERIMENTAL})
+        target_link_libraries(PACO_EXPERIMENTAL ${IGRAPH_LIBRARIES})
+        add_executable(test_paco_exp test_paco_exp.cpp)
+        target_link_libraries(test_paco_exp PACO_EXPERIMENTAL)
 endif(EXPERIMENTAL)
 ###

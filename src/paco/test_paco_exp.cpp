@@ -34,6 +34,9 @@
 #include "RandomOptimizer.h"
 #include "AnnealOptimizer.h"
 #include "AgglomerativeOptimizer.h"
+#include "QualityFunction2.h"
+#include "SurpriseFunction2.h"
+#include "AsymptoticSurpriseFunction2.h"
 #include "Timer.h"
 using namespace std;
 
@@ -41,25 +44,22 @@ int main(int argc, char *argv[])
 {
     GraphC h;
     h.read_gml(string(argv[1]));
-    h.read_weights_from_file(string(argv[2]));
+
+    //h.read_weights_from_file(string(argv[2]));
 
     CommunityStructure c(&h);
     c.set_random_seed();
+    c.read_membership_from_file(argv[2]);
 
     c.reindex_membership();
     c.sort_edges();
 
-    AgglomerativeOptimizer opt;
-    SurpriseFunction fun;
-    opt.set_edges_order(c.get_sorted_edges_indices());
+    QualityFunction2 q1(new SurpriseFunction2);
+    QualityFunction2 q2(new AsymptoticSurpriseFunction2);
 
-    Timer timer;timer.start();
-    for (int i=0; i<100;++i)
-        opt.optimize(h.get_igraph(),fun,c.get_membership());
-    cout << timer.getElapsedTimeInMicroSec() << endl;
-    c.reindex_membership();
+    QualityFunction2 q3 = q1+q2;
 
-    cout << "S=" << fun(h.get_igraph(),c.get_membership()) << endl;
+    cout << "S=" << q3(h.get_igraph(),c.get_membership()) << endl;
 
     return 0;
 }

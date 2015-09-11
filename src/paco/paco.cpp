@@ -55,20 +55,6 @@
 
 using namespace std;
 
-enum PacoMethod
-{
-    MethodAgglomerative = 0,
-    MethodRandom = 1,
-    MethodAnneal = 2,
-};
-
-enum PacoQuality
-{
-    QualitySurprise = 0,
-    QualitySignificance = 1,
-    QualityAsymptoticSurprise = 2
-};
-
 void printUsage()
 {
     mexPrintf("PACO PArtitioning Cost Optimization.\n");
@@ -125,8 +111,8 @@ static const char *error_strings[] =
 
 struct PacoParams
 {
-    PacoMethod method;
-    PacoQuality qual;
+    OptimizerType method;
+    QualityType qual;
     size_t nrep;      // Maximum number of consecutive repetitions to perform.
     int rand_seed; // random seed for the louvain algorithm
 };
@@ -185,7 +171,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             // Parse string value inputArgs[c]
             if ( strcasecmp(cpartype,"Method")==0 )
             {
-                pars->method = static_cast<PacoMethod>(*mxGetPr(parval));
+                pars->method = static_cast<OptimizerType>(*mxGetPr(parval));
                 if (pars->method<0 || pars->method>2)
                 {
                     *argposerr = argcount+1;
@@ -195,7 +181,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             }
             else if ( strcasecmp(cpartype,"Quality")==0 )
             {
-                pars->qual = static_cast<PacoQuality>(*mxGetPr(parval));
+                pars->qual = static_cast<QualityType>(*mxGetPr(parval));
                 if (pars->qual<0 || pars->qual>2)
                 {
                     *argposerr = argcount+1;
@@ -266,15 +252,14 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     }
     catch (std::exception &e)
     {
-        //mexErrMsgTxt("Input network has diagonal entries. Set them to zero.");
-        std::string error_string = e.what();
         delete G;
-        mexErrMsgTxt(error_string.c_str());
+        mexErrMsgTxt(e.what());
     }
 
     // Create an instance of the optimizer
     CommunityStructure c(G);
     c.set_random_seed(pars.rand_seed);
+/*
     c.sort_edges();
 
     QualityFunction *fun;
@@ -351,6 +336,16 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     {
         mexErrMsgTxt(e.what());
     }
+*/
+    double finalquality=0;
+    try
+    {
+        finalquality = c.optimize(pars.qual,pars.method,pars.nrep);
+    }
+    catch ( exception &e )
+    {
+        mexErrMsgTxt(e.what());
+    }
 
     // Prepare output
     outputArgs[0] = mxCreateDoubleMatrix(1,(mwSize)N, mxREAL);
@@ -364,15 +359,11 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     // Copy the value of partition quality
     outputArgs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
     double *q = mxGetPr(outputArgs[1]);
-
     // Copy final quality value
-    q[0] = finalqual;
-
+    q[0] = finalquality;
 
     // Cleanup the memory (follow this order)
     delete G;
-    delete opt;
-    delete fun;
     // Finish the function
     return;
 }
