@@ -97,14 +97,14 @@ protected:
     igraph_t ig;
 
     // Weights storage
-    vector<igraph_real_t> weights;
+    vector<igraph_real_t> edge_weights_stl;
     igraph_vector_t edge_weights;
 
-    vector<igraph_real_t> strengths;
-    igraph_vector_t vertices_degrees;
-
-    vector<igraph_real_t> degrees;
+    vector<igraph_real_t> vertices_strenghts_stl;
     igraph_vector_t vertices_strenghts;
+
+    vector<igraph_real_t> vertices_degrees_stl;
+    igraph_vector_t vertices_degrees;
 
     bool _is_weighted;
     bool _is_directed;

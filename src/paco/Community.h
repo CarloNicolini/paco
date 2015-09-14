@@ -40,13 +40,15 @@ enum OptimizerType
     MethodAgglomerative = 0,
     MethodRandom = 1,
     MethodAnneal = 2,
+    MethodInfomap = 3
 };
 
 enum QualityType
 {
     QualitySurprise = 0,
     QualitySignificance = 1,
-    QualityAsymptoticSurprise = 2
+    QualityAsymptoticSurprise = 2,
+    QualityInfoMap = 3
 };
 
 class CommunityStructure

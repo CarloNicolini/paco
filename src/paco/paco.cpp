@@ -172,7 +172,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             if ( strcasecmp(cpartype,"Method")==0 )
             {
                 pars->method = static_cast<OptimizerType>(*mxGetPr(parval));
-                if (pars->method<0 || pars->method>2)
+                if (pars->method<0 || pars->method>3)
                 {
                     *argposerr = argcount+1;
                     return ERROR_ARG_VALUE;
@@ -182,7 +182,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             else if ( strcasecmp(cpartype,"Quality")==0 )
             {
                 pars->qual = static_cast<QualityType>(*mxGetPr(parval));
-                if (pars->qual<0 || pars->qual>2)
+                if (pars->qual<0 || pars->qual>3)
                 {
                     *argposerr = argcount+1;
                     return ERROR_ARG_VALUE;
@@ -259,84 +259,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     // Create an instance of the optimizer
     CommunityStructure c(G);
     c.set_random_seed(pars.rand_seed);
-/*
-    c.sort_edges();
 
-    QualityFunction *fun;
-    QualityOptimizer *opt;
-
-    // Select the optimization method
-    switch (pars.method)
-    {
-    case MethodAgglomerative:
-    {
-        opt = dynamic_cast<AgglomerativeOptimizer*>( new AgglomerativeOptimizer);
-        dynamic_cast<AgglomerativeOptimizer*>(opt)->set_edges_order(c.get_sorted_edges_indices());
-        break;
-    }
-    case MethodRandom:
-    {
-        opt = dynamic_cast<RandomOptimizer*>(new RandomOptimizer);
-        break;
-    }
-    case MethodAnneal:
-    {
-        opt = dynamic_cast<AnnealOptimizer*>(new AnnealOptimizer);
-        break;
-    }
-    default:
-    {
-        mexErrMsgTxt("Non supported optimization method");
-        break;
-    }
-    }
-
-    // Select the quality function
-    switch (pars.qual)
-    {
-    case QualitySurprise:
-    {
-        fun = dynamic_cast<SurpriseFunction*>(new SurpriseFunction);
-        break;
-    }
-    case QualitySignificance:
-    {
-        fun = dynamic_cast<SignificanceFunction*>(new SignificanceFunction);
-        break;
-    }
-    case QualityAsymptoticSurprise:
-    {
-        fun = dynamic_cast<AsymptoticSurpriseFunction*>(new AsymptoticSurpriseFunction);
-        break;
-    }
-    default:
-    {
-        mexErrMsgTxt("Non supported quality function");
-        break;
-    }
-    }
-
-    // Finally optimize the partition
-    bool is_weighted = G->is_weighted();
-    if (is_weighted && pars.qual == QualitySurprise)
-        mexErrMsgTxt("Can't optimize discrete surprise on weighted graph. Use AsymptoticSurprise instead.");
-
-    double finalqual = 0;
-    try
-    {
-        for (int i=0; i<pars.nrep; ++i)
-        {
-            if (!is_weighted)
-                finalqual = opt->optimize(G->get_igraph(),*fun,c.get_membership());
-            else
-                finalqual = opt->optimize(G->get_igraph(),*fun,c.get_membership(),G->get_edge_weights());
-        }
-    }
-    catch(std::exception &e)
-    {
-        mexErrMsgTxt(e.what());
-    }
-*/
     double finalquality=0;
     try
     {

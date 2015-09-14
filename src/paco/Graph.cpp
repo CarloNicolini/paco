@@ -90,7 +90,7 @@ void GraphC::init(const Eigen::MatrixXd &W)
     igraph_matrix_view(&w_adj,const_cast<igraph_real_t*>(W.data()),W.cols(),W.rows());
     IGRAPH_TRY(igraph_weighted_adjacency(&this->ig,&w_adj,IGRAPH_ADJ_UNDIRECTED,NULL,true));
 
-    weights.clear();
+    edge_weights_stl.clear();
     int n = W.rows();
     int m = W.cols();
     for (int i=0; i<n; ++i)
@@ -99,15 +99,15 @@ void GraphC::init(const Eigen::MatrixXd &W)
         {
             double w = W.coeffRef(i*n+j);
             if (w>0)
-                weights.push_back(w);
+                edge_weights_stl.push_back(w);
             if (w<0)
                 throw std::logic_error("Negative edge weight found. Only positive weights supported.");
         }
     }
-    if (weights.size() != igraph_ecount(&ig))
+    if (edge_weights_stl.size() != igraph_ecount(&ig))
         throw std::logic_error("Non consistent edge weight length.");
 
-    igraph_vector_view(&edge_weights,weights.data(),weights.size());
+    igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
     _is_directed = false;
 
     size_t num_different_edge_weight_values = set<double>(W.data(),W.data()+W.rows()*W.cols()).size();
@@ -210,7 +210,7 @@ bool GraphC::read_weights_from_file(const string &filename)
     if (!ifs.good())
         throw std::ios_base::failure("Error, file " + filename+ " doesn't exist");
 
-    this->weights.clear();
+    this->edge_weights_stl.clear();
 
     string line;
     while ( getline(ifs,line) )
@@ -222,16 +222,16 @@ bool GraphC::read_weights_from_file(const string &filename)
         str >> ew;
         if (ew<0)
             throw std::logic_error("Negative edge weight found.");
-        weights.push_back(ew);
+        edge_weights_stl.push_back(ew);
     }
     ifs.close();
 
-    if (weights.size() != number_of_edges())
+    if (edge_weights_stl.size() != number_of_edges())
         throw std::logic_error("Edge weights vector not consistent with number of graph edges");
 
-    size_t num_different_edge_weight_values = set<double>(weights.begin(),weights.end()).size();
+    size_t num_different_edge_weight_values = set<double>(edge_weights_stl.begin(),edge_weights_stl.end()).size();
     _is_weighted = num_different_edge_weight_values!=2; // set if the graph is weighted or just has two different weights
-    igraph_vector_view(&edge_weights,weights.data(),weights.size()); // copy to weights vector
+    igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size()); // copy to weights vector
 }
 
 /**
@@ -240,9 +240,9 @@ bool GraphC::read_weights_from_file(const string &filename)
  */
 void GraphC::set_edge_weights(const vector<igraph_real_t> &w)
 {
-    this->weights = w;
-    igraph_vector_view(&edge_weights,weights.data(),weights.size());
-    size_t num_different_edge_weight_values = set<double>(weights.begin(),weights.end()).size();
+    this->edge_weights_stl = w;
+    igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
+    size_t num_different_edge_weight_values = set<double>(edge_weights_stl.begin(),edge_weights_stl.end()).size();
     _is_weighted = num_different_edge_weight_values!=2;
 }
 
