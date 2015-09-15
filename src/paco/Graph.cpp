@@ -105,7 +105,7 @@ void GraphC::init(const Eigen::MatrixXd &W)
         }
     }
     if (edge_weights_stl.size() != igraph_ecount(&ig))
-        throw std::logic_error("Non consistent edge weight length.");
+        throw std::logic_error("Non consistent length of edge weigths vector, or diagonal entries in adjacency matrix.");
 
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
     _is_directed = false;
