@@ -45,6 +45,7 @@ public:
     void init(const igraph_t*g, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL);
     bool move_vertex(const igraph_t *g, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights=NULL);
     bool merge_communities(const igraph_t *g, const igraph_vector_t *memb, size_t source_comm, size_t dest_comm, const igraph_vector_t *weights=NULL);
+    bool split_community(const igraph_t *g, const igraph_vector_t *memb, size_t comm, const igraph_vector_t *weights=NULL);
     inline size_t get_membership(const igraph_vector_t *memb, int vert) const;
     void reindex(const igraph_vector_t *memb);
     void print() const;

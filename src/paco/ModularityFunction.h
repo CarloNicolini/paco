@@ -23,47 +23,20 @@
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#ifndef ModularityFunction_H
+#define ModularityFunction_H
 
-#include "Graph.h"
-#include "SurpriseFunction.h"
-#include "ModularityFunction.h"
-#include "Community.h"
-#include "PartitionHelper.h"
+#include "QualityFunction.h"
 
-using namespace std;
-
-int main(int argc, char *argv[])
+class ModularityFunction : public QualityFunction
 {
-    GraphC h;
-    h.read_gml(argv[1]);
-    const igraph_t *g = h.get_igraph();
-    CommunityStructure c(&h);
-    c.read_membership_from_file(argv[2]);
-    c.reindex_membership();
+public:
+    ModularityFunction();
+    ~ModularityFunction() {}
 
-    const igraph_vector_t *m = c.get_membership();
-    PartitionHelper par;
-    par.init(g,m);
+protected:
+    void eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL) const;
+    void eval(const PartitionHelper *par) const;
+};
 
-/*
-    SurpriseFunction f;
-    cout << f(&par) << endl;
-
-    for (int i=0; i<6; ++i)
-    {
-        par.move_vertex(g,m,i,11);
-        cout << f(&par) << endl;
-    }
-
-    for (int i=0; i<6; ++i)
-    {
-        par.move_vertex(g,m,i,6);
-        cout << f(&par) << endl;
-    }
-*/
-    ModularityFunction mod;
-    cout << mod(&par) << endl;
-
-    return 0;
-}
+#endif // ModularityFunction_H

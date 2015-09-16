@@ -23,47 +23,34 @@
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-
-#include "Graph.h"
-#include "SurpriseFunction.h"
+#include "QualityFunction.h"
 #include "ModularityFunction.h"
-#include "Community.h"
-#include "PartitionHelper.h"
+#include "igraph_utils.h"
 
-using namespace std;
 
-int main(int argc, char *argv[])
+ModularityFunction::ModularityFunction() {}
+
+void ModularityFunction::eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights) const
 {
-    GraphC h;
-    h.read_gml(argv[1]);
-    const igraph_t *g = h.get_igraph();
-    CommunityStructure c(&h);
-    c.read_membership_from_file(argv[2]);
-    c.reindex_membership();
+    PartitionHelper *par2 = new PartitionHelper;
+    par2->init(g,memb,weights);
+    this->eval(par2);
+    delete par2;
+}
 
-    const igraph_vector_t *m = c.get_membership();
-    PartitionHelper par;
-    par.init(g,m);
+void ModularityFunction::eval(const PartitionHelper *par) const
+{
+    quality = 0;
+    igraph_real_t m = par->get_num_edges();
 
-/*
-    SurpriseFunction f;
-    cout << f(&par) << endl;
-
-    for (int i=0; i<6; ++i)
+    if (m > 0)
     {
-        par.move_vertex(g,m,i,11);
-        cout << f(&par) << endl;
+        for (CommMapCIter iter=par->get_communities().begin(); iter!=par->get_communities().end(); ++iter)
+        {
+            size_t c = iter->first;
+            igraph_real_t a = par->get_incomm_weight().at(c)/m;
+            igraph_real_t e = par->get_incomm_deg().at(c)/2/m;
+            quality += (a - e*e);
+        }
     }
-
-    for (int i=0; i<6; ++i)
-    {
-        par.move_vertex(g,m,i,6);
-        cout << f(&par) << endl;
-    }
-*/
-    ModularityFunction mod;
-    cout << mod(&par) << endl;
-
-    return 0;
 }

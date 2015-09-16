@@ -118,7 +118,7 @@ void PartitionHelper::init(const igraph_t*graph, const igraph_vector_t *memb, co
         graph_total_weight = igraph_vector_sum(weights);
         for (size_t ei=0; ei<m; ei++)
         {
-            igraph_real_t w= weights->stor_begin[ei];
+            igraph_real_t w = weights->stor_begin[ei];
             if (w < 0)
                 throw std::logic_error("Negative weight in weight vector");
             igraph_edge(graph, (igraph_integer_t) ei, &from, &to);
@@ -292,6 +292,11 @@ bool PartitionHelper::merge_communities(const igraph_t *g, const igraph_vector_t
         size_t v = *(it++);
         move_vertex(g,memb,v,dest_comm,weights);
     }
+}
+
+bool PartitionHelper::split_community(const igraph_t *g, const igraph_vector_t *memb, size_t comm, const igraph_vector_t *weights)
+{
+
 }
 
 /**

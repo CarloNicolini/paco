@@ -109,7 +109,10 @@ void CommunityStructure::init(const GraphC *G)
 {
     // Copy the graph instance pointer
     this->pgraph = G;
-
+    if (G->number_of_nodes() ==0)
+        throw std::logic_error("Graph with no vertices");
+    if (G->number_of_edges()==0)
+        throw std::logic_error("Graph with no edges");
     this->nVertices = G->number_of_nodes();
     this->nEdges = G->number_of_edges();
     this->nPairs = nVertices*(nVertices-1)/2;

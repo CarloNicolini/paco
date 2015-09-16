@@ -35,6 +35,7 @@
 #include "AnnealOptimizer.h"
 #include "AgglomerativeOptimizer.h"
 #include "Timer.h"
+
 using namespace std;
 
 int main(int argc, char *argv[])
