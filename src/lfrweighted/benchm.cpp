@@ -26,6 +26,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 
+#include <Eigen/Core>
 #include "binary_benchm.h"
 #include "histograms.h"
 #include "print.h"
@@ -85,13 +86,19 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     density=density/member_matrix.size();
     sparsity=sparsity/member_matrix.size();
 
+    Eigen::MatrixXd W;
+    W.setZero(num_nodes,num_nodes);
     ofstream out1("network.dat");
     for (int u=0; u<E.size(); u++)
     {
         set<int>::iterator itb=E[u].begin();
         while (itb!=E[u].end())
+        {
             out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
+            W.coeffRef(u+1,*(itb++)+1) = neigh_weigh[u][*(itb)];
+        }
     }
+    cout << W << endl;
 
     ofstream out2("community.dat");
 
@@ -105,7 +112,7 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
 
     }
 
-    cout<<"\n\n---------------------------------------------------------------------------"<<endl;
+    cout<<"\n\n---------------------------------------------------------------------------" << endl;
 
     cout<<"network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<<double(edges)/num_nodes<<endl;
     cout<<"\naverage mixing parameter (topology): "<< average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing))<<endl;
@@ -117,19 +124,19 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     for (int i=0; i<E.size(); i++)
         degree_seq.push_back(E[i].size());
 
-    statout<<"degree distribution (probability density function of the degree in logarithmic bins) "<<endl;
+    statout<<"degree distribution (probability density function of the degree in logarithmic bins) " << endl;
     log_histogram(degree_seq, statout, 10);
-    statout<<"\ndegree distribution (degree-occurrences) "<<endl;
+    statout<<"\ndegree distribution (degree-occurrences) " << endl;
     int_histogram(degree_seq, statout);
-    statout<<endl<<"--------------------------------------"<<endl;
+    statout<<endl<<"--------------------------------------" << endl;
 
-    statout<<"community distribution (size-occurrences)"<<endl;
+    statout<<"community distribution (size-occurrences)" << endl;
     int_histogram(num_seq, statout);
-    statout<<endl<<"--------------------------------------"<<endl;
+    statout<<endl<<"--------------------------------------" << endl;
 
-    statout<<"mixing parameter (topology)"<<endl;
+    statout<<"mixing parameter (topology)" << endl;
     not_norm_histogram(double_mixing, statout, 20, 0, 0);
-    statout<<endl<<"--------------------------------------"<<endl;
+    statout<<endl<<"--------------------------------------" << endl;
 
     deque<double> inwij;
     deque<double> outwij;
@@ -164,18 +171,18 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     }
 
     cout<<"\naverage mixing parameter (weights): "<<average_func(one_minus_mu2)<<" +/- "<<sqrt(variance_func(one_minus_mu2))<<endl;
-    statout<<"mixing parameter (weights)"<<endl;
+    statout<<"mixing parameter (weights)" << endl;
     not_norm_histogram(one_minus_mu2, statout, 20, 0, 0);
-    statout<<endl<<"--------------------------------------"<<endl;
+    statout<<endl<<"--------------------------------------" << endl;
 
     cout<<"average weight of an internal link "<<average_func(inwij)<<" +/- "<<sqrt(variance_func(inwij))<<endl;
     cout<<"average weight of an external link "<<average_func(outwij)<<" +/- "<<sqrt(variance_func(outwij))<<endl;
 
-    statout<<"internal weights (weight-occurrences)"<<endl;
+    statout<<"internal weights (weight-occurrences)" << endl;
     not_norm_histogram(inwij, statout, 20, 0, 0);
-    statout<<endl<<"--------------------------------------"<<endl;
+    statout<<endl<<"--------------------------------------" << endl;
 
-    statout<<"external weights (weight-occurrences)"<<endl;
+    statout<<"external weights (weight-occurrences)" << endl;
     not_norm_histogram(outwij, statout, 20, 0, 0);
 
     cout<<endl<<endl;
@@ -225,15 +232,15 @@ int check_weights(deque<map <int, double > > & neigh_weigh, const deque<deque<in
 
         if (fabs(in_s - factual[k][0]) > 1e-7)
             cherr(in_s - factual[k][0]);
-        //cout<<"ok1"<<endl;
+        //cout<<"ok1" << endl;
 
         if (fabs(out_s - factual[k][1]) > 1e-7)
             cherr(out_s - factual[k][1]);
-        //cout<<"ok2"<<endl;
+        //cout<<"ok2" << endl;
 
         if (fabs(in_s + out_s + factual[k][2] - strs[k]) > 1e-7)
             cherr(in_s + out_s + factual[k][2] - strs[k]);
-        //cout<<"ok3"<<endl;
+        //cout<<"ok3" << endl;
 
         double d1=(in_s - wished[k][0]);
         double d2=(out_s - wished[k][1]);
@@ -250,7 +257,7 @@ int check_weights(deque<map <int, double > > & neigh_weigh, const deque<deque<in
     if (fabs(var_check - tot_var) > 1e-5)
         cerr<<"found this difference in check "<<fabs(var_check - tot_var)<<endl;
     else
-        cout<<"ok: check passed"<<endl;
+        cout<<"ok: check passed" << endl;
 
     // ----------------------------------------------------------------------- CHECK -----------------------------------------------
     // ----------------------------------------------------------------------- CHECK -----------------------------------------------
@@ -547,7 +554,7 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
 
         nmax=max_degree;
         nmin=max(int(min_degree), 3);
-        cout << "community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]"<<endl;
+        cout << "community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]" << endl;
     }
 
     deque <int> degree_seq ;		//  degree sequence of the nodes
@@ -576,11 +583,11 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
     deque<deque<int> > member_list;		// row i cointains the memberships of node i
     deque<deque<int> > link_list;		// row i cointains degree of the node i respect to member_list[i][j]; there is one more number that is the external degree
 
-    cout << " Building communities... "<<endl;
+    cout << " Building communities... " << endl;
     if(build_subgraphs(E, member_matrix, member_list, link_list, internal_degree_seq, degree_seq, excess, defect)==-1)
         return -1;
 
-    cout << "Connecting communities... "<<endl;
+    cout << "Connecting communities... " << endl;
     connect_all_the_parts(E, member_list, link_list);
 
     if(erase_links(E, member_list, excess, defect, mixing_parameter)==-1)
@@ -594,10 +601,10 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
 
     deque<map <int, double > > neigh_weigh;
 
-    cout<< "Inserting weights..."<<endl;
+    cout<< "Inserting weights..." << endl;
     weights(E, member_list, beta, mixing_parameter2, neigh_weigh);
 
-    cout<< "Recording network..."<<endl;
+    cout<< "Recording network..." << endl;
     print_network(E, member_list, member_matrix, num_seq, neigh_weigh, beta, mixing_parameter2, mixing_parameter);
 
     return 0;
