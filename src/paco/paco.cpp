@@ -42,11 +42,7 @@
 #include "SignificanceFunction.h"
 
 #ifdef __linux__
-	#ifdef MATLAB_SUPPORT
-	#include "/usr/local/MATLAB/R2015a/extern/include/mex.h"
-	#elif OCTAVE_SUPPORT
-	#include "/usr/include/octave-4.0.0/octave/mex.h"
-	#endif
+    #include <mex.h>
 #endif
 
 #ifdef __APPLE__
