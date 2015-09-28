@@ -73,6 +73,8 @@ void printUsage()
     mexPrintf("		0: Surprise (discrete)\n");
     mexPrintf("		1: Significance\n");
     mexPrintf("		2: AsymptoticSurprise\n");
+    mexPrintf("		3: Infomap\n");
+    mexPrintf("		4: Modularity\n");
     mexPrintf("[m, qual] = paco(W,'seed',val);\n");
     mexPrintf("		val: to provide a specific random seed to the algorithm, in order to have reproducible results.\n");
     mexPrintf("\n\n");
