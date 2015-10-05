@@ -26,7 +26,7 @@ option(OCTAVE_SUPPORT "Oct with Octave mkoctfile" OFF)
 if(MATLAB_SUPPORT)
     find_package(MyMatlab)
     include_directories(${MATLAB_INCLUDE_DIRS})
-    add_definitions("-DMATLAB_SUPPORT")
+    add_definitions("-DMATLAB_SUPPORT")    
 endif()
 
 if(OCTAVE_SUPPORT)
