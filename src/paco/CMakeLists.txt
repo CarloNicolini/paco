@@ -66,7 +66,7 @@ target_link_libraries(test_optimizer PACO)
 if(MATLAB_SUPPORT)
 # To avoid a stupid linking problem with incompatible libstdc++ versions
 # http://stackoverflow.com/questions/19386651/how-to-fix-usr-lib-libstdc-so-6-version-glibcxx-3-4-15-not-found
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
 add_library(paco_mx SHARED paco.cpp ${PACO_SRCS})
 target_link_libraries(paco_mx ${MATLAB_LIBRARIES} ${IGRAPH_LIBRARIES})
 set_target_properties(paco_mx PROPERTIES SUFFIX ".${MATLAB_MEX_EXT}")
