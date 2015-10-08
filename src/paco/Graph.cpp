@@ -32,6 +32,7 @@ GraphC::GraphC()
 {
     IGRAPH_TRY(igraph_empty(&this->ig,0,IGRAPH_UNDIRECTED));
     _is_directed = false;
+    _must_delete=true;
 }
 
 /**
@@ -44,6 +45,7 @@ GraphC::GraphC(igraph_t *g)
     IGRAPH_TRY(igraph_copy(g,&this->ig));
     _is_directed = false;
     _is_weighted = false;
+    _must_delete = true;
 }
 
 /**
@@ -55,6 +57,7 @@ GraphC::GraphC(size_t nvertices)
     IGRAPH_TRY(igraph_empty(&this->ig,nvertices,IGRAPH_UNDIRECTED));
     _is_directed = false;
     _is_weighted = false;
+    _must_delete = true;
 }
 
 /**
@@ -80,16 +83,23 @@ GraphC::GraphC(double *W, int n, int m)
 
 void GraphC::init(const Eigen::MatrixXd &W)
 {
+    _must_delete = true;
     igraph_matrix_t w_adj;
     if (W.rows()!=W.cols())
     {
         throw std::logic_error("Non square adjacency matrix");
     }
-    if (W.diagonal().sum()!=0)
-        throw std::logic_error("Adjacency matrix has self-loops, only simple graphs allowed");
+//    cerr << "SUM OF DIAGONAL=" << W.diagonal().sum() << endl;
+
+    if (W.diagonal().sum()>double(0.0))
+    {
+      _must_delete = false;
+      throw std::logic_error("Adjacency matrix has self-loops, only simple graphs allowed");
+    }
+
     igraph_matrix_view(&w_adj,const_cast<igraph_real_t*>(W.data()),W.cols(),W.rows());
     IGRAPH_TRY(igraph_weighted_adjacency(&this->ig,&w_adj,IGRAPH_ADJ_UNDIRECTED,NULL,true));
-
+    // Populate the edge weights vector
     edge_weights_stl.clear();
     int n = W.rows();
     int m = W.cols();
@@ -101,17 +111,23 @@ void GraphC::init(const Eigen::MatrixXd &W)
             if (w>0)
                 edge_weights_stl.push_back(w);
             if (w<0)
+            {
+              _must_delete = false;
                 throw std::logic_error("Negative edge weight found. Only positive weights supported.");
+            }
         }
     }
     if (edge_weights_stl.size() != igraph_ecount(&ig))
+    {
+        _must_delete = false;
         throw std::logic_error("Non consistent length of edge weigths vector, or diagonal entries in adjacency matrix.");
-
+    }
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
     _is_directed = false;
 
     size_t num_different_edge_weight_values = set<double>(W.data(),W.data()+W.rows()*W.cols()).size();
     _is_weighted = num_different_edge_weight_values!=2;
+    _must_delete = false;
 }
 
 const igraph_vector_t* GraphC::get_edge_weights() const
@@ -158,7 +174,8 @@ const igraph_vector_t* GraphC::get_strenghts() const
  */
 GraphC::~GraphC()
 {
-    igraph_destroy(&this->ig);
+  if (_must_delete)
+      igraph_destroy(&this->ig);
 }
 
 const igraph_t* GraphC::get_igraph() const

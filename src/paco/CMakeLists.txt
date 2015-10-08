@@ -49,12 +49,15 @@ add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
 target_link_libraries(PACO ${IGRAPH_LIBRARIES})
 
 if(MATLAB_SUPPORT)
-    add_mex(paco paco.cpp)
-    target_link_libraries(paco PACO ${MATLAB_LIBRARIES})
+    add_mex(paco_mx paco.cpp)
+    target_link_libraries(paco_mx PACO ${MATLAB_LIBRARIES})
 endif(MATLAB_SUPPORT)
 
 add_executable(test_graphc test_graphc.cpp)
 target_link_libraries(test_graphc PACO)
+
+add_executable(test_igraph_matrix_view test_igraph_matrix_view.cpp)
+target_link_libraries(test_igraph_matrix_view PACO)
 
 add_executable(test_igraph_matrix test_igraph_matrix.cpp)
 target_link_libraries(test_igraph_matrix PACO)

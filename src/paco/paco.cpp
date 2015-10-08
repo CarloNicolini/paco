@@ -250,7 +250,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     }
     catch (std::exception &e)
     {
-        delete G;
+        //delete G;
         mexErrMsgTxt(e.what());
     }
 

@@ -108,6 +108,8 @@ protected:
 
     bool _is_weighted;
     bool _is_directed;
+  private:
+    bool _must_delete;
 };
 
 #endif
