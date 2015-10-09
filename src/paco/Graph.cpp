@@ -81,24 +81,29 @@ GraphC::GraphC(double *W, int n, int m)
     this->init(MW);
 }
 
+/**
+ * @brief GraphC::init
+ * @param W
+ */
 void GraphC::init(const Eigen::MatrixXd &W)
 {
     _must_delete = true;
     igraph_matrix_t w_adj;
+
     if (W.rows()!=W.cols())
     {
         throw std::logic_error("Non square adjacency matrix");
     }
-//    cerr << "SUM OF DIAGONAL=" << W.diagonal().sum() << endl;
 
     if (W.diagonal().sum()>double(0.0))
     {
-      _must_delete = false;
-      throw std::logic_error("Adjacency matrix has self-loops, only simple graphs allowed");
+        //_must_delete = false;
+        throw std::logic_error("Adjacency matrix has self-loops, only simple graphs allowed");
     }
 
     igraph_matrix_view(&w_adj,const_cast<igraph_real_t*>(W.data()),W.cols(),W.rows());
-    IGRAPH_TRY(igraph_weighted_adjacency(&this->ig,&w_adj,IGRAPH_ADJ_UNDIRECTED,NULL,true));
+    igraph_weighted_adjacency(&this->ig,&w_adj,IGRAPH_ADJ_UNDIRECTED,NULL,true);
+
     // Populate the edge weights vector
     edge_weights_stl.clear();
     int n = W.rows();
@@ -112,14 +117,14 @@ void GraphC::init(const Eigen::MatrixXd &W)
                 edge_weights_stl.push_back(w);
             if (w<0)
             {
-              _must_delete = false;
+                //_must_delete = false;
                 throw std::logic_error("Negative edge weight found. Only positive weights supported.");
             }
         }
     }
     if (edge_weights_stl.size() != igraph_ecount(&ig))
     {
-        _must_delete = false;
+        //_must_delete = false;
         throw std::logic_error("Non consistent length of edge weigths vector, or diagonal entries in adjacency matrix.");
     }
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
@@ -127,9 +132,12 @@ void GraphC::init(const Eigen::MatrixXd &W)
 
     size_t num_different_edge_weight_values = set<double>(W.data(),W.data()+W.rows()*W.cols()).size();
     _is_weighted = num_different_edge_weight_values!=2;
-    _must_delete = false;
 }
 
+/**
+ * @brief GraphC::get_edge_weights
+ * @return
+ */
 const igraph_vector_t* GraphC::get_edge_weights() const
 {
     if (_is_weighted)
@@ -138,11 +146,19 @@ const igraph_vector_t* GraphC::get_edge_weights() const
         throw std::logic_error("Graph is not weighted. Invalid call to get_edge_weights()");
 }
 
+/**
+ * @brief GraphC::compute_vertex_degrees
+ * @param loops
+ */
 void GraphC::compute_vertex_degrees(bool loops)
 {
     igraph_degree(&ig,&vertices_degrees,igraph_vss_all(),IGRAPH_ALL,loops);
 }
 
+/**
+ * @brief GraphC::compute_vertex_strenghts
+ * @param loops
+ */
 void GraphC::compute_vertex_strenghts(bool loops)
 {
     if (is_weighted())
@@ -156,11 +172,19 @@ void GraphC::compute_vertex_strenghts(bool loops)
     }
 }
 
+/**
+ * @brief GraphC::get_degrees
+ * @return
+ */
 const igraph_vector_t* GraphC::get_degrees() const
 {
     return &vertices_degrees;
 }
 
+/**
+ * @brief GraphC::get_strenghts
+ * @return
+ */
 const igraph_vector_t* GraphC::get_strenghts() const
 {
     if ( is_weighted())
@@ -174,10 +198,14 @@ const igraph_vector_t* GraphC::get_strenghts() const
  */
 GraphC::~GraphC()
 {
-  if (_must_delete)
-      igraph_destroy(&this->ig);
+    if (_must_delete)
+        igraph_destroy(&this->ig);
 }
 
+/**
+ * @brief GraphC::get_igraph
+ * @return
+ */
 const igraph_t* GraphC::get_igraph() const
 {
     return &this->ig;
