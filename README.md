@@ -83,3 +83,6 @@ and redirect the `libstdc++.so.6` to link the system library:
     $> sudo ln -fs /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.17 libstdc++.so.6
 
 This command makes the `libstdc++.so.6` point to the system libstdc++ library.
+
+
+For other informations take a look at http://dovgalecs.com/blog/matlab-glibcxx_3-4-11-not-found/
