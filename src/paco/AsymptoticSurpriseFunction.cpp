@@ -37,7 +37,10 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
     size_t p = n*(n-1)/2;
 
     if (n != igraph_vector_size(memb) )
-        throw std::runtime_error("Non consistent length of membership vector");
+    {
+        cerr << "Non consistent length of membership vector" << endl;
+        throw std::logic_error("Non consistent length of membership vector");
+    }
 
     // Sum of intracluster edge weights
     size_t mzeta=0;

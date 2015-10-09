@@ -243,48 +243,34 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     int N = mxGetN(inputArgs[0]);
 
     // Create the Graph helper object specifying edge weights too
-    GraphC *G;
+    GraphC *G=NULL;
     try
     {
         G  = new GraphC(mxGetPr(inputArgs[0]),N,N);
+        // Create an instance of the optimizer
+        CommunityStructure c(G);
+        c.set_random_seed(pars.rand_seed);
+        double finalquality=c.optimize(pars.qual,pars.method,pars.nrep);
+
+        // Prepare output
+        outputArgs[0] = mxCreateDoubleMatrix(1,(mwSize)N, mxREAL);
+        // Copy the membership vector to outputArgs[0] which has been already preallocated
+        igraph_vector_copy_to(c.get_membership(),mxGetPr(outputArgs[0]));
+
+        // Copy the value of partition quality
+        outputArgs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
+        double *q = mxGetPr(outputArgs[1]);
+        // Copy final quality value
+        q[0] = finalquality;
+        // Cleanup the memory (follow this order)
+        delete G;
     }
     catch (std::exception &e)
     {
-        //delete G;
+        cerr << e.what() << endl;
         mexErrMsgTxt(e.what());
     }
 
-    // Create an instance of the optimizer
-    CommunityStructure c(G);
-    c.set_random_seed(pars.rand_seed);
-
-    double finalquality=0;
-    try
-    {
-        finalquality = c.optimize(pars.qual,pars.method,pars.nrep);
-    }
-    catch ( exception &e )
-    {
-        mexErrMsgTxt(e.what());
-    }
-
-    // Prepare output
-    outputArgs[0] = mxCreateDoubleMatrix(1,(mwSize)N, mxREAL);
-    double *memb = mxGetPr(outputArgs[0]);
-
-    // Copy the membership vector to outputArgs[0] which has been already preallocated
-    igraph_vector_copy_to(c.get_membership(),memb);
-    //for (size_t i = 0; i<N ; ++i)
-    //  memb[i] = static_cast<double>(c.get_membership(i));
-
-    // Copy the value of partition quality
-    outputArgs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
-    double *q = mxGetPr(outputArgs[1]);
-    // Copy final quality value
-    q[0] = finalquality;
-
-    // Cleanup the memory (follow this order)
-    delete G;
     // Finish the function
     return;
 }

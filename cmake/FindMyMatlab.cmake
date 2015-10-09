@@ -119,6 +119,7 @@ else()
     $ENV{HOME}/redhat-matlab/
     /opt/matlab/
     /usr/local/matlab/
+    /usr/local/MATLAB/
     $ENV{MATLABROOT}
   )
 
