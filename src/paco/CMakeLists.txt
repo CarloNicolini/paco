@@ -44,7 +44,6 @@ KLDivergence.h
 Timer.h
 )
 
-
 add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
 target_link_libraries(PACO ${IGRAPH_LIBRARIES})
 

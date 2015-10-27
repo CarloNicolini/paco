@@ -5,4 +5,6 @@ project(Paco)
 include_directories(eigen)
 
 add_subdirectory(paco)
-#add_subdirectory(lfrweighted)
+if (COMPILE_LFR)
+add_subdirectory(lfrweighted)
+endif(COMPILE_LFR)

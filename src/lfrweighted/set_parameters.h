@@ -6,11 +6,9 @@
 
 class Parameters
 {
-
 public:
-
     Parameters();
-    ~Parameters() {};
+    ~Parameters() {}
 
     int num_nodes;
     double average_k;

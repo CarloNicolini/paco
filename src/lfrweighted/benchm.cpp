@@ -44,7 +44,7 @@
  * @return
  */
 int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, const deque<deque<int> > & member_matrix,
-                  deque<int> & num_seq, deque<map <int, double > > & neigh_weigh, double beta, double mu, double mu0)
+                  deque<int> & num_seq, deque<map <int, double > > & neigh_weigh, double beta, double mu, double mu0, Eigen::MatrixXd &W)
 {
 
     int edges=0;
@@ -86,36 +86,37 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     density=density/member_matrix.size();
     sparsity=sparsity/member_matrix.size();
 
-    Eigen::MatrixXd W;
+    // CARLO - Inserted output matrix in adjacency matrix format
     W.setZero(num_nodes,num_nodes);
-    ofstream out1("network.dat");
+    //ofstream out1("network.dat");
     for (int u=0; u<E.size(); u++)
     {
         set<int>::iterator itb=E[u].begin();
         while (itb!=E[u].end())
         {
-            out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
-            W.coeffRef(u+1,*(itb++)+1) = neigh_weigh[u][*(itb)];
+            //out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
+            W.coeffRef(u,*(itb++)) = neigh_weigh[u][*(itb)];
         }
     }
-    cout << W << endl;
+    //cout << W << endl;
 
     ofstream out2("community.dat");
-
     for (int i=0; i<member_list.size(); i++)
     {
-
         out2<<i+1<<"\t";
+        cerr<<i+1<<"\t";
         for (int j=0; j<member_list[i].size(); j++)
+        {
+            cerr<<member_list[i][j]+1<<" ";
             out2<<member_list[i][j]+1<<" ";
+        }
         out2<<endl;
-
+        cerr << endl;
     }
 
-    cout<<"\n\n---------------------------------------------------------------------------" << endl;
-
-    cout<<"network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<<double(edges)/num_nodes<<endl;
-    cout<<"\naverage mixing parameter (topology): "<< average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing))<<endl;
+    cout<<"\n" << endl;
+    cout<<"Network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<<double(edges)/num_nodes<<endl;
+    cout<<"\nAverage mixing parameter (topology): "<< average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing))<<endl;
     cout<<"p_in: "<<density<<"\tp_out: "<<sparsity<<endl;
 
     ofstream statout("statistics.dat");
@@ -533,7 +534,7 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
  * @return
  */
 int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  max_degree, double  tau, double  tau2,
-              double  mixing_parameter, double  mixing_parameter2, double  beta, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range, double ca)
+              double  mixing_parameter, double  mixing_parameter2, double  beta, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range, double ca, Eigen::MatrixXd &W)
 {
 
     double dmin=solve_dmin(max_degree, average_k, -tau);
@@ -551,7 +552,6 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
     // range for the community sizes
     if (!fixed_range)
     {
-
         nmax=max_degree;
         nmin=max(int(min_degree), 3);
         cout << "community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]" << endl;
@@ -601,11 +601,9 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
 
     deque<map <int, double > > neigh_weigh;
 
-    cout<< "Inserting weights..." << endl;
     weights(E, member_list, beta, mixing_parameter2, neigh_weigh);
 
-    cout<< "Recording network..." << endl;
-    print_network(E, member_list, member_matrix, num_seq, neigh_weigh, beta, mixing_parameter2, mixing_parameter);
+    print_network(E, member_list, member_matrix, num_seq, neigh_weigh, beta, mixing_parameter2, mixing_parameter, W);
 
     return 0;
 }

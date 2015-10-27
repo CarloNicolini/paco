@@ -448,16 +448,13 @@ bool set_parameters(int argc, char * argv[], Parameters & par1)
 
     if (argc <= 1)   // if no arguments, return statement about program usage.
     {
-
         statement();
         return false;
     }
 
     while (++argct < argc)  			// input file name
     {
-
         temp = argv[argct];
-
         if(temp=="-rand")
             par1.randomf=true;
 
@@ -466,46 +463,30 @@ bool set_parameters(int argc, char * argv[], Parameters & par1)
 
         else if(temp=="-inf")
             par1.defect=true;
-
         else
         {
-
             argct++;
-
             string temp2;
-
             if(argct<argc)
             {
-
                 temp2 = argv[argct];
-
                 if(temp=="-f")
                 {
-
                     if(set_from_file(temp2, par1)==false)
                         return false;
-
                 }
-
                 if(temp!="-f")
                 {
-
                     if(par1.set(temp, temp2)==false)
                         return false;
-
                 }
-
             }
-
             else
             {
-
-                cerr<<"\n***********************\nERROR while reading parameters"<<endl;
+                cerr<<"ERROR while reading parameters" << endl;
                 return false;
-
             }
         }
-
     }
 
     if(par1.arrange()==false)

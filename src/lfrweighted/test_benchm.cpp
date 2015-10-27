@@ -15,7 +15,8 @@ int main(int argc, char * argv[])
     erase_file_if_exists("community.dat");
     erase_file_if_exists("statistics.dat");
 
-    benchmark(p.excess, p.defect, p.num_nodes, p.average_k, p.max_degree, p.tau, p.tau2, p.mixing_parameter,  p.mixing_parameter2,  p.beta, p.overlapping_nodes, p.overlap_membership, p.nmin, p.nmax, p.fixed_range, p.clustering_coeff);
+    Eigen::MatrixXd W; // weighted adjacency matrix
+    benchmark(p.excess, p.defect, p.num_nodes, p.average_k, p.max_degree, p.tau, p.tau2, p.mixing_parameter,  p.mixing_parameter2,  p.beta, p.overlapping_nodes, p.overlap_membership, p.nmin, p.nmax, p.fixed_range, p.clustering_coeff, W);
 
     return 0;
 }

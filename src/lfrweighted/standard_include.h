@@ -15,7 +15,8 @@
 #include <ctime>
 #include <iterator>
 #include <algorithm>
-
+#include <Eigen/Core>
+#include "FileLogger.h"
 
 #define unlikely -214741
 

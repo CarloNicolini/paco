@@ -19,6 +19,7 @@ binary_benchm.h
 cast.h
 cc.h
 combinatorics.h
+FileLogger.h
 histograms.h
 print.h
 random.h
@@ -32,6 +33,11 @@ target_link_libraries(LFRW ${IGRAPH_LIBRARIES})
 
 add_executable(test_benchm test_benchm.cpp)
 target_link_libraries(test_benchm LFRW)
+
+if(MATLAB_SUPPORT)
+    add_mex(lfrw lfr.cpp)
+    target_link_libraries(lfrw LFRW ${MATLAB_LIBRARIES})
+endif(MATLAB_SUPPORT)
 
 # if(MATLAB_SUPPORT)
 #     # To avoid a stupid linking problem with incompatible libstdc++ versions
