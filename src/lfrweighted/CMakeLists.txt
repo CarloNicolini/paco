@@ -39,6 +39,11 @@ if(MATLAB_SUPPORT)
     target_link_libraries(lfrw LFRW ${MATLAB_LIBRARIES})
 endif(MATLAB_SUPPORT)
 
+if(OCTAVE_SUPPORT)
+    octave_add_oct(lfrw_oct SOURCES lfr.cpp LINK_LIBRARIES LFRW EXTENSION "mex")
+    #target_link_libraries(lfrw LFRW ${MATLAB_LIBRARIES})
+endif(OCTAVE_SUPPORT)
+
 # if(MATLAB_SUPPORT)
 #     # To avoid a stupid linking problem with incompatible libstdc++ versions
 #     # http://stackoverflow.com/questions/19386651/how-to-fix-usr-lib-libstdc-so-6-version-glibcxx-3-4-15-not-found

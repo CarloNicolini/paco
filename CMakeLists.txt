@@ -23,6 +23,9 @@ endif()
 option(MATLAB_SUPPORT "Mex with MATLAB" OFF)
 option(OCTAVE_SUPPORT "Oct with Octave mkoctfile" OFF)
 option(COMPILE_LFR "Compile the Lancichinetti-Fortunato-Radicchi benchmark network" OFF)
+
+set(MATLAB_ROOT "/usr/local/MATLAB/R2015a")
+
 if(MATLAB_SUPPORT)
     find_package(MyMatlab)
     message(STATUS "Matlab include directories: ${MATLAB_INCLUDE_DIRS}")

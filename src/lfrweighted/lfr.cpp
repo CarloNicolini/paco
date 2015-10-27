@@ -29,6 +29,7 @@
 #include <igraph.h>
 #include <sys/time.h>
 
+#include "benchm.h"
 #include "set_parameters.h" // the LFR parameters
 #include "../paco/igraph_utils.h" // to handle conversion from EigenMatrix to igraph object and then to mxArray
 
@@ -82,7 +83,7 @@ static const char *error_strings[] =
  * @param argposerr
  * @return
  */
-error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[], PacoParams *pars, int *argposerr )
+error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[], Parameters *pars, int *argposerr )
 {
     if (nInputArgs < 1)
     {
@@ -113,7 +114,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
 */
 
     // Iterate on function arguments
-    int argcount=1;
+    int argcount=0;
     while (argcount<nInputArgs)
     {
         // Be sure that something exists after c-th argument
@@ -134,26 +135,92 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             // Parse string value inputArgs[c]
             if ( strcasecmp(cpartype,"N")==0 )
             {
-                /*
-                pars->method = static_cast<OptimizerType>(*mxGetPr(parval));
-                if (pars->method<0 || pars->method>3)
+                pars->num_nodes = static_cast<int>((*mxGetPr(parval)));
+                if (pars->num_nodes<0 )
                 {
                     *argposerr = argcount+1;
                     return ERROR_ARG_VALUE;
                 }
-                */
                 argcount+=2;
             }
-            else if ( strcasecmp(cpartype,"Quality")==0 )
+            else if ( strcasecmp(cpartype,"k")==0 )
             {
-                /*
-                pars->qual = static_cast<QualityType>(*mxGetPr(parval));
-                if (pars->qual<0 || pars->qual>3)
+                pars->average_k = static_cast<double>((*mxGetPr(parval)));
+                if (pars->average_k <0 )
                 {
                     *argposerr = argcount+1;
                     return ERROR_ARG_VALUE;
                 }
-                */
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"maxk")==0 )
+            {
+                pars->max_degree = static_cast<int>((*mxGetPr(parval)));
+                if (pars->max_degree <0 )
+                {
+                    *argposerr = argcount+1;
+                    return ERROR_ARG_VALUE;
+                }
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"mut")==0 )
+            {
+                pars->mixing_parameter = static_cast<double>((*mxGetPr(parval)));
+                if (pars->mixing_parameter <0 || pars->mixing_parameter > 1)
+                {
+                    *argposerr = argcount+1;
+                    return ERROR_ARG_VALUE;
+                }
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"muw")==0 )
+            {
+                pars->mixing_parameter2 = static_cast<double>((*mxGetPr(parval)));
+                if (pars->mixing_parameter2 <0 || pars->mixing_parameter2 > 1)
+                {
+                    *argposerr = argcount+1;
+                    return ERROR_ARG_VALUE;
+                }
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"t1")==0 )
+            {
+                pars->tau = static_cast<double>((*mxGetPr(parval)));
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"t2")==0 )
+            {
+                pars->tau2 = static_cast<double>((*mxGetPr(parval)));
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"minc")==0 )
+            {
+                pars->nmin = static_cast<int>((*mxGetPr(parval)));
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"maxc")==0 )
+            {
+                pars->nmax = static_cast<int>((*mxGetPr(parval)));
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"beta")==0 )
+            {
+                pars->beta = static_cast<double>((*mxGetPr(parval)));
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"on")==0 )
+            {
+                pars->overlapping_nodes = static_cast<int>((*mxGetPr(parval)));
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"om")==0 )
+            {
+                pars->overlap_membership = static_cast<int>((*mxGetPr(parval)));
+                argcount+=2;
+            }
+            else if ( strcasecmp(cpartype,"C")==0 )
+            {
+                pars->clustering_coeff = static_cast<double>((*mxGetPr(parval)));
                 argcount+=2;
             }
             else
@@ -169,6 +236,10 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
         }
         mxFree(cpartype); // free the converted argument
     }
+
+    if (pars->arrange()==false)
+        return ERROR_ARG_VALUE;
+
     return NO_ERROR;
 }
 
@@ -181,12 +252,13 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
  */
 void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[])
 {
-    FILELog::ReportingLevel() = static_cast<TLogLevel>(7);
+    FILELog::ReportingLevel() = logINFO;
     // Set standard parameters argument
+    Parameters p;
 
     // Check the arguments of the function
     int error_arg_pos=-1;
-    error_type err = parse_args(nOutputArgs, outputArgs, nInputArgs, inputArgs, &pars, &error_arg_pos);
+    error_type err = parse_args(nOutputArgs, outputArgs, nInputArgs, inputArgs, &p, &error_arg_pos);
 
     if (err!=NO_ERROR)
     {
@@ -197,21 +269,23 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
         mexErrMsgTxt(ss.str().c_str());
     }
 
-    int N=1000;
     try
     {
        // Prepare output
-        outputArgs[0] = mxCreateDoubleMatrix((mwSize)N,(mwSize)N, mxREAL);
-        // Copy the membership vector to outputArgs[0] which has been already preallocated
-        igraph_vector_copy_to(c.get_membership(),mxGetPr(outputArgs[0]));
+        outputArgs[0] = mxCreateDoubleMatrix(p.num_nodes,p.num_nodes, mxREAL); // final weighted adjacency matrix
+        outputArgs[1] = mxCreateDoubleMatrix(1,p.num_nodes, mxREAL); // membership of every vertex
 
-        // Copy the value of partition quality
-        outputArgs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
-        double *q = mxGetPr(outputArgs[1]);
-        // Copy final quality value
-        q[0] = finalquality;
-        // Cleanup the memory (follow this order)
-        delete G;
+        Eigen::MatrixXd W(p.num_nodes,p.num_nodes);
+        vector<int> membership;
+        benchmark(p.excess, p.defect, p.num_nodes, p.average_k, p.max_degree, p.tau, p.tau2, p.mixing_parameter,  p.mixing_parameter2,  p.beta, p.overlapping_nodes, p.overlap_membership, p.nmin, p.nmax, p.fixed_range, p.clustering_coeff, W, membership);
+        // Copy the result to output arg 0
+        for (int i=0; i<p.num_nodes*p.num_nodes;++i)
+          mxGetPr(outputArgs[0])[i]=W.coeff(i);
+
+        // Copy the membership to output arg 1
+        for (int i=0; i<p.num_nodes;++i)
+          mxGetPr(outputArgs[1])[i]=membership.at(i);
+
     }
     catch (std::exception &e)
     {

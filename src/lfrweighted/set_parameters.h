@@ -35,7 +35,7 @@ public:
 
 };
 
-void statement();
+void print_usage();
 bool set_from_file(string & file_name, Parameters & par1);
 bool set_parameters(int argc, char * argv[], Parameters & par1);
 

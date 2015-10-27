@@ -1,7 +1,7 @@
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                               *
- *	This program is free software; you can redistribute it and/or modify         *
+ *    This program is free software; you can redistribute it and/or modify         *
  *  it under the terms of the GNU General Public License as published by         *
  *  the Free Software Foundation; either version 2 of the License, or            *
  *  (at your option) any later version.                                          *
@@ -18,10 +18,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                               *
  *  Created by Andrea Lancichinetti on 7/01/09 (email: arg.lanci@gmail.com)      *
- *	Modified on 28/05/09                                                         *
- *	Collaborators: Santo Fortunato												 *
+ *    Modified on 28/05/09                                                         *
+ *    Collaborators: Santo Fortunato                                                 *
  *  Location: ISI foundation, Turin, Italy                                       *
- *	Project: Benchmarking community detection programs                           *
+ *    Project: Benchmarking community detection programs                           *
  *                                                                               *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
@@ -46,7 +46,6 @@
 int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, const deque<deque<int> > & member_matrix,
                   deque<int> & num_seq, deque<map <int, double > > & neigh_weigh, double beta, double mu, double mu0, Eigen::MatrixXd &W)
 {
-
     int edges=0;
     int num_nodes=member_list.size();
     deque<double> double_mixing;
@@ -59,21 +58,16 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
 
     double density=0;
     double sparsity=0;
-
     for (int i=0; i<member_matrix.size(); i++)
     {
         double media_int=0;
         double media_est=0;
-
         for (int j=0; j<member_matrix[i].size(); j++)
         {
-
             double kinj = double(internal_kin_only_one(E[member_matrix[i][j]], member_matrix[i]));
             media_int+= kinj;
             media_est+=E[member_matrix[i][j]].size() - double(internal_kin_only_one(E[member_matrix[i][j]], member_matrix[i]));
-
         }
-
         double pair_num=(member_matrix[i].size()*(member_matrix[i].size()-1));
         double pair_num_e=((num_nodes-member_matrix[i].size())*(member_matrix[i].size()));
 
@@ -88,43 +82,40 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
 
     // CARLO - Inserted output matrix in adjacency matrix format
     W.setZero(num_nodes,num_nodes);
-    //ofstream out1("network.dat");
     for (int u=0; u<E.size(); u++)
     {
         set<int>::iterator itb=E[u].begin();
         while (itb!=E[u].end())
         {
-            //out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
             W.coeffRef(u,*(itb++)) = neigh_weigh[u][*(itb)];
         }
     }
-    //cout << W << endl;
 
-    ofstream out2("community.dat");
+    //ofstream out2("community.dat");
+    /*
     for (int i=0; i<member_list.size(); i++)
     {
-        out2<<i+1<<"\t";
         cerr<<i+1<<"\t";
         for (int j=0; j<member_list[i].size(); j++)
         {
             cerr<<member_list[i][j]+1<<" ";
-            out2<<member_list[i][j]+1<<" ";
+            //out2<<member_list[i][j]+1<<" ";
         }
-        out2<<endl;
+        //out2<<endl;
         cerr << endl;
     }
+    */
 
-    cout<<"\n" << endl;
-    cout<<"Network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<<double(edges)/num_nodes<<endl;
-    cout<<"\nAverage mixing parameter (topology): "<< average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing))<<endl;
-    cout<<"p_in: "<<density<<"\tp_out: "<<sparsity<<endl;
-
-    ofstream statout("statistics.dat");
+    FILE_LOG(logINFO)<<"Network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<<double(edges)/num_nodes;
+    FILE_LOG(logINFO)<<"\nAverage mixing parameter (topology): "<< average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing));
+    FILE_LOG(logINFO)<<"p_in: "<<density<<"\tp_out: "<<sparsity;
 
     deque<int> degree_seq;
     for (int i=0; i<E.size(); i++)
         degree_seq.push_back(E[i].size());
 
+    /*
+    ofstream statout("statistics.dat");
     statout<<"degree distribution (probability density function of the degree in logarithmic bins) " << endl;
     log_histogram(degree_seq, statout, 10);
     statout<<"\ndegree distribution (degree-occurrences) " << endl;
@@ -138,6 +129,7 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     statout<<"mixing parameter (topology)" << endl;
     not_norm_histogram(double_mixing, statout, 20, 0, 0);
     statout<<endl<<"--------------------------------------" << endl;
+    */
 
     deque<double> inwij;
     deque<double> outwij;
@@ -171,22 +163,20 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
         one_minus_mu2.push_back(1 - internal_strength_i/strength_i);
     }
 
-    cout<<"\naverage mixing parameter (weights): "<<average_func(one_minus_mu2)<<" +/- "<<sqrt(variance_func(one_minus_mu2))<<endl;
-    statout<<"mixing parameter (weights)" << endl;
-    not_norm_histogram(one_minus_mu2, statout, 20, 0, 0);
-    statout<<endl<<"--------------------------------------" << endl;
+    FILE_LOG(logINFO)<<"average mixing parameter (weights): "<<average_func(one_minus_mu2)<<" +/- "<<sqrt(variance_func(one_minus_mu2));
+    //statout<<"mixing parameter (weights)" << endl;
+    //not_norm_histogram(one_minus_mu2, statout, 20, 0, 0);
+    //statout<<endl<<"--------------------------------------" << endl;
 
-    cout<<"average weight of an internal link "<<average_func(inwij)<<" +/- "<<sqrt(variance_func(inwij))<<endl;
-    cout<<"average weight of an external link "<<average_func(outwij)<<" +/- "<<sqrt(variance_func(outwij))<<endl;
+    FILE_LOG(logINFO)<<"average weight of an internal link "<<average_func(inwij)<<" +/- "<<sqrt(variance_func(inwij))<<endl;
+    FILE_LOG(logINFO)<<"average weight of an external link "<<average_func(outwij)<<" +/- "<<sqrt(variance_func(outwij))<<endl;
 
-    statout<<"internal weights (weight-occurrences)" << endl;
-    not_norm_histogram(inwij, statout, 20, 0, 0);
-    statout<<endl<<"--------------------------------------" << endl;
+    //statout<<"internal weights (weight-occurrences)" << endl;
+    //not_norm_histogram(inwij, statout, 20, 0, 0);
+    //statout<<endl<<"--------------------------------------" << endl;
 
-    statout<<"external weights (weight-occurrences)" << endl;
-    not_norm_histogram(outwij, statout, 20, 0, 0);
-
-    cout<<endl<<endl;
+    //statout<<"external weights (weight-occurrences)" << endl;
+    //not_norm_histogram(outwij, statout, 20, 0, 0);
 
     return 0;
 }
@@ -211,16 +201,13 @@ int check_weights(deque<map <int, double > > & neigh_weigh, const deque<deque<in
 
     for (int k=0; k<member_list.size(); k++)
     {
-
         double in_s=0;
         double out_s=0;
 
         for(map<int, double>::iterator itm=neigh_weigh[k].begin(); itm!=neigh_weigh[k].end(); itm++)
         {
-
             if(itm->second<0)
                 cherr(333);
-
             if(fabs(itm->second - neigh_weigh[itm->first][k]) > 1e-7)
                 cherr(111);
 
@@ -228,7 +215,6 @@ int check_weights(deque<map <int, double > > & neigh_weigh, const deque<deque<in
                 in_s+=itm->second;
             else
                 out_s+=itm->second;
-
         }
 
         if (fabs(in_s - factual[k][0]) > 1e-7)
@@ -251,28 +237,33 @@ int check_weights(deque<map <int, double > > & neigh_weigh, const deque<deque<in
         d1t+=d1*d1;
         d2t+=d2*d2;
         d3t+=d3*d3;
-
     }
 
-    cout<<"tot_var "<<tot_var<<"\td1t "<<d1t<<"\td2t "<<d2t<<"\td3t "<<d3t<<endl;
+    FILE_LOG(logINFO)<<"tot_var "<<tot_var<<"\td1t "<<d1t<<"\td2t "<<d2t<<"\td3t "<<d3t;
     if (fabs(var_check - tot_var) > 1e-5)
-        cerr<<"found this difference in check "<<fabs(var_check - tot_var)<<endl;
+        FILE_LOG(logWARNING)<<"found this difference in check "<<fabs(var_check - tot_var);
     else
-        cout<<"ok: check passed" << endl;
-
-    // ----------------------------------------------------------------------- CHECK -----------------------------------------------
-    // ----------------------------------------------------------------------- CHECK -----------------------------------------------
+        FILE_LOG(logINFO)<<"Ok: check passed";
 
     return 0;
 
 }
 
-//*/
-
+/**
+ * @brief propagate
+ * @param neigh_weigh
+ * @param member_list
+ * @param wished
+ * @param factual
+ * @param i
+ * @param tot_var
+ * @param strs
+ * @param internal_kin_top
+ * @return
+ */
 int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> > & member_list,
               deque<deque<double> > & wished, deque<deque<double> > & factual, int i, double & tot_var, double *strs, const deque<int> & internal_kin_top)
 {
-
     {
         // in this case I rewire the idle strength
 
@@ -293,74 +284,54 @@ int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> >
 
                 if (they_are_mate(i, itm->first, member_list))
                 {
-
                     factual[itm->first][0]+=change;
                     factual[itm->first][2]-=change;
 
                     factual[i][0]+=change;
                     factual[i][2]-=change;
-
                 }
-
                 else
                 {
-
                     factual[itm->first][1]+=change;
                     factual[itm->first][2]-=change;
 
                     factual[i][1]+=change;
                     factual[i][2]-=change;
-
                 }
-
                 for (int bw=0; bw<3; bw++)
                     newpartvar+= (factual[itm->first][bw] - wished[itm->first][bw]) * (factual[itm->first][bw] - wished[itm->first][bw]);
-
                 itm->second+= change;
                 neigh_weigh[itm->first][i]+=change;
-
             }
 
         for (int bw=0; bw<3; bw++)
             newpartvar+= (factual[i][bw] - wished[i][bw]) * (factual[i][bw] - wished[i][bw]);
-
         tot_var+= newpartvar - oldpartvar;
-
     }
 
     int internal_neigh=internal_kin_top[i];
 
-    if(internal_neigh!=0)  		// in this case I rewire the difference strength
+    if(internal_neigh!=0)          // in this case I rewire the difference strength
     {
-
         double changenn=(factual[i][0] - wished[i][0]);
-
         double oldpartvar=0;
         for(map<int, double>::iterator itm=neigh_weigh[i].begin(); itm!=neigh_weigh[i].end(); itm++)
         {
-
             if(they_are_mate(i, itm->first, member_list))
             {
-
                 double change = changenn/internal_neigh;
-
                 if(itm->second - change > 0)
                     for (int bw=0; bw<3; bw++)
                         oldpartvar+= (factual[itm->first][bw] - wished[itm->first][bw]) * (factual[itm->first][bw] - wished[itm->first][bw]);
-
             }
-
             else
             {
-
                 double change = changenn/(neigh_weigh[i].size() - internal_neigh);
 
                 if(itm->second + change > 0)
                     for (int bw=0; bw<3; bw++)
                         oldpartvar+= (factual[itm->first][bw] - wished[itm->first][bw]) * (factual[itm->first][bw] - wished[itm->first][bw]);
-
             }
-
         }
 
         for (int bw=0; bw<3; bw++)
@@ -370,15 +341,12 @@ int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> >
 
         for(map<int, double>::iterator itm=neigh_weigh[i].begin(); itm!=neigh_weigh[i].end(); itm++)
         {
-
             if (they_are_mate(i, itm->first, member_list))
             {
-
                 double change = changenn/internal_neigh;
 
                 if(itm->second - change > 0)
                 {
-
                     factual[itm->first][0]-=change;
                     factual[itm->first][2]+=change;
 
@@ -390,19 +358,14 @@ int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> >
 
                     itm->second-= change;
                     neigh_weigh[itm->first][i]-=change;
-
                 }
-
             }
 
             else
             {
-
                 double change = changenn/(neigh_weigh[i].size() - internal_neigh);
-
                 if(itm->second + change > 0)
                 {
-
                     factual[itm->first][1]+=change;
                     factual[itm->first][2]-=change;
 
@@ -414,26 +377,30 @@ int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> >
 
                     itm->second+= change;
                     neigh_weigh[itm->first][i]+=change;
-
                 }
-
             }
-
         }
 
         for (int bw=0; bw<3; bw++)
             newpartvar+= (factual[i][bw] - wished[i][bw]) * (factual[i][bw] - wished[i][bw]);
 
         tot_var+=newpartvar - oldpartvar;
-
     }
 
     //check_weights(neigh_weigh, member_list, wished, factual, tot_var, strs);
-
     return 0;
 
 }
 
+/**
+ * @brief weights
+ * @param en
+ * @param member_list
+ * @param beta
+ * @param mu
+ * @param neigh_weigh
+ * @return
+ */
 int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const double beta, const double mu, deque<map <int, double > > & neigh_weigh)
 {
     double tstrength=0;
@@ -459,7 +426,7 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
     s_in_out_id_row[1]=0;
     s_in_out_id_row[2]=0;
 
-    deque<deque<double> > wished;	// 3 numbers for each node: internal, idle and extra strength. the sum of the three is strs[i]. wished is the theoretical, factual the factual one.
+    deque<deque<double> > wished;    // 3 numbers for each node: internal, idle and extra strength. the sum of the three is strs[i]. wished is the theoretical, factual the factual one.
     deque<deque<double> > factual;
 
     for (int i=0; i<en.size(); i++)
@@ -534,7 +501,7 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
  * @return
  */
 int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  max_degree, double  tau, double  tau2,
-              double  mixing_parameter, double  mixing_parameter2, double  beta, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range, double ca, Eigen::MatrixXd &W)
+              double  mixing_parameter, double  mixing_parameter2, double  beta, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range, double ca, Eigen::MatrixXd &W, vector<int> &membership)
 {
 
     double dmin=solve_dmin(max_degree, average_k, -tau);
@@ -549,15 +516,16 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
     if (fabs(media1-average_k)>fabs(media2-average_k))
         min_degree++;
 
-    // range for the community sizes
+    // Range for the community sizes
     if (!fixed_range)
     {
         nmax=max_degree;
         nmin=max(int(min_degree), 3);
-        cout << "community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]" << endl;
+        FILE_LOG(logINFO) << "community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]" ;
     }
 
-    deque <int> degree_seq ;		//  degree sequence of the nodes
+    // Degree sequence of the nodes
+    deque <int> degree_seq ;
     deque <double> cumulative;
     powerlaw(max_degree, min_degree, tau, cumulative);
 
@@ -579,15 +547,15 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
     if(internal_degree_and_membership(mixing_parameter, overlapping_nodes, overlap_membership, num_nodes, member_matrix, excess, defect, degree_seq, num_seq, internal_degree_seq, fixed_range, nmin, nmax, tau2)==-1)
         return -1;
 
-    deque<set<int> > E;					// E is the adjacency matrix written in form of list of edges
-    deque<deque<int> > member_list;		// row i cointains the memberships of node i
-    deque<deque<int> > link_list;		// row i cointains degree of the node i respect to member_list[i][j]; there is one more number that is the external degree
+    deque<set<int> > E;                    // E is the adjacency matrix written in form of list of edges
+    deque<deque<int> > member_list;        // row i cointains the memberships of node i
+    deque<deque<int> > link_list;        // row i cointains degree of the node i respect to member_list[i][j]; there is one more number that is the external degree
 
-    cout << " Building communities... " << endl;
+    FILE_LOG(logINFO) << "Building communities... " ;
     if(build_subgraphs(E, member_matrix, member_list, link_list, internal_degree_seq, degree_seq, excess, defect)==-1)
         return -1;
 
-    cout << "Connecting communities... " << endl;
+    FILE_LOG(logINFO) << "Connecting communities... " ;
     connect_all_the_parts(E, member_list, link_list);
 
     if(erase_links(E, member_list, excess, defect, mixing_parameter)==-1)
@@ -595,15 +563,20 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
 
     if(ca!=unlikely)
     {
-        cout << "Trying to approach an average clustering coefficient ... "<<ca<<endl;
+        FILE_LOG(logINFO) << "Trying to approach an average clustering coefficient ... " << ca;
         cclu(E, member_list, member_matrix, ca);
     }
 
     deque<map <int, double > > neigh_weigh;
-
     weights(E, member_list, beta, mixing_parameter2, neigh_weigh);
-
     print_network(E, member_list, member_matrix, num_seq, neigh_weigh, beta, mixing_parameter2, mixing_parameter, W);
+
+    // Copy the membership
+    membership.resize(member_list.size());
+    for (int i=0; i<member_list.size();++i)
+    {
+        membership[i]=member_list[i][0];
+    }
 
     return 0;
 }
@@ -614,19 +587,13 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
  */
 void erase_file_if_exists(string s)
 {
-
     char b[100];
     cast_string_to_char(s, b);
-
     ifstream in1(b);
-
     if(in1.is_open())
     {
-
         char rmb[120];
         sprintf(rmb, "rm %s", b);
-
         int erase= system(rmb);
     }
-
 }
