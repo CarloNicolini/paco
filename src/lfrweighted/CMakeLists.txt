@@ -35,8 +35,8 @@ add_executable(test_benchm test_benchm.cpp)
 target_link_libraries(test_benchm LFRW)
 
 if(MATLAB_SUPPORT)
-    add_mex(lfrw lfr.cpp)
-    target_link_libraries(lfrw LFRW ${MATLAB_LIBRARIES})
+    add_mex(lfrw_mx lfr.cpp)
+    target_link_libraries(lfrw_mx LFRW ${MATLAB_LIBRARIES})
 endif(MATLAB_SUPPORT)
 
 if(OCTAVE_SUPPORT)
