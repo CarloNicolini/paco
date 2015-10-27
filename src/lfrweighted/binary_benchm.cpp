@@ -1,24 +1,30 @@
 #include "binary_benchm.h"
 
+/**
+ * @brief they_are_mate
+ * @param a
+ * @param b
+ * @param member_list
+ * @return
+ */
 bool they_are_mate(int a, int b, const deque<deque<int> > & member_list)
 {
 
     for(int i=0; i<member_list[a].size(); i++)
     {
-
         if(binary_search(member_list[b].begin(), member_list[b].end(), member_list[a][i]))
             return true;
-
     }
-
     return false;
-
 }
 
-// it computes the sum of a deque<int>
+/**
+ * @brief deque_int_sum it computes the sum of a deque<int>
+ * @param a
+ * @return
+ */
 int deque_int_sum(const deque<int> & a)
 {
-
     int s=0;
     for(int i=0; i<a.size(); i++)
         s+=a[i];
@@ -26,30 +32,42 @@ int deque_int_sum(const deque<int> & a)
     return s;
 }
 
-// it computes the integral of a power law
+/**
+ * @brief integral it computes the integral of a power law
+ * @param a
+ * @param b
+ * @return
+ */
 double integral (double a, double b)
 {
-
     if (fabs(a+1.)>1e-10)
         return (1./(a+1.)*pow(b, a+1.));
-
     else
         return (log(b));
-
 }
 
-// it returns the average degree of a power law
+/**
+ * @brief average_degree it returns the average degree of a power law
+ * @param dmax
+ * @param dmin
+ * @param gamma
+ * @return
+ */
 double average_degree(const double &dmax, const double &dmin, const double &gamma)
 {
-
     return (1./(integral(gamma, dmax)-integral(gamma, dmin)))*(integral(gamma+1, dmax)-integral(gamma+1, dmin));
-
 }
 
-//bisection method to find the inferior limit, in order to have the expected average degree
+
+/**
+ * @brief solve_dmin bisection method to find the inferior limit, in order to have the expected average degree
+ * @param dmax
+ * @param dmed
+ * @param gamma
+ * @return
+ */
 double solve_dmin(const double& dmax, const double &dmed, const double &gamma)
 {
-
     double dmin_l=1;
     double dmin_r=dmax;
     double average_k1=average_degree(dmin_r, dmin_l, gamma);
@@ -57,49 +75,45 @@ double solve_dmin(const double& dmax, const double &dmed, const double &gamma)
 
     if ((average_k1-dmed>0) || (average_k2-dmed<0))
     {
-
         cerr<<"\n***********************\nERROR: the average degree is out of range:";
-
         if (average_k1-dmed>0)
         {
             cerr<<"\nyou should increase the average degree (bigger than "<<average_k1<<")"<<endl;
             cerr<<"(or decrease the maximum degree...)"<<endl;
         }
-
         if (average_k2-dmed<0)
         {
             cerr<<"\nyou should decrease the average degree (smaller than "<<average_k2<<")"<<endl;
             cerr<<"(or increase the maximum degree...)"<<endl;
         }
-
         return -1;
     }
 
     while (fabs(average_k1-dmed)>1e-7)
     {
-
         double temp=average_degree(dmax, ((dmin_r+dmin_l)/2.), gamma);
         if ((temp-dmed)*(average_k2-dmed)>0)
         {
-
             average_k2=temp;
             dmin_r=((dmin_r+dmin_l)/2.);
-
         }
         else
         {
 
             average_k1=temp;
             dmin_l=((dmin_r+dmin_l)/2.);
-
         }
-
     }
-
     return dmin_l;
 }
 
-// it computes the correct (i.e. discrete) average of a power law
+/**
+ * @brief integer_average it computes the correct (i.e. discrete) average of a power law
+ * @param n
+ * @param min
+ * @param tau
+ * @return
+ */
 double integer_average (int n, int min, double tau)
 {
 
@@ -116,7 +130,11 @@ double integer_average (int n, int min, double tau)
 
 }
 
-// this function changes the community sizes merging the smallest communities
+/**
+ * @brief change_community_size this function changes the community sizes merging the smallest communities
+ * @param seq
+ * @return
+ */
 int change_community_size(deque<int> &seq)
 {
 
@@ -147,12 +165,15 @@ int change_community_size(deque<int> &seq)
     return 0;
 }
 
+/**
+ * @brief build_bipartite_network This function builds a bipartite network with num_seq and member_numbers which are the degree sequences. in member matrix links of the communities are stored. This means member_matrix has num_seq.size() rows and each row has num_seq[i] elements
+ * @param member_matrix
+ * @param member_numbers
+ * @param num_seq
+ * @return
+ */
 int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int> & member_numbers, const deque<int> &num_seq)
 {
-
-    // this function builds a bipartite network with num_seq and member_numbers which are the degree sequences. in member matrix links of the communities are stored
-    // this means member_matrix has num_seq.size() rows and each row has num_seq[i] elements
-
     deque<set<int> > en_in;			// this is the Ein of the subgraph
     deque<set<int> > en_out;		// this is the Eout of the subgraph
 
@@ -192,52 +213,37 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
 
     while (itlast != degree_node_in.begin())
     {
-
         itlast--;
-
         multimap <int, int>::iterator itit= degree_node_out.end();
         deque <multimap<int, int>::iterator> erasenda;
 
         for (int i=0; i<itlast->first; i++)
         {
-
             if(itit!=degree_node_out.begin())
             {
-
                 itit--;
-
                 en_in[itlast->second].insert(itit->second);
                 en_out[itit->second].insert(itlast->second);
 
                 erasenda.push_back(itit);
-
             }
-
             else
                 return -1;
-
         }
 
         //cout<<"degree node out before"<<endl;
         //prints(degree_node_out);
-
         for (int i=0; i<erasenda.size(); i++)
         {
-
             if(erasenda[i]->first>1)
                 degree_node_out.insert(make_pair(erasenda[i]->first - 1, erasenda[i]->second));
-
             degree_node_out.erase(erasenda[i]);
-
         }
-
         //cout<<"degree node out after"<<endl;
         //prints(degree_node_out);
-
     }
 
-    // this is to randomize the subgraph -------------------------------------------------------------------
-
+    // This is to randomize the subgraph
     deque<int> degree_list;
     for(int kk=0; kk<member_numbers.size(); kk++)
         for(int k2=0; k2<member_numbers[kk]; k2++)
@@ -245,16 +251,12 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
 
     for(int run=0; run<10; run++) for(int node_a=0; node_a<num_seq.size(); node_a++) for(int krm=0; krm<en_out[node_a].size(); krm++)
     {
-
         int random_mate=degree_list[irand(degree_list.size()-1)];
-
         if (en_out[node_a].find(random_mate)==en_out[node_a].end())
         {
-
             deque <int> external_nodes;
             for (set<int>::iterator it_est=en_out[node_a].begin(); it_est!=en_out[node_a].end(); it_est++)
                 external_nodes.push_back(*it_est);
-
             int	old_node=external_nodes[irand(external_nodes.size()-1)];
 
             deque <int> not_common;
@@ -278,7 +280,6 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
 
             en_out[node_h].erase(random_mate);
             en_out[node_h].insert(old_node);
-
         }
     }
 
@@ -287,17 +288,31 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
 
     for (int i=0; i<en_out.size(); i++)
     {
-
         member_matrix.push_back(first);
         for (set<int>::iterator its=en_out[i].begin(); its!=en_out[i].end(); its++)
             member_matrix[i].push_back(*its);
-
     }
-
     return 0;
-
 }
 
+/**
+ * @brief internal_degree_and_membership
+ * @param mixing_parameter
+ * @param overlapping_nodes
+ * @param max_mem_num
+ * @param num_nodes
+ * @param member_matrix
+ * @param excess
+ * @param defect
+ * @param degree_seq
+ * @param num_seq
+ * @param internal_degree_seq
+ * @param fixed_range
+ * @param nmin
+ * @param nmax
+ * @param tau2
+ * @return
+ */
 int internal_degree_and_membership (double mixing_parameter, int overlapping_nodes, int max_mem_num, int num_nodes, deque<deque<int> >  & member_matrix,
                                     bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<int> &internal_degree_seq, bool fixed_range, int nmin, int nmax, double tau2)
 {
@@ -305,17 +320,16 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
     if(num_nodes< overlapping_nodes)
     {
 
-        cerr<<"\n***********************\nERROR: there are more overlapping nodes than nodes in the whole network! Please, decrease the former ones or increase the latter ones"<<endl;
+        FILE_LOG(logERROR) <<"There are more overlapping nodes than nodes in the whole network! Please, decrease the former ones or increase the latter ones"<<endl;
         return -1;
     }
 
-    //
     member_matrix.clear();
     internal_degree_seq.clear();
 
     deque<double> cumulative;
 
-    // it assigns the internal degree to each node -------------------------------------------------------------------------
+    // it assigns the internal degree to each node
     int max_degree_actual=0;		// maximum internal degree
 
     for (int i=0; i<degree_seq.size(); i++)
@@ -463,7 +477,7 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
     if(build_bipartite_network(member_matrix, member_numbers, num_seq)==-1)
     {
 
-        cerr<<"it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes"<<endl;
+        FILE_LOG(logERROR) << "it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes"<<endl;
         return -1;
 
     }
