@@ -68,25 +68,25 @@ bool Parameters::arrange()
 
     if (num_nodes==unlikely)
     {
-        cerr<<"\n***********************\nERROR:\t number of nodes unspecified";
+        FILE_LOG(logERROR) << "ERROR:\t number of nodes unspecified";
         return false;
     }
 
     if (average_k==unlikely)
     {
-        cerr<<"\n***********************\nERROR:\t average degree unspecified";
+        FILE_LOG(logERROR) << "ERROR:\t average degree unspecified";
         return false;
     }
 
     if (max_degree==unlikely)
     {
-        cerr<<"\n***********************\nERROR:\t maximum degree unspecified";
+        FILE_LOG(logERROR) << "ERROR:\t maximum degree unspecified";
         return false;
     }
 
     if (mixing_parameter2==unlikely)
     {
-        cerr<<"\n***********************\nERROR:\t weight mixing parameter (option -muw) unspecified";
+        FILE_LOG(logERROR) << "ERROR:\t weight mixing parameter (option -muw) unspecified";
         return false;
     }
 
@@ -164,11 +164,11 @@ bool Parameters::arrange()
 bool Parameters::set(string & flag, string & num)
 {
     // false is something goes wrong
-    FILE_LOG(logINFO)<<"setting... "<<flag<<" "<<num;
+    FILE_LOG(logINFO)<<"Setting... " << flag << " " << num;
     double err;
     if(!cast_string_to_double(num, err))
     {
-        cerr<<"\n***********************\nERROR while reading parameters";
+        FILE_LOG(logERROR) << "ERROR while reading parameters";
         return false;
     }
 
@@ -176,7 +176,7 @@ bool Parameters::set(string & flag, string & num)
     {
         if (fabs(err-int (err))>1e-8)
         {
-            cerr<<"\n***********************\nERROR: number of nodes must be an integer";
+            FILE_LOG(logERROR) << "ERROR: number of nodes must be an integer";
             return false;
         }
         num_nodes=cast_int(err);
@@ -214,7 +214,7 @@ bool Parameters::set(string & flag, string & num)
     {
         if (fabs(err-int (err))>1e-8)
         {
-            cerr<<"\n***********************\nERROR: the minumum community size must be an integer";
+            FILE_LOG(logERROR)<<"ERROR: the minumum community size must be an integer";
             return false;
         }
         nmin=cast_int(err);
@@ -223,7 +223,7 @@ bool Parameters::set(string & flag, string & num)
     {
         if (fabs(err-int (err))>1e-8)
         {
-            cerr<<"\n***********************\nERROR: the maximum community size must be an integer";
+            FILE_LOG(logERROR) << "ERROR: the maximum community size must be an integer";
             return false;
         }
         nmax=cast_int(err);
@@ -232,7 +232,7 @@ bool Parameters::set(string & flag, string & num)
     {
         if (fabs(err-int (err))>1e-8)
         {
-            cerr<<"\n***********************\nERROR: the number of overlapping nodes must be an integer";
+            FILE_LOG(logERROR) << "ERROR: the number of overlapping nodes must be an integer";
             return false;
         }
         overlapping_nodes=cast_int(err);
@@ -241,8 +241,7 @@ bool Parameters::set(string & flag, string & num)
     {
         if (fabs(err-int (err))>1e-8)
         {
-
-            cerr<<"\n***********************\nERROR: the number of membership of the overlapping nodes must be an integer";
+            FILE_LOG(logERROR) << "ERROR: the number of membership of the overlapping nodes must be an integer";
             return false;
         }
         overlap_membership=cast_int(err);
@@ -253,7 +252,7 @@ bool Parameters::set(string & flag, string & num)
     }
     else
     {
-        cerr<<"\n***********************\nERROR while reading parameters: "<<flag<<" is an unknown option";
+        FILE_LOG(logERROR) <<"ERROR while reading parameters: "<<flag<<" is an unknown option";
         return false;
     }
     return true;

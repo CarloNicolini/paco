@@ -75,7 +75,7 @@ double solve_dmin(const double& dmax, const double &dmed, const double &gamma)
 
     if ((average_k1-dmed>0) || (average_k2-dmed<0))
     {
-        cerr<<"\n***********************\nERROR: the average degree is out of range:";
+        FILE_LOG(logError) << "ERROR: the average degree is out of range:";
         if (average_k1-dmed>0)
         {
             cerr<<"\nyou should increase the average degree (bigger than "<<average_k1<<")"<<endl;
@@ -1172,9 +1172,8 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
                 if(deqar.size()==E[i].size())  	// this shouldn't happen...
                 {
 
-                    cerr<<"sorry, something went wrong: there is a node which does not respect the constraints. (option -sup)"<<endl;
+                    FILE_LOG(logError) << "Something went wrong: there is a node which does not respect the constraints. (option -sup)"<<endl;
                     return -1;
-
                 }
 
                 int random_mate=deqar[irand(deqar.size()-1)];
@@ -1213,9 +1212,8 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
                 if(stopper_==stopper_here)  	// this shouldn't happen...
                 {
 
-                    cerr<<"sorry, something went wrong: there is a node which does not respect the constraints. (option -inf)"<<endl;
+                    FILE_LOG(logERROR) << "Something went wrong: there is a node which does not respect the constraints. (option -inf)"<<endl;
                     return -1;
-
                 }
 
                 E[i].insert(random_mate);
