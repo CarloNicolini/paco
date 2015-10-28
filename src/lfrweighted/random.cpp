@@ -115,6 +115,7 @@ void srand_file(void)
 
 }
 
+/*
 int configuration_model(deque<set<int> > & en, deque<int> & degrees)
 {
 
@@ -230,3 +231,4 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees)
     return 0;
 
 }
+*/

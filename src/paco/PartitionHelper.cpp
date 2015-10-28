@@ -292,11 +292,12 @@ bool PartitionHelper::merge_communities(const igraph_t *g, const igraph_vector_t
         size_t v = *(it++);
         move_vertex(g,memb,v,dest_comm,weights);
     }
+    return true;
 }
 
 bool PartitionHelper::split_community(const igraph_t *g, const igraph_vector_t *memb, size_t comm, const igraph_vector_t *weights)
 {
-
+    return false;
 }
 
 /**

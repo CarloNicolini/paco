@@ -35,18 +35,29 @@ double log_combination (int n, int k)
 
 double binomial(int n, int x, double p)  		//	returns the binomial distribution, n trials, x successes, p probability
 {
-
     if (p==0)
+    {
         if (x==0)
+        {
             return 1;
+        }
         else
+        {
             return 0;
+        }
+    }
 
     if (p>=1)
+    {
         if (x==n)
+        {
             return 1;
+        }
         else
+        {
             return 0;
+        }
+    }
 
     double log_b=0;
     log_b+=log_combination(n, x)+x*log(p)+(n-x)*log(1-p);
@@ -55,13 +66,10 @@ double binomial(int n, int x, double p)  		//	returns the binomial distribution,
 }
 
 //to draw a number:
-
 /*
-
 deque <double> cumulative;
 binomial_cumulative(10, 0.5, cumulative);
 int nn=lower_bound(cumulative.begin(), cumulative.end(), ran4())-cumulative.begin();
-
 */
 
 int binomial_cumulative(int n, double p, deque<double> &cum)
@@ -244,18 +252,18 @@ double compute_hypergeometric(int i, int k, int kout, int m)
     //prints(den);
 
     for(int h=0; h<den.size(); h++) if(den[h]<=0)
-        {
-            cerr<<"denominator has zero or less (in the hypergeometric)"<<endl;
-            return 0;
+    {
+        cerr<<"denominator has zero or less (in the hypergeometric)"<<endl;
+        return 0;
 
-        }
+    }
 
     for(int h=0; h<num.size(); h++) if(num[h]<=0)
-        {
-            cerr<<"numerator has zero or less (in the hypergeometric)"<<endl;
-            return 0;
+    {
+        cerr<<"numerator has zero or less (in the hypergeometric)"<<endl;
+        return 0;
 
-        }
+    }
 
     //cout<<"sizes: "<<num.size()<<" "<<den.size()<<endl;
 

@@ -26,6 +26,6 @@ void srand5(int rank);
 int irand(int n);
 void srand_file(void);
 
-int configuration_model(deque<set<int> > & en, deque<int> & degrees);
+//int configuration_model(deque<set<int> > & en, deque<int> & degrees);
 
 #endif

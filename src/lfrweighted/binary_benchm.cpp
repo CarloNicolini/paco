@@ -75,16 +75,16 @@ double solve_dmin(const double& dmax, const double &dmed, const double &gamma)
 
     if ((average_k1-dmed>0) || (average_k2-dmed<0))
     {
-        FILE_LOG(logError) << "ERROR: the average degree is out of range:";
+        FILE_LOG(logERROR) << "The average degree is out of range:";
         if (average_k1-dmed>0)
         {
-            cerr<<"\nyou should increase the average degree (bigger than "<<average_k1<<")"<<endl;
-            cerr<<"(or decrease the maximum degree...)"<<endl;
+            FILE_LOG(logERROR)<<"You should increase the average degree (bigger than "<<average_k1<<")";
+            FILE_LOG(logERROR)<<"(or decrease the maximum degree...)";
         }
         if (average_k2-dmed<0)
         {
-            cerr<<"\nyou should decrease the average degree (smaller than "<<average_k2<<")"<<endl;
-            cerr<<"(or increase the maximum degree...)"<<endl;
+            FILE_LOG(logERROR)<<"You should decrease the average degree (smaller than "<<average_k2<<")";
+            FILE_LOG(logERROR)<<"(or increase the maximum degree...)";
         }
         return -1;
     }
@@ -208,7 +208,7 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
 
     /*
      for (int i=0; i<degree_node_in.size(); i++)
-     cout<<degree_node_in[i].first<<" "<<degree_node_in[i].second<<endl;
+     cout<<degree_node_in[i].first<<" "<<degree_node_in[i].second;
      */
 
     while (itlast != degree_node_in.begin())
@@ -231,7 +231,7 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
                 return -1;
         }
 
-        //cout<<"degree node out before"<<endl;
+        //cout<<"degree node out before";
         //prints(degree_node_out);
         for (int i=0; i<erasenda.size(); i++)
         {
@@ -239,7 +239,7 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
                 degree_node_out.insert(make_pair(erasenda[i]->first - 1, erasenda[i]->second));
             degree_node_out.erase(erasenda[i]);
         }
-        //cout<<"degree node out after"<<endl;
+        //cout<<"degree node out after";
         //prints(degree_node_out);
     }
 
@@ -320,7 +320,7 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
     if(num_nodes< overlapping_nodes)
     {
 
-        FILE_LOG(logERROR) <<"There are more overlapping nodes than nodes in the whole network! Please, decrease the former ones or increase the latter ones"<<endl;
+        FILE_LOG(logERROR) <<"There are more overlapping nodes than nodes in the whole network! Please, decrease the former ones or increase the latter ones";
         return -1;
     }
 
@@ -398,21 +398,16 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
         }
 
         num_seq[min_element(num_seq.begin(), num_seq.end()) - num_seq.begin()]+=num_nodes + overlapping_nodes * (max_mem_num-1) - _num_;
-
     }
-
-    //cout<<"num_seq"<<endl;
+    //cout<<"num_seq";
     //prints(num_seq);
-
     int ncom=num_seq.size();
 
-    //cout<<"\n----------------------------------------------------------"<<endl;
-
     /*
-     cout<<"community sizes"<<endl;
+     cout<<"community sizes";
      for (int i=0; i<num_seq.size(); i++)
      cout<<num_seq[i]<<" ";
-     cout<<endl<<endl;
+     cout<<endl;
      //*/
 
     /*
@@ -421,10 +416,10 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
      member_matrix.push_back(first);
 
      // it puts the overlapping_nodes inside
-     cout<<ncom<<endl;
+     cout<<ncom;
      for (int i=degree_seq.size() - overlapping_nodes; i<degree_seq.size(); i++) {
 
-     cout<<i<<endl;
+     cout<<i;
      set<int> members;
      int hh=0;
 
@@ -438,29 +433,21 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
      hh++;
 
      if(hh>3*num_nodes) {
-     cerr<<"it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes"<<endl;
+     FILE_LOG(logERROR)<<"it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes";
      return -1;
      }
-
      }
-
      for (set<int>::iterator its=members.begin(); its!=members.end(); its++)
      member_matrix[*its].push_back(i);
-
      }
 
      // it decides the memberships for the not overlapping nodes
-
      int moment_module=0;
      for (int i=0; i<num_nodes - overlapping_nodes; i++) {
-
      while(member_matrix[moment_module].size()==num_seq[moment_module])
      moment_module++;
-
      member_matrix[moment_module].push_back(i);
-
      }
-
      */
 
     // I have to assign the degree to the nodes
@@ -476,18 +463,16 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
 
     if(build_bipartite_network(member_matrix, member_numbers, num_seq)==-1)
     {
-
-        FILE_LOG(logERROR) << "it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes"<<endl;
+        FILE_LOG(logERROR) << "it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes";
         return -1;
-
     }
 
     //printm(member_matrix);
 
-    //cout<<"degree_seq"<<endl;
+    //cout<<"degree_seq";
     //prints(degree_seq);
 
-    //cout<<"internal_degree_seq"<<endl;
+    //cout<<"internal_degree_seq";
     //prints(internal_degree_seq);
 
     deque<int> available;
@@ -521,7 +506,7 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
             {
                 if(change_community_size(num_seq)==-1)
                 {
-                    FILE_LOG(logERROR) <<"\n***********************\nERROR: this program needs more than one community to work fine";
+                    FILE_LOG(logERROR) <<"this program needs more than one community to work fine";
                     return -1;
                 }
                 FILE_LOG(logDEBUG) << "It took too long to decide the memberships; I will try to change the community sizes";
@@ -580,7 +565,7 @@ int compute_internal_degree_per_node(int d, int m, deque<int> & a)
  if(s!=degree_seq[i]) {
 
  int ok;
- cerr<<"wrong link list"<<endl;
+ FILE_LOG(logERROR)<<"wrong link list";
  cin>>ok;
 
  }
@@ -735,7 +720,7 @@ int build_subgraph(deque<set<int> > & E, const deque<int> & nodes, const deque<i
 
             if(stopper_ml==2*E.size())
             {
-                cout<<"sorry, I need to change the degree distribution a little bit (one less link)"<<endl;
+                cout<<"sorry, I need to change the degree distribution a little bit (one less link)";
                 break;
             }
         }
@@ -1004,20 +989,16 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
         var_mate++;
     }
 
-    //cout<<"var mate = "<<var_mate<<endl;
-
+    //cout<<"var mate = "<<var_mate;
     int stopper_mate=0;
     int mate_trooper=10;
 
     while(var_mate>0)
     {
-
-        //cout<<"var mate = "<<var_mate<<endl;
-
+        //cout<<"var mate = "<<var_mate;
         int best_var_mate=var_mate;
 
-        // ************************************************  rewiring
-
+        // rewiring
         for(int a=0; a<degrees.size(); a++) for(set<int>::iterator its= en[a].begin(); its!=en[a].end(); its++) if(they_are_mate(a, *its, member_list))
         {
 
@@ -1079,7 +1060,7 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
 
         }
 
-        // ************************************************  rewiring
+        // rewiring
 
         if(var_mate==best_var_mate)
         {
@@ -1093,11 +1074,11 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
         else
             stopper_mate=0;
 
-        //cout<<"var mate = "<<var_mate<<endl;
+        //cout<<"var mate = "<<var_mate;
 
     }
 
-    //cout<<"var mate = "<<var_mate<<endl;
+    //cout<<"var mate = "<<var_mate;
 
     for (int i=0; i<en.size(); i++)
     {
@@ -1162,7 +1143,7 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 
                 //---------------------------------------------------------------------------------
 
-                cout<<"degree sequence changed to respect the option -sup ... "<<++eras_add_times<<endl;
+                FILE_LOG(logINFO) << "Degree sequence changed to respect the option -sup ... "<<++eras_add_times;
 
                 deque<int> deqar;
                 for (set<int>::iterator it_est=E[i].begin(); it_est!=E[i].end(); it_est++)
@@ -1172,7 +1153,7 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
                 if(deqar.size()==E[i].size())  	// this shouldn't happen...
                 {
 
-                    FILE_LOG(logError) << "Something went wrong: there is a node which does not respect the constraints. (option -sup)"<<endl;
+                    FILE_LOG(logERROR) << "Something went wrong: there is a node which does not respect the constraints. (option -sup)";
                     return -1;
                 }
 
@@ -1195,7 +1176,7 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 
                 //---------------------------------------------------------------------------------
 
-                cout<<"degree sequence changed to respect the option -inf ... "<<++eras_add_times<<endl;
+                FILE_LOG(logINFO)<<"degree sequence changed to respect the option -inf ... "<<++eras_add_times;
 
                 int stopper_here=num_nodes;
                 int stopper_=0;
@@ -1212,7 +1193,7 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
                 if(stopper_==stopper_here)  	// this shouldn't happen...
                 {
 
-                    FILE_LOG(logERROR) << "Something went wrong: there is a node which does not respect the constraints. (option -inf)"<<endl;
+                    FILE_LOG(logERROR) << "Something went wrong: there is a node which does not respect the constraints. (option -inf)";
                     return -1;
                 }
 

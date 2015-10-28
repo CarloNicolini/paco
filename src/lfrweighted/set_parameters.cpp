@@ -68,25 +68,25 @@ bool Parameters::arrange()
 
     if (num_nodes==unlikely)
     {
-        FILE_LOG(logERROR) << "ERROR:\t number of nodes unspecified";
+        FILE_LOG(logERROR) << "ERROR: number of nodes unspecified";
         return false;
     }
 
     if (average_k==unlikely)
     {
-        FILE_LOG(logERROR) << "ERROR:\t average degree unspecified";
+        FILE_LOG(logERROR) << "ERROR: average degree unspecified";
         return false;
     }
 
     if (max_degree==unlikely)
     {
-        FILE_LOG(logERROR) << "ERROR:\t maximum degree unspecified";
+        FILE_LOG(logERROR) << "ERROR: maximum degree unspecified";
         return false;
     }
 
     if (mixing_parameter2==unlikely)
     {
-        FILE_LOG(logERROR) << "ERROR:\t weight mixing parameter (option -muw) unspecified";
+        FILE_LOG(logERROR) << "ERROR: weight mixing parameter (option -muw) unspecified";
         return false;
     }
 
@@ -95,18 +95,18 @@ bool Parameters::arrange()
 
     if(overlapping_nodes<0 || overlap_membership<0)
     {
-        FILE_LOG(logERROR)<<"ERROR:\tsome positive parameters are negative";
+        FILE_LOG(logERROR)<<"ERROR:some positive parameters are negative";
         return -1;
     }
 
     if (num_nodes<=0 || average_k<=0 || max_degree<=0 || mixing_parameter<0 || mixing_parameter2<0 || (nmax<=0 && nmax!=unlikely) || (nmin<=0 && nmin!=unlikely) )
     {
-        FILE_LOG(logERROR)<<"ERROR:\tsome positive parameters are negative";
+        FILE_LOG(logERROR)<<"ERROR:some positive parameters are negative";
         return -1;
     }
     if(mixing_parameter > 1 || mixing_parameter2 > 1)
     {
-        FILE_LOG(logERROR)<<"ERROR:\tmixing parameter > 1 (must be between 0 and 1)";
+        FILE_LOG(logERROR)<<"ERROR:mixing parameter > 1 (must be between 0 and 1)";
         return -1;
     }
 
@@ -117,20 +117,20 @@ bool Parameters::arrange()
 
     if(excess && defect)
     {
-        FILE_LOG(logERROR)<<"ERROR:\tboth options -inf and -sup cannot be used at the same time";
+        FILE_LOG(logERROR)<<"ERROR:both options -inf and -sup cannot be used at the same time";
         return false;
     }
 
-    FILE_LOG(logINFO)<<"number of nodes:\t"<<num_nodes;
-    FILE_LOG(logINFO)<<"average degree:\t"<<average_k;
-    FILE_LOG(logINFO)<<"maximum degree:\t"<<max_degree;
-    FILE_LOG(logINFO)<<"exponent for the degree distribution:\t"<<tau;
-    FILE_LOG(logINFO)<<"exponent for the community size distribution:\t"<<tau2;
-    FILE_LOG(logINFO)<<"mixing parameter(topology):\t"<<mixing_parameter;
-    FILE_LOG(logINFO)<<"mixing parameter (weights):\t"<<mixing_parameter2;
-    FILE_LOG(logINFO)<<"beta exponent:\t"<<beta;
-    FILE_LOG(logINFO)<<"number of overlapping nodes:\t"<<overlapping_nodes;
-    FILE_LOG(logINFO)<<"number of memberships of the overlapping nodes:\t"<<overlap_membership;
+    FILE_LOG(logINFO)<<"number of nodes:"<<num_nodes;
+    FILE_LOG(logINFO)<<"average degree:"<<average_k;
+    FILE_LOG(logINFO)<<"maximum degree:"<<max_degree;
+    FILE_LOG(logINFO)<<"exponent for the degree distribution:"<<tau;
+    FILE_LOG(logINFO)<<"exponent for the community size distribution:"<<tau2;
+    FILE_LOG(logINFO)<<"mixing parameter (topology):"<<mixing_parameter;
+    FILE_LOG(logINFO)<<"mixing parameter (weights):"<<mixing_parameter2;
+    FILE_LOG(logINFO)<<"beta exponent:"<<beta;
+    FILE_LOG(logINFO)<<"number of overlapping nodes:"<<overlapping_nodes;
+    FILE_LOG(logINFO)<<"number of memberships of the overlapping nodes:"<<overlap_membership;
     if(clustering_coeff!=unlikely)
         FILE_LOG(logINFO) << "Average clustering coefficient: "<<clustering_coeff;
 
@@ -267,22 +267,22 @@ void print_usage()
     FILE_LOG(logINFO)<<"\nTo run the program type \n./benchmark [FLAG] [P]";
     FILE_LOG(logINFO)<<"\n----------------------\n";
     FILE_LOG(logINFO)<<"To set the parameters, type:"<<endl;
-    FILE_LOG(logINFO)<<"-N\t\t[number of nodes]";
-    FILE_LOG(logINFO)<<"-k\t\t[average degree]";
-    FILE_LOG(logINFO)<<"-maxk\t\t[maximum degree]";
-    FILE_LOG(logINFO)<<"-mut\t\t[mixing parameter for the topology]";
-    FILE_LOG(logINFO)<<"-muw\t\t[mixing parameter for the weights]";
-    FILE_LOG(logINFO)<<"-beta\t\t[exponent for the weight distribution]";
-    FILE_LOG(logINFO)<<"-t1\t\t[minus exponent for the degree sequence]";
-    FILE_LOG(logINFO)<<"-t2\t\t[minus exponent for the community size distribution]";
-    FILE_LOG(logINFO)<<"-minc\t\t[minimum for the community sizes]";
-    FILE_LOG(logINFO)<<"-maxc\t\t[maximum for the community sizes]";
-    FILE_LOG(logINFO)<<"-on\t\t[number of overlapping nodes]";
-    FILE_LOG(logINFO)<<"-om\t\t[number of memberships of the overlapping nodes]";
-    FILE_LOG(logINFO)<<"-C\t\t[Average clustering coefficient]";
+    FILE_LOG(logINFO)<<"-N[number of nodes]";
+    FILE_LOG(logINFO)<<"-k[average degree]";
+    FILE_LOG(logINFO)<<"-maxk[maximum degree]";
+    FILE_LOG(logINFO)<<"-mut[mixing parameter for the topology]";
+    FILE_LOG(logINFO)<<"-muw[mixing parameter for the weights]";
+    FILE_LOG(logINFO)<<"-beta[exponent for the weight distribution]";
+    FILE_LOG(logINFO)<<"-t1[minus exponent for the degree sequence]";
+    FILE_LOG(logINFO)<<"-t2[minus exponent for the community size distribution]";
+    FILE_LOG(logINFO)<<"-minc[minimum for the community sizes]";
+    FILE_LOG(logINFO)<<"-maxc[maximum for the community sizes]";
+    FILE_LOG(logINFO)<<"-on[number of overlapping nodes]";
+    FILE_LOG(logINFO)<<"-om[number of memberships of the overlapping nodes]";
+    FILE_LOG(logINFO)<<"-C[Average clustering coefficient]";
     FILE_LOG(logINFO)<<"----------------------\n";
     FILE_LOG(logINFO)<<"It is also possible to set the parameters writing flags and relative numbers in a file. To specify the file, use the option:";
-    FILE_LOG(logINFO)<<"-f\t[filename]";
+    FILE_LOG(logINFO)<<"-f[filename]";
     FILE_LOG(logINFO)<<"You can set the parameters both writing some of them in the file, and using flags from the command line for others."<<endl;
     FILE_LOG(logINFO)<<"-N, -k, -maxk, -muw have to be specified. For the others, the program can use default values:";
     FILE_LOG(logINFO)<<"t1=2, t2=1, on=0, om=0, beta=1.5, mut=muw, minc and maxc will be chosen close to the degree sequence extremes.";
@@ -303,6 +303,12 @@ void print_usage()
     FILE_LOG(logINFO)<<"Read file ReadMe.txt for more info."<<endl;
 }
 
+/**
+ * @brief set_from_file
+ * @param file_name
+ * @param par1
+ * @return
+ */
 bool set_from_file(string & file_name, Parameters & par1)
 {
     int h= file_name.size();
@@ -352,6 +358,13 @@ bool set_from_file(string & file_name, Parameters & par1)
     return true;
 }
 
+/**
+ * @brief set_parameters
+ * @param argc
+ * @param argv
+ * @param par1
+ * @return
+ */
 bool set_parameters(int argc, char * argv[], Parameters & par1)
 {
     if (argc <= 1)   // if no arguments, return statement about program usage.

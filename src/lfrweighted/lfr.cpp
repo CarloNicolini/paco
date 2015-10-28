@@ -46,7 +46,27 @@ using namespace std;
 void printUsage()
 {
     mexPrintf("LFRW: Lancichinetti-Fortunato-Radicchi network generator\n");
-
+    mexPrintf("This program produces weighted adjacency matrices for graph community detection benchmark\n");
+    mexPrintf("[WeightedGraph, membership] = lfrw('argname',argvalue);\n");
+    mexPrintf("Input:\n");
+    mexPrintf("'N'\n");
+    mexPrintf("\tDesidered number of nodes in the network\n");
+    mexPrintf("'k'\n");
+    mexPrintf("\tDesidered average degree of the network\n");
+    mexPrintf("'maxk'\n");
+    mexPrintf("\tDesidered max degree of the network\n");
+    mexPrintf("'mut'\n");
+    mexPrintf("\tDesidered community topological mixing coefficient (range [0,1])\n");
+    mexPrintf("'muw'\n");
+    mexPrintf("\tDesidered weights mixing coefficient (range [0,1])\n");
+    mexPrintf("'t1'\n");
+    mexPrintf("\tDesidered exponent for the degree distribution\n");
+    mexPrintf("'t2'\n");
+    mexPrintf("\tDesidered exponent for the community size distribution\n");
+    mexPrintf("'beta'\n");
+    mexPrintf("\tDesidered beta exponent\n");
+    mexPrintf("'C'\n");
+    mexPrintf("\tDesidered clustering coefficient\n");
 }
 
 enum error_type
@@ -252,7 +272,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
  */
 void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[])
 {
-    FILELog::ReportingLevel() = logINFO;
+    FILELog::ReportingLevel() = logDEBUG;
     // Set standard parameters argument
     Parameters p;
 
