@@ -28,8 +28,17 @@
 #include "igraph_utils.h"
 #include "KLDivergence.h"
 
+/**
+ * @brief AsymptoticSurpriseFunction::AsymptoticSurpriseFunction
+ */
 AsymptoticSurpriseFunction::AsymptoticSurpriseFunction() {}
 
+/**
+ * @brief AsymptoticSurpriseFunction::eval
+ * @param g
+ * @param memb
+ * @param weights
+ */
 void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights) const
 {
     size_t n = igraph_vcount(g);
@@ -72,6 +81,10 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
     quality = m*KL(double(mzeta)/double(m),double(pzeta)/double(p));
 }
 
+/**
+ * @brief AsymptoticSurpriseFunction::eval
+ * @param par
+ */
 void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
 {
     double p = par->get_graph_total_pairs();
