@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
 {
     GraphC h;
     h.read_gml(string(argv[1]));
+//    h.read_weights_from_file(string(argv[2]));
     cout << h.is_weighted() << endl;
-    //h.read_weights_from_file(string(argv[2]));
 
     CommunityStructure c(&h);
     c.set_random_seed();
@@ -52,8 +52,10 @@ int main(int argc, char *argv[])
     c.sort_edges();
     try
     {
-        c.optimize(QualityAsymptoticSurprise,MethodAgglomerative,10);
+        c.optimize(QualityAsymptoticSurprise,MethodAgglomerative,1);
         c.print_membership();
+        AsymptoticSurpriseFunction fun;
+        cout << fun(h.get_igraph(),c.get_membership(),NULL) << endl;
     }
     catch (std::exception &e)
     {

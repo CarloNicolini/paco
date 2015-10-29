@@ -26,10 +26,11 @@
 #include <cmath>
 
 /**
- * @brief KLs Binary Kullback Leibler divergence between q and p
- * @param q
- * @param p
- * @return
+ * @brief KLs Binary Kullback Leibler divergence between 
+ * two binomial distributions with parameters p and q respectively
+ * @param q parameter of left binomial distribution
+ * @param p parameter of right binomial distribution
+ * @return the KL divergence
  */
 double KL(double q, double p)
 {

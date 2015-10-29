@@ -54,7 +54,7 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
     igraph_integer_t to;
 
     // iterate all edges and check where the endpoints of the edges are
-    // if they are in the same community
+    // if they are in the same community increase intracluster edge weights mzeta
     for (igraph_integer_t edge_id=0; edge_id<m; edge_id++)
     {
         igraph_edge(g, (igraph_integer_t) edge_id, &from, &to);
