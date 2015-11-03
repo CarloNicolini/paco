@@ -278,6 +278,15 @@ bool PartitionHelper::move_vertex(const igraph_t *g, const igraph_vector_t * mem
     return true;
 }
 
+/**
+ * @brief PartitionHelper::merge_communities
+ * @param g
+ * @param memb
+ * @param source_comm
+ * @param dest_comm
+ * @param weights
+ * @return
+ */
 bool PartitionHelper::merge_communities(const igraph_t *g, const igraph_vector_t *memb, size_t source_comm, size_t dest_comm, const igraph_vector_t *weights)
 {
     if (source_comm==dest_comm)
@@ -295,6 +304,14 @@ bool PartitionHelper::merge_communities(const igraph_t *g, const igraph_vector_t
     return true;
 }
 
+/**
+ * @brief PartitionHelper::split_community
+ * @param g
+ * @param memb
+ * @param comm
+ * @param weights
+ * @return
+ */
 bool PartitionHelper::split_community(const igraph_t *g, const igraph_vector_t *memb, size_t comm, const igraph_vector_t *weights)
 {
     return false;
@@ -355,20 +372,22 @@ void PartitionHelper::print() const
         throw std::runtime_error("Non initialized membership vector. Call PartitionHelper::init first");
 
     printf(ANSI_COLOR_BLUE);
-    printf("memb:");
+    printf("Membership:\n");
     igraph_vector_print(curmemb);
 
     printf(ANSI_COLOR_YELLOW);
+    printf("\n________________________________________________\n");
+    printf("c\twc\tnc\tpc\t{vi...}\n________________________________________________\n");
     for (CommMapCIter it = communities.cbegin(); it!=communities.cend(); ++it)
     {
         size_t c = it->first;
         if (it->second.empty())
             continue;
 
-        printf("%zu\t%g\t%zu\t%zu\t{",c,incomm_weight.at(c),incomm_nvert.at(c),incomm_pairs.at(c));
+        printf("%zu\t%.2f\t%zu\t%zu\t{",c,incomm_weight.at(c),incomm_nvert.at(c),incomm_pairs.at(c));
         for ( std::set<size_t>::const_iterator it2 = communities.at(c).begin(); it2!=communities.at(c).end(); ++it2)
         {
-            printf("%zu,",*it2);
+            //printf("%zu,",*it2);
         }
         printf("}\n");
     }

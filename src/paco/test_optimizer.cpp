@@ -35,43 +35,35 @@
 #include "AnnealOptimizer.h"
 #include "AgglomerativeOptimizer.h"
 #include "Timer.h"
+#include "ModularityFunction.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
     GraphC h;
-    h.read_gml(string(argv[1]));
-//    h.read_weights_from_file(string(argv[2]));
-    cout << h.is_weighted() << endl;
+    h.read_adj_matrix(string(argv[1]));
 
     CommunityStructure c(&h);
     c.set_random_seed();
 
     c.reindex_membership();
     c.sort_edges();
+
     try
     {
         c.optimize(QualityAsymptoticSurprise,MethodAgglomerative,1);
-        c.print_membership();
+        c.reindex_membership();
+
         AsymptoticSurpriseFunction fun;
-        cout << fun(h.get_igraph(),c.get_membership(),NULL) << endl;
+        cout << "Final AS=" << fun(h.get_igraph(),c.get_membership(),h.get_edge_weights()) << endl;
+        SurpriseFunction fun2;
+        cout << fun2(h.get_igraph(),c.get_membership()) << endl;
     }
     catch (std::exception &e)
     {
         cerr << e.what() << endl;
     }
-    /*
-    AgglomerativeOptimizer opt;
-    opt.set_edges_order(c.get_sorted_edges_indices());
-
-    Timer timer;timer.start();
-    for (int i=0; i<100;++i)
-        opt.optimize(h.get_igraph(),fun,c.get_membership());
-    cout << timer.getElapsedTimeInMicroSec() << endl;
-    c.reindex_membership();
-    */
-    //cout << "S=" << fun(h.get_igraph(),c.get_membership()) << endl;
 
     return 0;
 }

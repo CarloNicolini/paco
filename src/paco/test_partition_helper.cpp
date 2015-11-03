@@ -27,6 +27,7 @@
 
 #include "Graph.h"
 #include "SurpriseFunction.h"
+#include "AsymptoticSurpriseFunction.h"
 #include "ModularityFunction.h"
 #include "Community.h"
 #include "PartitionHelper.h"
@@ -36,17 +37,26 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     GraphC h;
-    h.read_gml(argv[1]);
+    h.read_adj_matrix(string(argv[1]));
     const igraph_t *g = h.get_igraph();
     CommunityStructure c(&h);
     c.read_membership_from_file(argv[2]);
-    c.reindex_membership();
 
     const igraph_vector_t *m = c.get_membership();
+    const igraph_vector_t *w = h.get_edge_weights();
     PartitionHelper par;
-    par.init(g,m);
+    par.init(g,m,w);
 
-/*
+    AsymptoticSurpriseFunction f;
+    cout << "AS pre movement=" << f(g,m,w) << endl;
+    par.move_vertex(g,m,0,29,h.get_edge_weights());
+    par.move_vertex(g,m,1,29,h.get_edge_weights());
+    par.move_vertex(g,m,2,29,h.get_edge_weights());
+    par.move_vertex(g,m,3,29,h.get_edge_weights());
+    //igraph_vector_print(m);
+    par.print();
+    cout << "AS pre movement=" << f(g,m,w) << endl;
+    /*
     SurpriseFunction f;
     cout << f(&par) << endl;
 
@@ -62,8 +72,6 @@ int main(int argc, char *argv[])
         cout << f(&par) << endl;
     }
 */
-    ModularityFunction mod;
-    cout << mod(&par) << endl;
 
     return 0;
 }

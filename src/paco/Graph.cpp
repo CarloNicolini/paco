@@ -122,11 +122,13 @@ void GraphC::init(const Eigen::MatrixXd &W)
             }
         }
     }
+
     if (edge_weights_stl.size() != igraph_ecount(&ig))
     {
         //_must_delete = false;
         throw std::logic_error("Non consistent length of edge weigths vector, or diagonal entries in adjacency matrix.");
     }
+
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
     _is_directed = false;
 
@@ -209,6 +211,53 @@ GraphC::~GraphC()
 const igraph_t* GraphC::get_igraph() const
 {
     return &this->ig;
+}
+#include <sstream>
+/**
+ * @brief GraphC::read_adj_matrix
+ * @param filename
+ * @return
+ */
+bool GraphC::read_adj_matrix(const std::string &filename)
+{
+    IGRAPH_TRY(igraph_destroy(&this->ig));
+    Eigen::MatrixXd adj_mat;
+
+    ifstream file;
+    file.open(filename.c_str(),std::ios::in);
+
+    // Error file is not open
+    if(!file.is_open())
+    {
+        return false;
+    }
+
+    vector<vector<double> > data;
+    string line;
+
+    while(!std::getline(file, line, '\n').eof())
+    {
+        std::istringstream reader(line);
+        vector<double> lineData;
+        string::const_iterator i = line.begin();
+        while(!reader.eof())
+        {
+            double val;
+            reader >> val;
+            if(reader.fail())
+                break;
+            lineData.push_back(val);
+        }
+        data.push_back(lineData);
+    }
+    // Deep copy of data array to the adjacency matrix
+    adj_mat.setZero(data.size(),data.size());
+    for (int i=0; i<data.size(); ++i)
+        for (int j=0; j<data.size(); ++j)
+            adj_mat.coeffRef(i,j)=data[i][j];
+
+    this->init(adj_mat);
+    return true;
 }
 
 /**

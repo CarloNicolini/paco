@@ -36,6 +36,7 @@ typedef unordered_map<size_t, set<size_t> > CommMap;
 typedef unordered_map<size_t, set<size_t> >::iterator CommMapIter;
 typedef unordered_map<size_t, set<size_t> >::const_iterator CommMapCIter;
 
+
 class PartitionHelper
 {
 public:

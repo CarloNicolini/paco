@@ -177,10 +177,15 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     QualityFunction *fun;
 
     const igraph_vector_t *edge_weights;
+
     try
-    { edge_weights= pgraph->get_edge_weights(); }
+    {
+        edge_weights= pgraph->get_edge_weights();
+    }
     catch ( ... )
-    { edge_weights=NULL; }
+    {
+        edge_weights=NULL;
+    }
 
     double finalqual = 0;
 
@@ -190,9 +195,13 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     case QualitySurprise:
     {
         if (pgraph->is_weighted())
+        {
             throw std::logic_error("Can't optimize discrete surprise on weighted graph. Use AsymptoticSurprise instead.");
+        }
         else
+        {
             fun = dynamic_cast<SurpriseFunction*>(new SurpriseFunction);
+        }
         break;
     }
     case QualitySignificance:

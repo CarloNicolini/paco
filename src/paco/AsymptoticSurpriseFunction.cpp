@@ -41,6 +41,12 @@ AsymptoticSurpriseFunction::AsymptoticSurpriseFunction() {}
  */
 void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights) const
 {
+    PartitionHelper *par = new PartitionHelper;
+    par->init(g,memb,weights);
+    this->eval(par);
+    delete par;
+
+/*
     size_t n = igraph_vcount(g);
     size_t m = igraph_ecount(g);
     size_t p = n*(n-1)/2;
@@ -79,6 +85,7 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
         pzeta += vertices_count*(vertices_count-1)/2;
     }
     quality = m*KL(double(mzeta)/double(m),double(pzeta)/double(p));
+*/
 }
 
 /**
@@ -91,6 +98,9 @@ void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
     double pi = par->get_total_incomm_pairs();
     double m = par->get_graph_total_weight();
     double mi = par->get_total_incomm_weight();
+    printf("mi=%f pi=%f m=%f p=%f\n",mi,pi,m,p);
 
-    quality = m*KL(mi/m,pi/p);
+    double observed = mi/m;
+    double expected = pi/p;
+    quality = m*KL(observed,expected);
 }

@@ -36,8 +36,8 @@ double KL(double q, double p)
 {
     double KL = 0.0;
     if (q > 0.0 && p > 0.0)
-        KL += q*log(q/p);
+        KL += q*log10(q/p);
     if (q < 1.0 && p < 1.0)
-        KL += (1.0-q)*log((1.0-q)/(1.0-p));
+        KL += (1.0-q)*log10((1.0-q)/(1.0-p));
     return KL;
 }

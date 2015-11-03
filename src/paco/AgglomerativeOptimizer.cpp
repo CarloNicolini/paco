@@ -55,7 +55,9 @@ double AgglomerativeOptimizer::diff_move(const igraph_t *g, const QualityFunctio
             return post-pre;
         }
         else
+        {
             return post-pre;
+        }
     }
     else
         return 0;
