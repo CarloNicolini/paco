@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
     CommunityStructure c(&h);
     c.set_random_seed();
-/*
+    /*
     c.sort_edges();
 
     try
