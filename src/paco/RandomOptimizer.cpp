@@ -35,7 +35,7 @@ RandomOptimizer::~RandomOptimizer()
 {
 }
 
-double RandomOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm)
+double RandomOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights)
 {
     // try to join the vertices
     double pre = fun(par);
@@ -46,7 +46,7 @@ double RandomOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun,
         double post = fun(par);
         if (post<pre)
         {
-            par->move_vertex(g, memb,vert,orig_comm); // restore previous status
+            par->move_vertex(g, memb,vert,orig_comm,weights); // restore previous status
             return post-pre;
         }
         else
@@ -71,7 +71,7 @@ double RandomOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, 
 
         size_t dest_comm = memb->stor_begin[vert2];
 
-        diff_move(g,fun,memb,vert1,dest_comm);
+        diff_move(g,fun,memb,vert1,dest_comm,weights);
     }
     //par->reindex(memb);
     #ifdef _DEBUG

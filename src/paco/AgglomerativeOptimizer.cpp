@@ -26,6 +26,13 @@
 #include "AgglomerativeOptimizer.h"
 #include <iostream>
 
+/**
+ * @brief AgglomerativeOptimizer::AgglomerativeOptimizer
+ * @param g
+ * @param fun
+ * @param memb
+ * @param weights
+ */
 AgglomerativeOptimizer::AgglomerativeOptimizer(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights) : QualityOptimizer(g, fun, memb)
 {
     if (edges_order.empty())
@@ -36,22 +43,34 @@ AgglomerativeOptimizer::AgglomerativeOptimizer(const igraph_t *g, const QualityF
     this->optimize(g,fun,memb,weights);
 }
 
+/**
+ * @brief AgglomerativeOptimizer::~AgglomerativeOptimizer
+ */
 AgglomerativeOptimizer::~AgglomerativeOptimizer()
 {
 }
 
-double AgglomerativeOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm)
+/**
+ * @brief AgglomerativeOptimizer::diff_move
+ * @param g
+ * @param fun
+ * @param memb
+ * @param vert
+ * @param dest_comm
+ * @return
+ */
+double AgglomerativeOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights)
 {
     // try to join the vertices
     double pre = fun(par);
     int orig_comm = memb->stor_begin[vert]; // save old original community of vert
-    bool vertex_moved = par->move_vertex(g, memb,vert,dest_comm);
+    bool vertex_moved = par->move_vertex(g, memb,vert,dest_comm,weights);
     if (vertex_moved)
     {
         double post = fun(par);
         if (post<pre)
         {
-            par->move_vertex(g, memb,vert,orig_comm); // restore previous status
+            par->move_vertex(g, memb,vert,orig_comm,weights); // restore previous status
             return post-pre;
         }
         else
@@ -63,12 +82,24 @@ double AgglomerativeOptimizer::diff_move(const igraph_t *g, const QualityFunctio
         return 0;
 }
 
+/**
+ * @brief AgglomerativeOptimizer::set_edges_order
+ * @param value
+ */
 void AgglomerativeOptimizer::set_edges_order(const vector<int> &value)
 {
     edges_order = value;
 }
 
-double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const  igraph_vector_t *memb,const igraph_vector_t *weights)
+/**
+ * @brief AgglomerativeOptimizer::optimize
+ * @param g
+ * @param fun
+ * @param memb
+ * @param weights
+ * @return
+ */
+double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, const  igraph_vector_t *memb, const igraph_vector_t *weights)
 {
     par->init(g,memb,weights);
     if (edges_order.empty())
@@ -90,16 +121,18 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
         if ( rand()%2 ) // Randomly choose to aggregate vert1-->comm2 or vert2-->comm1
         {
             size_t dest_comm = memb->stor_begin[vert2];
-            diff_move(g,fun,memb,vert1,dest_comm);
+            diff_move(g,fun,memb,vert1,dest_comm,weights);
         }
         else
         {
             size_t dest_comm = memb->stor_begin[vert1];
-            diff_move(g,fun,memb,vert2,dest_comm);
+            diff_move(g,fun,memb,vert2,dest_comm,weights);
         }
     }
     //par->reindex(memb);
-    return fun(g,memb,weights);
+    //par->print();
+    return fun(par);
+
 #ifdef _DEBUG
     par->print();
     printf(ANSI_COLOR_RED "AGGLOMERATIVE Final Qual=%g\n" ANSI_COLOR_RESET,fun(par));

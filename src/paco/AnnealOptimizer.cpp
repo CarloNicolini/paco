@@ -36,18 +36,18 @@ AnnealOptimizer::~AnnealOptimizer()
 
 }
 
-double AnnealOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm)
+double AnnealOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights)
 {
     // try to join the vertices
     double pre = fun(par);
     int orig_comm = memb->stor_begin[vert]; // save old original community of vert
-    bool vertex_moved = par->move_vertex(g, memb,vert,dest_comm);
+    bool vertex_moved = par->move_vertex(g, memb,vert,dest_comm,weights);
     if (vertex_moved)
     {
         double post = fun(par);
         if (post<pre)
         {
-            par->move_vertex(g, memb,vert,orig_comm); // restore previous status
+            par->move_vertex(g, memb,vert,orig_comm,weights); // restore previous status
             return post-pre;
         }
         else
@@ -96,7 +96,7 @@ double AnnealOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, 
         igraph_edge(g,e,&ev1,&ev2);
         size_t cev2 = memb->stor_begin[ev2];
         // Get the difference in cost function of moving ev1 community to ev2 community
-        double delta = diff_move(g,fun,memb,ev1,cev2);
+        double delta = diff_move(g,fun,memb,ev1,cev2,weights);
 
         double rand_unif_01 = igraph_rng_get_unif01(rng);
         bool accept_better = (delta>0);

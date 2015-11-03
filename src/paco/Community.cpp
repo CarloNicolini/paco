@@ -171,6 +171,13 @@ void CommunityStructure::reindex_membership()
         VECTOR(membership)[i] -= minC;
 }
 
+/**
+ * @brief CommunityStructure::optimize
+ * @param qual
+ * @param optmethod
+ * @param nrep
+ * @return
+ */
 double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, int nrep)
 {
     QualityOptimizer *opt;

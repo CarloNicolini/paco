@@ -38,7 +38,7 @@ public:
     void set_edges_order(const vector<int> &value);
 
 protected:
-    double diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm);
+    double diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights);
     vector<int> edges_order;
 };
 

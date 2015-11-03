@@ -41,26 +41,22 @@ AsymptoticSurpriseFunction::AsymptoticSurpriseFunction() {}
  */
 void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights) const
 {
-    PartitionHelper *par = new PartitionHelper;
-    par->init(g,memb,weights);
-    this->eval(par);
-    delete par;
+    /*
+    igraph_real_t n = static_cast<igraph_real_t>(igraph_vcount(g));
+    igraph_real_t num_edges = static_cast<igraph_real_t>(igraph_ecount(g));
+    igraph_real_t m = igraph_real_t(igraph_ecount(g));
+    igraph_real_t p = n*(n-1)/2;
 
-/*
-    size_t n = igraph_vcount(g);
-    size_t m = igraph_ecount(g);
-    size_t p = n*(n-1)/2;
+    if (weights)
+        m = igraph_vector_sum(weights);
 
     if (n != igraph_vector_size(memb) )
-    {
-        cerr << "Non consistent length of membership vector" << endl;
-        throw std::logic_error("Non consistent length of membership vector");
-    }
+        throw std::runtime_error("Non consistent length of membership vector");
 
     // Sum of intracluster edge weights
-    size_t mzeta=0;
+    igraph_real_t mi=0;
     // Sum of intracluster pairs
-    size_t pzeta=0;
+    igraph_real_t pi=0;
 
     // Initialize the vectors of edges and configuration model
     size_t nComms=(size_t)igraph_vector_max(memb)+1; // XXX to fix in a future...
@@ -69,23 +65,36 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
     igraph_integer_t to;
 
     // iterate all edges and check where the endpoints of the edges are
-    // if they are in the same community increase intracluster edge weights mzeta
-    for (igraph_integer_t edge_id=0; edge_id<m; edge_id++)
+    // if they are in the same community
+    for (igraph_integer_t edge_id=0; edge_id<num_edges; edge_id++)
     {
         igraph_edge(g, (igraph_integer_t) edge_id, &from, &to);
+        igraph_real_t w = 1;
+        if (weights)
+            w = weights->stor_begin[edge_id];
         igraph_integer_t comm_from=*(memb->stor_begin+from); // Community node "from" belongs
         igraph_integer_t comm_to=*(memb->stor_begin+to);  // Community node "to" belongs
-        mzeta += size_t(comm_from==comm_to);
+        int delta = static_cast<igraph_real_t>(int(comm_from==comm_to));
+        mi += delta*w;
     }
 
     // Sum the count of vertex pairs in every community
     for (igraph_integer_t c=0; c<nComms; c++)
     {
-        size_t vertices_count = std::count(memb->stor_begin, memb->stor_end, c);
-        pzeta += vertices_count*(vertices_count-1)/2;
+        igraph_real_t vertices_count = static_cast<igraph_real_t>(std::count(memb->stor_begin, memb->stor_end, c));
+        pi += vertices_count*(vertices_count-1.0)/2.0;
     }
-    quality = m*KL(double(mzeta)/double(m),double(pzeta)/double(p));
-*/
+
+    double observed = mi/m;
+    double expected = pi/p;
+
+    quality = m*KL(observed,expected);
+    */
+    PartitionHelper *par = new PartitionHelper;
+    par->init(g,memb,weights);
+    this->eval(par);
+    delete par;
+    //printf("--> AS=%f -- mi=%f pi=%f m=%f p=%f\n",quality, mi,pi,m,p);
 }
 
 /**
@@ -94,13 +103,35 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
  */
 void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
 {
+    /*
     double p = par->get_graph_total_pairs();
     double pi = par->get_total_incomm_pairs();
     double m = par->get_graph_total_weight();
     double mi = par->get_total_incomm_weight();
-    printf("mi=%f pi=%f m=%f p=%f\n",mi,pi,m,p);
 
     double observed = mi/m;
     double expected = pi/p;
     quality = m*KL(observed,expected);
+    */
+    //printf("AS=%f -- mi=%f pi=%f m=%f p=%f\n",quality, mi,pi,m,p);
+    quality = 0;
+    igraph_real_t m = par->get_graph_total_weight();
+    igraph_real_t p = par->get_graph_total_pairs();
+
+    igraph_real_t mi = 0;
+    igraph_real_t pi = 0;
+
+    if (m > 0)
+    {
+        for (CommMapCIter iter=par->get_communities().begin(); iter!=par->get_communities().end(); ++iter)
+        {
+            size_t c = iter->first;
+            igraph_real_t mc = par->get_incomm_weight().at(c);
+            igraph_real_t nc = par->get_incomm_nvert().at(c);
+            igraph_real_t pc = nc*(nc-1.0)/2.0;
+            mi += mc;
+            pi += pc;
+        }
+    }
+    quality = m*KL(mi/m,pi/p);
 }

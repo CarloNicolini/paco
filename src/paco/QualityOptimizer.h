@@ -40,7 +40,7 @@ public:
     const PartitionHelper* get_partition_helper() const;
 
 protected:
-    virtual double diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm) = 0;
+    virtual double diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights) = 0;
     PartitionHelper *par;
 };
 
