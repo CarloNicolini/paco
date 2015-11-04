@@ -80,48 +80,49 @@ Go to www.igraph.org/c and follow the documentation for the compilation using th
 
 1. Download igraph-0.7.1 source code:
 
-
-    $> cd
-    $> wget http://igraph.org/nightly/get/c/igraph-0.7.1.tar.gz
-
+```
+$> cd
+$> wget http://igraph.org/nightly/get/c/igraph-0.7.1.tar.gz
+```
  
 2. Extract the code under your home folder:
 
-
-    $> tar -zxvf igraph-0.7.1.tar.gz
-
+```
+$> tar -zxvf igraph-0.7.1.tar.gz
+```
 
 3. Install the necessary libs, under Ubuntu:
 
-
-    $> sudo apt-get install build-essential libxml2-dev zlib1g-dev
-
+```
+$> sudo apt-get install build-essential libxml2-dev zlib1g-dev
+```
 
 4. Try to configure and compile igraph:
 
-
-    $> cd igraph-0.7.1/
-    $> ./configure
-    $> make 
-
+```
+$> cd igraph-0.7.1/
+$> ./configure
+$> make 
+```
 
 5. If you have many processors on your computer, make in parallel mode, instead of `make` just issue `make -j8` for example to compile with 8 cores.
 
 6. Check if installation went fine:
 
-
-    $> make check
-
+```
+$> make check
+```
 
 7. If tests are passed, then install it. I usually install *igraph* under `/usr/lib/`. To do that I call `make install` with administrator privileges. 
 
-
-        $> sudo make install
-
+```
+$> sudo make install
+```
 
 8. If you don't have administrator privileges you can compile igraph under your home folder.
 
 In the rest of the notes we assume that the Igraph include directory is `/usr/local/include/igraph`.
+
 
 # Windows support:
 Despite everything should be ready to be ported happily in Windows, I don't have time to let the code compile smoothly on Windows. If you want to join me in writing PACO for Windows let me know.
@@ -133,9 +134,9 @@ Despite everything should be ready to be ported happily in Windows, I don't have
 
 I can compile Paco for MATLAB but after calling `paco_mx`, MATLAB prompts me with the following error message:
 
-    Invalid MEX-file '~/paco_mx.mexa64':
-    /usr/local/MATLAB/R2015a/bin/glnxa64/../../sys/os/glnxa64/libstdc++.so.6:
-    version `GLIBCXX_3.4.21' not found (required by ...
+```
+Invalid MEX-file '~/paco_mx.mexa64': /usr/local/MATLAB/R2015a/bin/glnxa64/../../sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by ...
+```
 
 This problem means that the `libstdc++.so.6` inside the Matlab library folder is pointing to a version of `libstdc++` older than the system one, usually stored in `/usr/lib/x86_64` folder.
 
@@ -143,20 +144,26 @@ To solve the issue you need to redirect the symbolic links in the MATLAB folder 
 
 Two of the symlinks for libraries need to be changed:
 
-    $> cd /usr/local/MATLAB/R2015a/sys/os/glnxa64
-    $> ls -l
+```
+$> cd /usr/local/MATLAB/R2015a/sys/os/glnxa64
+$> ls -l
+```
 
 The sym links for libstdc++.so.6 and libgfortran.so.3 should point to versions in /usr/lib, not local ones.
 
 
 Before changing this libraries, first make sure `g++-4.4` and `libgfortran3`are installed :
 
-    $> sudo apt-get install g++-4.4 libgfortran3
+```
+$> sudo apt-get install g++-4.4 libgfortran3
+```
 
 Now, modify the symlinks:
 
-    $> sudo ln -fs /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 libgfortran.so.3
-    $> sudo ln -fs /usr/lib/gcc/x86_64-linux-gnu/4.4/libstdc++.so libstdc++.so.6
+```
+$> sudo ln -fs /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 libgfortran.so.3
+$> sudo ln -fs /usr/lib/gcc/x86_64-linux-gnu/4.4/libstdc++.so libstdc++.so.6
+```
 
 This command makes the `libstdc++.so.6` point to the `g++-4.4` `libstdc++` library.
 
