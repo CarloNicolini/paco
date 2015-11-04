@@ -77,30 +77,31 @@ We suggest compiling `igraph` from source, since PACO needs `igraph`>=0.7.1.
 Go to www.igraph.org/c and follow the documentation for the compilation using the autogen script they provide, otherwise follow the following instructions:
 
 ### Compilation and installation of igraph on Ubuntu 12.04 or greater
-    1. Download igraph-0.7.1 source code:
 
-        $> cd
-        $> wget http://igraph.org/nightly/get/c/igraph-0.7.1.tar.gz
+1. Download igraph-0.7.1 source code:
+
+    $> cd
+    $> wget http://igraph.org/nightly/get/c/igraph-0.7.1.tar.gz
     
-    2. Extract the code under your home folder:
+2. Extract the code under your home folder:
 
-        $> tar -zxvf igraph-0.7.1.tar.gz
+    $> tar -zxvf igraph-0.7.1.tar.gz
 
-    3. Install the necessary libs, under Ubuntu:
+3. Install the necessary libs, under Ubuntu:
 
-        $> sudo apt-get install build-essential libxml2-dev zlib1g-dev
+    $> sudo apt-get install build-essential libxml2-dev zlib1g-dev
 
-    4. Try to configure and compile igraph:
+4. Try to configure and compile igraph:
 
-        $> cd igraph-0.7.1/
-        $> ./configure
-        $> make 
+    $> cd igraph-0.7.1/
+    $> ./configure
+    $> make 
 
-    5. If you have many processors on your computer, make in parallel mode, instead of `make` just issue `make -j8` for example to compile with 8 cores.
+5. If you have many processors on your computer, make in parallel mode, instead of `make` just issue `make -j8` for example to compile with 8 cores.
 
-    6. Check if installation went fine:
+6. Check if installation went fine:
 
-        $> make check
+    $> make check
 
     7. If tests are passed, then install it. I usually install *igraph* under `/usr/lib/`. To do that I call `make install` with administrator privileges. 
 
