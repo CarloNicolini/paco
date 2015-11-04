@@ -1,20 +1,34 @@
 # PACO "Partitioning Cost Optimization"
 
-Paco is a tool to build solvers and optimize quality functions on graphs for community detection.
-Paco comes as both a C++ library and a support for Matlab/Octave mex function.
+PACO is a tool to build solvers and optimize quality functions on graphs for community detection. PACO comes as both a C++ library and a support for Matlab/Octave mex function.
+
+At this moment PACO allows to optimize the following quality functions:
+
+1. Newman's Modularity (binary and weighted networks)
+2. Surprise (only binary networks)
+3. Asymptotical Surprise (binary and weighted networks)
+4. Significance (binary and weighted networks)
+
+and supports three optimization algorithms:
+
+1. An agglomerative optimizer based on FAGSO, a very fast and powerful heuristics that is based on sorting of networks edges by their endpoints neighbors set Jaccard coefficient.
+2. Simulated Annealing optimizer: the classical simulated annealing algorithm for global optimization.
+3. Random optimizer
 
 ## Requirements
-Paco needs the `C` libraries`igraph`
+PACO is written in C++ and therefore needs a viable C/C++ compiler, typicall `gcc` or `clang` are supported compilers. PACO is tested to compile on Linux and OSX.
 
-To compile, clone this dataset with git:
+PACO makes deep use of the `C` libraries`igraph`. To see how to get `igraph` look at the appropriate section .
 
-    $> git clone https:/github.com/CarloNicolini/paco.git
-    $> cd paco
+To get and compile PACO, issue the following commands in the command-line:
+
+    $> git clone https:/github.com/CarloNicolini/PACO.git
+    $> cd PACO
     $> mkdir build
     $> cd build
     $> cmake ..
 
-If you want to compile `paco_mx` mex function, you need to enable the `MATLAB_SUPPORT` flag. At the last step:
+If you want to compile `PACO_mx` mex function, you need to enable the `MATLAB_SUPPORT` flag. At the last step:
 
     $> cmake -DMATLAB_SUPPORT=True ..
 
@@ -63,6 +77,19 @@ The `lfrw_mx` function is self-documented:
     'C'
         Desidered clustering coefficient
 
+An example usage of `lfrw_mx` in Matlab is the following:
+
+1. Start a MATLAB console (no graphical interface for simplicity):
+```
+$> matlab -nojvm
+```
+
+2. Once MATLAB is started:
+```
+>> [AdjMatrix, planted_vert_membership] = lfrw_mx('N',100,'k',5,'maxk',15,'muw',0.2,'mut',0.2);
+```
+
+3. Some informations are printed on output, regarding the generation of the benchmark network. The first output argument is the adjacency matrix of the generated network, the second is the planted partition indicated as a vector of integers, where every element is the community of the i-th vertex.
 
 ## Obtaining igraph in OSX
 We strongly suggest to obtain `igraph` in OSX using **Homebrew**.
@@ -132,10 +159,10 @@ Despite everything should be ready to be ported happily in Windows, I don't have
 
 ## Linking libstdc++.so.6 problem
 
-I can compile Paco for MATLAB but after calling `paco_mx`, MATLAB prompts me with the following error message:
+I can compile PACO for MATLAB but after calling `PACO_mx`, MATLAB prompts me with the following error message:
 
 ```
-Invalid MEX-file '~/paco_mx.mexa64': /usr/local/MATLAB/R2015a/bin/glnxa64/../../sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by ...
+Invalid MEX-file '~/PACO_mx.mexa64': /usr/local/MATLAB/R2015a/bin/glnxa64/../../sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by ...
 ```
 
 This problem means that the `libstdc++.so.6` inside the Matlab library folder is pointing to a version of `libstdc++` older than the system one, usually stored in `/usr/lib/x86_64` folder.
