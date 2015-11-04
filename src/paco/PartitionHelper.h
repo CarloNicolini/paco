@@ -140,7 +140,7 @@ protected:
 private:
     inline bool check_comm(int dest_comm);
     void fill_communities(const igraph_vector_t *memb);
-    double weight_to_from_community(const igraph_t *g, const igraph_vector_t* memb, size_t v, size_t comm, igraph_neimode_t mode, const igraph_vector_t *weights=NULL);
+    const double weight_to_from_community(const igraph_t *g, const igraph_vector_t* memb, size_t v, size_t comm, igraph_neimode_t mode, const igraph_vector_t *weights=NULL);
 };
 
 

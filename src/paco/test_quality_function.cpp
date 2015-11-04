@@ -64,5 +64,8 @@ int main(int argc, char *argv[])
     QualityOptimizer *opt;
     opt = ( new AgglomerativeOptimizer);
 
+    delete fun;
+    delete opt;
+
     return 0;
 }

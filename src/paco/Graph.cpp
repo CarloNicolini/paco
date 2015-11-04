@@ -239,7 +239,6 @@ bool GraphC::read_adj_matrix(const std::string &filename)
     {
         std::istringstream reader(line);
         vector<double> lineData;
-        string::const_iterator i = line.begin();
         while(!reader.eof())
         {
             double val;
@@ -326,6 +325,7 @@ bool GraphC::read_weights_from_file(const string &filename)
     size_t num_different_edge_weight_values = set<double>(edge_weights_stl.begin(),edge_weights_stl.end()).size();
     _is_weighted = num_different_edge_weight_values!=2; // set if the graph is weighted or just has two different weights
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size()); // copy to weights vector
+    return true;
 }
 
 /**
@@ -396,12 +396,13 @@ bool GraphC::add_edge(size_t source, size_t target)
 bool GraphC::remove_edge(size_t source, size_t target)
 {
     if (!is_edge(source,target)) // allow only simple undirected graphs
-        return true;
+        return false;
     else
     {
         igraph_es_t es;
         IGRAPH_TRY(igraph_es_pairs_small(&es, IGRAPH_UNDIRECTED, source, target));
         IGRAPH_TRY(igraph_delete_edges(&this->ig,es));
+        return true;
     }
 }
 
@@ -413,6 +414,7 @@ bool GraphC::remove_edge(size_t source, size_t target)
 bool GraphC::remove_edges(igraph_es_t &es)
 {
     IGRAPH_TRY(igraph_delete_edges(&this->ig,es));
+    return true;
 }
 
 /**
@@ -458,6 +460,7 @@ pair<igraph_integer_t,igraph_integer_t> GraphC::get_edge(size_t edge_id) const
 bool GraphC::add_vertices(size_t nvertices)
 {
     IGRAPH_TRY(igraph_add_vertices(&this->ig,nvertices,0));
+    return true;
 }
 
 /**
@@ -520,7 +523,7 @@ void GraphC::print() const
 {
     igraph_adjlist_t adjlist;
     igraph_neimode_t mode = IGRAPH_TOTAL;
-    igraph_adjlist_init(&this->ig,&adjlist,IGRAPH_TOTAL);
+    igraph_adjlist_init(&this->ig,&adjlist,mode);
     igraph_adjlist_print(&adjlist);
     igraph_adjlist_destroy(&adjlist);
     //igraph_write_graph_dot(&this->ig,stderr);

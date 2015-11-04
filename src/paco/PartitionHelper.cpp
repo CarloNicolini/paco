@@ -39,6 +39,7 @@ PartitionHelper::PartitionHelper()
     total_incomm_weight = 0;
     total_incomm_pairs = 0;
     num_vertices = 0;
+    num_edges = 0;
     graph_total_pairs = 0;
     num_comms = 0;
 
@@ -327,7 +328,7 @@ bool PartitionHelper::split_community(const igraph_t *g, const igraph_vector_t *
  * @param weights
  * @return
  */
-double PartitionHelper::weight_to_from_community(const igraph_t *g, const igraph_vector_t *memb, size_t v, size_t comm, igraph_neimode_t mode, const igraph_vector_t *weights)
+const double PartitionHelper::weight_to_from_community(const igraph_t *g, const igraph_vector_t *memb, size_t v, size_t comm, igraph_neimode_t mode, const igraph_vector_t *weights)
 {
     if (weights)
     {

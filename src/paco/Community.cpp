@@ -295,6 +295,8 @@ void CommunityStructure::sort_edges()
     {
         sorted_edges.at(i).first = i;
         sorted_edges.at(i).second = edges_sim.stor_begin[i];
+        if (this->pgraph->is_weighted()) //XXX Jaccard index is then weighted by edge weight
+            sorted_edges.at(i).second  *= this->pgraph->get_edge_weights()->stor_begin[i];
     }
 
     // Edges are sorted by jaccard index. Edges endpoints can be found by IGRAPH_TO and IGRAPH_FROM macros

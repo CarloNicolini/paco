@@ -80,7 +80,7 @@ T mapvalue_sum(const unordered_map<size_t,T> &m)
 template <class T>
 inline ostream &operator<<(ostream &os, const map<size_t,T> &m)
 {
-    for ( typename map<size_t,T>::const_iterator i=m.begin() ; i!= m.end() ; i++)
+    for ( typename map<size_t,T>::const_iterator i=m.begin() ; i!= m.end() ; ++i)
     {
         os << i->first << "-> " << i->second << endl;
     }

@@ -319,7 +319,7 @@ bool sumLogProbabilities(const long double& nextLogP, long double& logP)
         common = logP;
         diffExponent = nextLogP - common;
     }
-    logP = common + ( (log(1 + pow(10, diffExponent))) / log(10) );
+    logP = common + ( (log1pl(pow(10, diffExponent))) / log(10) ); //changed log(1+x) with log1pl(x)
     // The cumulative summation stops when the increasing is less than 10e-4
     if(nextLogP - logP < -4)
         return true;
