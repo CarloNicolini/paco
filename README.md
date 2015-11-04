@@ -80,34 +80,46 @@ Go to www.igraph.org/c and follow the documentation for the compilation using th
 
 1. Download igraph-0.7.1 source code:
 
+
     $> cd
     $> wget http://igraph.org/nightly/get/c/igraph-0.7.1.tar.gz
-    
+
+ 
 2. Extract the code under your home folder:
+
 
     $> tar -zxvf igraph-0.7.1.tar.gz
 
+
 3. Install the necessary libs, under Ubuntu:
+
 
     $> sudo apt-get install build-essential libxml2-dev zlib1g-dev
 
+
 4. Try to configure and compile igraph:
+
 
     $> cd igraph-0.7.1/
     $> ./configure
     $> make 
 
+
 5. If you have many processors on your computer, make in parallel mode, instead of `make` just issue `make -j8` for example to compile with 8 cores.
 
 6. Check if installation went fine:
 
+
     $> make check
 
-    7. If tests are passed, then install it. I usually install *igraph* under `/usr/lib/`. To do that I call `make install` with administrator privileges. 
+
+7. If tests are passed, then install it. I usually install *igraph* under `/usr/lib/`. To do that I call `make install` with administrator privileges. 
+
 
         $> sudo make install
 
-    8. If you don't have administrator privileges you can compile igraph under your home folder.
+
+8. If you don't have administrator privileges you can compile igraph under your home folder.
 
 In the rest of the notes we assume that the Igraph include directory is `/usr/local/include/igraph`.
 
