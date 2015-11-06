@@ -54,22 +54,17 @@ double ran2(long *idum)
 
 double ran4(bool t, long s)
 {
-
     double r=0;
-
     static long seed_=1;
-
     if(t)
         r=ran2(&seed_);
     else
         seed_=s;
-
     return r;
 }
 
 double ran4()
 {
-
     return ran4(true, 0);
 }
 
@@ -82,17 +77,13 @@ void srand4(void)
 
 void srand5(int rank)
 {
-
     long s=(long)(rank);
     ran4(false, s);
-
 }
 
 int irand(int n)
 {
-
     return (int(ran4()*(n+1)));
-
 }
 
 void srand_file(void)
