@@ -32,7 +32,7 @@ public:
     void set_random();
     bool arrange();
     deque<string> command_flags;
-
+    void print();
 };
 
 void print_usage();

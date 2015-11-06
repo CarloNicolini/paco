@@ -41,9 +41,36 @@ Parameters::Parameters()
     command_flags.push_back("-beta");		//10
     command_flags.push_back("-muw");		//11
     command_flags.push_back("-C");			//12
-
 }
 
+/**
+ * @brief Parameters::print
+ */
+void Parameters::print()
+{
+    FILE_LOG(logINFO) << "Num Nodes=" <<
+    "num_nodes "<< num_nodes << endl <<
+    "average_k "<<average_k << endl <<
+    "max_degree "<< max_degree << endl <<
+    "tau "<< tau << endl <<
+    "tau2 "<<tau2 << endl <<
+    "mixing_parameter "<< mixing_parameter << endl <<
+    "mixing_parameter2 " << mixing_parameter2 << endl <<
+    "beta "<< beta << endl <<
+    "overlapping_nodes " << overlapping_nodes << endl <<
+    "overlap_membership "<< overlap_membership << endl <<
+    "nmin" << nmin << endl <<
+    "nmax" << nmax << endl <<
+    "fixed_range" << fixed_range << endl <<
+    "excess"<< excess << endl <<
+    "defect" << defect << endl <<
+    "randomf" << randomf << endl <<
+    "clustering_coeff=" << clustering_coeff << endl;
+}
+
+/**
+ * @brief Parameters::set_random
+ */
 void Parameters::set_random()
 {
 
@@ -60,9 +87,12 @@ void Parameters::set_random()
     defect=false;
 }
 
+/**
+ * @brief Parameters::arrange
+ * @return
+ */
 bool Parameters::arrange()
 {
-
     if(randomf)
         set_random();
 
@@ -150,9 +180,7 @@ bool Parameters::arrange()
             return false;
         }
     }
-
     return true;
-
 }
 
 /**

@@ -117,22 +117,6 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
         return ERROR_TOO_MANY_OUTPUT_ARGS;
     }
 
-/*
-    command_flags.push_back("-N");			//0
-    command_flags.push_back("-k");			//1
-    command_flags.push_back("-maxk");		//2
-    command_flags.push_back("-mut");		//3
-    command_flags.push_back("-t1");			//4
-    command_flags.push_back("-t2");			//5
-    command_flags.push_back("-minc");		//6
-    command_flags.push_back("-maxc");		//7
-    command_flags.push_back("-on");			//8
-    command_flags.push_back("-om");			//9
-    command_flags.push_back("-beta");		//10
-    command_flags.push_back("-muw");		//11
-    command_flags.push_back("-C");			//12
-*/
-
     // Iterate on function arguments
     int argcount=0;
     while (argcount<nInputArgs)
