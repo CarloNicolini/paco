@@ -91,6 +91,16 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
         }
     }
 
+    // XXX SISTEMARE RETE DIREZIONATA
+    ofstream out1("network2.dat");
+    for (int u=0; u<E.size(); u++)
+    {
+        set<int>::iterator itb=E[u].begin();
+
+        while (itb!=E[u].end())
+            out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
+    }
+
     //ofstream out2("community.dat");
     /*
     for (int i=0; i<member_list.size(); i++)
@@ -271,8 +281,8 @@ int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> >
 
         double oldpartvar=0;
         for(map<int, double>::iterator itm=neigh_weigh[i].begin(); itm!=neigh_weigh[i].end(); itm++) if(itm->second + change > 0)
-                for (int bw=0; bw<3; bw++)
-                    oldpartvar+= (factual[itm->first][bw] - wished[itm->first][bw]) * (factual[itm->first][bw] - wished[itm->first][bw]);
+            for (int bw=0; bw<3; bw++)
+                oldpartvar+= (factual[itm->first][bw] - wished[itm->first][bw]) * (factual[itm->first][bw] - wished[itm->first][bw]);
 
         for (int bw=0; bw<3; bw++)
             oldpartvar+= (factual[i][bw] - wished[i][bw]) * (factual[i][bw] - wished[i][bw]);
@@ -280,29 +290,29 @@ int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> >
         double newpartvar=0;
 
         for(map<int, double>::iterator itm=neigh_weigh[i].begin(); itm!=neigh_weigh[i].end(); itm++) if(itm->second + change > 0)
+        {
+
+            if (they_are_mate(i, itm->first, member_list))
             {
+                factual[itm->first][0]+=change;
+                factual[itm->first][2]-=change;
 
-                if (they_are_mate(i, itm->first, member_list))
-                {
-                    factual[itm->first][0]+=change;
-                    factual[itm->first][2]-=change;
-
-                    factual[i][0]+=change;
-                    factual[i][2]-=change;
-                }
-                else
-                {
-                    factual[itm->first][1]+=change;
-                    factual[itm->first][2]-=change;
-
-                    factual[i][1]+=change;
-                    factual[i][2]-=change;
-                }
-                for (int bw=0; bw<3; bw++)
-                    newpartvar+= (factual[itm->first][bw] - wished[itm->first][bw]) * (factual[itm->first][bw] - wished[itm->first][bw]);
-                itm->second+= change;
-                neigh_weigh[itm->first][i]+=change;
+                factual[i][0]+=change;
+                factual[i][2]-=change;
             }
+            else
+            {
+                factual[itm->first][1]+=change;
+                factual[itm->first][2]-=change;
+
+                factual[i][1]+=change;
+                factual[i][2]-=change;
+            }
+            for (int bw=0; bw<3; bw++)
+                newpartvar+= (factual[itm->first][bw] - wished[itm->first][bw]) * (factual[itm->first][bw] - wished[itm->first][bw]);
+            itm->second+= change;
+            neigh_weigh[itm->first][i]+=change;
+        }
 
         for (int bw=0; bw<3; bw++)
             newpartvar+= (factual[i][bw] - wished[i][bw]) * (factual[i][bw] - wished[i][bw]);
