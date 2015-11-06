@@ -30,6 +30,8 @@ int main(int argc, char * argv[])
 
     ofstream os; os.open("matrix.dat");
     os << W << endl;
-
+    ofstream osmemb; osmemb.open("community.dat");
+    for (size_t i=0; i<m.size();++i)
+        osmemb << m.at(i) << endl;
     return 0;
 }
