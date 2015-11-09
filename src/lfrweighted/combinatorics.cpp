@@ -120,7 +120,7 @@ int distribution_from_cumulative(const deque<double> &cum, deque<double> &distr)
 
     distr.clear();
     double previous=0;
-    for (int i=0; i<cum.size(); i++)
+    for (unsigned int i=0; i<cum.size(); i++)
     {
         distr.push_back(cum[i]-previous);
         previous=cum[i];
@@ -135,7 +135,7 @@ int cumulative_from_distribution (deque<double> &cum, const deque<double> &distr
 
     cum.clear();
     double sum=0;
-    for (int i=0; i<distr.size(); i++)
+    for (unsigned int i=0; i<distr.size(); i++)
     {
         sum+=distr[i];
         cum.push_back(sum);
@@ -176,7 +176,7 @@ int shuffle_s(deque<int> & sq)
     if(siz==0)
         return -1;
 
-    for (int i=0; i<sq.size(); i++)
+    for (unsigned int i=0; i<sq.size(); i++)
     {
 
         int random_pos=irand(siz-1);
@@ -251,14 +251,14 @@ double compute_hypergeometric(int i, int k, int kout, int m)
 
     //prints(den);
 
-    for(int h=0; h<den.size(); h++) if(den[h]<=0)
+    for(unsigned int h=0; h<den.size(); h++) if(den[h]<=0)
     {
         cerr<<"denominator has zero or less (in the hypergeometric)"<<endl;
         return 0;
 
     }
 
-    for(int h=0; h<num.size(); h++) if(num[h]<=0)
+    for(unsigned int h=0; h<num.size(); h++) if(num[h]<=0)
     {
         cerr<<"numerator has zero or less (in the hypergeometric)"<<endl;
         return 0;
@@ -267,7 +267,7 @@ double compute_hypergeometric(int i, int k, int kout, int m)
 
     //cout<<"sizes: "<<num.size()<<" "<<den.size()<<endl;
 
-    for (int i=0; i<num.size(); i++)
+    for (unsigned int i=0; i<num.size(); i++)
         prod=prod*num[i]/den[i];
 
     return prod;

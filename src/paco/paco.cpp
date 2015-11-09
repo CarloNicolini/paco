@@ -139,7 +139,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
     bool v3 = mxIsEmpty(W);
     bool v4 = mxIsCell(W);
     bool v5 = !mxIsNumeric(W);
-    bool v6 = !mxIsSparse(W);
+    //bool v6 = !mxIsSparse(W);
 
     if ( v1 || v2 || v3 || v4 || v5 )
     {

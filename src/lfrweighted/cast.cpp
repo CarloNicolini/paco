@@ -15,14 +15,14 @@ bool cast_string_to_double (std::string &b, double &h)
         sign=-1;
     }
 
-    int digits_before=0;
-    for(int i=0; i<b.size(); i++)
+    unsigned int digits_before=0;
+    for(unsigned int i=0; i<b.size(); i++)
         if(b[i]!='.')
             digits_before++;
         else
             break;
 
-    int j=0;
+    unsigned int j=0;
     while (j!=digits_before)
     {
 
@@ -58,7 +58,7 @@ int cast_int(double u)
 
 int cast_string_to_char(std::string &file_name, char *b)
 {
-    for (int i=0; i<file_name.size(); i++)
+    for (unsigned int i=0; i<file_name.size(); i++)
         b[i]=file_name[i];
     b[file_name.size()]='\0';
     return 0;

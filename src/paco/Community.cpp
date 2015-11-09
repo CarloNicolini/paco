@@ -76,10 +76,10 @@ void CommunityStructure::read_membership_from_file(const string &filename)
         str >> memb;
         vmemb.push_back(memb);
     }
-    if (vmemb.size() != this->nVertices)
+    if (vmemb.size() != static_cast<unsigned int>(this->nVertices))
         throw std::runtime_error("Error loading membership file. Vertex number not consistent with current graph.");
 
-    for (size_t i=0; i<this->nVertices; ++i)
+    for (igraph_integer_t i=0; i<this->nVertices; ++i)
         VECTOR(membership)[i] = vmemb[i];
 }
 
@@ -95,7 +95,7 @@ void CommunityStructure::save_membership(const char *filename, const igraph_vect
         outputmembership.open(filename);
         if (!outputmembership.good())
             throw std::ios_base::failure("Error, file" + std::string(filename)+ " exists");
-        for (size_t i=0; i<igraph_vector_size(m); i++)
+        for (long int i=0; i<igraph_vector_size(m); i++)
             outputmembership << m->stor_begin[i] << endl;
         outputmembership.close();
     }
@@ -119,7 +119,7 @@ void CommunityStructure::init(const GraphC *G)
 
     // Init the membership vector
     IGRAPH_TRY(igraph_vector_init(&membership,nVertices));
-    for (size_t i=0; i<nVertices; ++i)
+    for (igraph_integer_t i=0; i<nVertices; ++i)
         VECTOR(membership)[i]=i;
 
     // Initialize the vector containing the edges similarities
@@ -167,7 +167,7 @@ void CommunityStructure::reindex_membership()
 {
     IGRAPH_TRY(igraph_reindex_membership(&this->membership,NULL));
     int minC = igraph_vector_min(&this->membership);
-    for (size_t i=0; i<nVertices; ++i)
+    for (igraph_integer_t i=0; i<nVertices; ++i)
         VECTOR(membership)[i] -= minC;
 }
 
@@ -291,7 +291,7 @@ void CommunityStructure::sort_edges()
     this->compute_edges_similarities(); // initialize the edges_sim igraph_vector_t
     sorted_edges.resize(nEdges);
 
-    for (size_t i=0; i<this->nEdges; ++i)
+    for (igraph_integer_t i=0; i<this->nEdges; ++i)
     {
         sorted_edges.at(i).first = i;
         sorted_edges.at(i).second = edges_sim.stor_begin[i];
@@ -304,10 +304,10 @@ void CommunityStructure::sort_edges()
 
     // Randomize the edges with the same jaccard index. Introduces some variability in
     // the final partitioning.
-    size_t i=0;
+    igraph_integer_t i=0;
     while (i<nEdges)
     {
-        size_t k=0;
+        igraph_integer_t k=0;
         while ((fabs(sorted_edges.at(i).second - sorted_edges.at(i+k).second)<1E-6) )
         {
             ++k;

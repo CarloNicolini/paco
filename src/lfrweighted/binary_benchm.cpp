@@ -407,7 +407,7 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
     }
     //cout<<"num_seq";
     //prints(num_seq);
-    int ncom=num_seq.size();
+    //int ncom=num_seq.size();
 
     /*
      cout<<"community sizes";
@@ -501,7 +501,7 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
 
     for (int i=degree_seq.size()-1; i>=0; i--)
     {
-        int & degree_here=internal_degree_seq[i];
+        //int & degree_here=internal_degree_seq[i];
         int try_this = irand(available_nodes.size()-1);
         int kr=0;
         while (internal_degree_seq[i] > available[available_nodes[try_this]])

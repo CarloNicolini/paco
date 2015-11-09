@@ -54,7 +54,7 @@ double compute_tot_t(deque<set<int> > & en)
 int choose_the_least(deque<set<int> > & en, deque<int> & A, int a, int & cn_a_o)
 {
 
-    int old_node;
+    int old_node=0;
     shuffle_s(A);
     cn_a_o=en[a].size();
     for(int i=0; i<A.size(); i++)

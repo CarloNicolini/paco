@@ -123,7 +123,7 @@ void GraphC::init(const Eigen::MatrixXd &W)
         }
     }
 
-    if (edge_weights_stl.size() != igraph_ecount(&ig))
+    if (edge_weights_stl.size() != static_cast<unsigned int>(igraph_ecount(&ig)))
     {
         //_must_delete = false;
         throw std::logic_error("Non consistent length of edge weigths vector, or diagonal entries in adjacency matrix.");
@@ -251,8 +251,8 @@ bool GraphC::read_adj_matrix(const std::string &filename)
     }
     // Deep copy of data array to the adjacency matrix
     adj_mat.setZero(data.size(),data.size());
-    for (int i=0; i<data.size(); ++i)
-        for (int j=0; j<data.size(); ++j)
+    for (unsigned int i=0; i<data.size(); ++i)
+        for (unsigned int j=0; j<data.size(); ++j)
             adj_mat.coeffRef(i,j)=data[i][j];
 
     this->init(adj_mat);

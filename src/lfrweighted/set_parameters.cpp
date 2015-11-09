@@ -126,18 +126,25 @@ bool Parameters::arrange()
     if(overlapping_nodes<0 || overlap_membership<0)
     {
         FILE_LOG(logERROR)<<"ERROR:some positive parameters are negative";
-        return -1;
+        return false;
     }
 
     if (num_nodes<=0 || average_k<=0 || max_degree<=0 || mixing_parameter<0 || mixing_parameter2<0 || (nmax<=0 && nmax!=unlikely) || (nmin<=0 && nmin!=unlikely) )
     {
         FILE_LOG(logERROR)<<"ERROR:some positive parameters are negative";
-        return -1;
+        return false;
     }
-    if(mixing_parameter > 1 || mixing_parameter2 > 1)
+
+    if(mixing_parameter > 1 || mixing_parameter <0 )
     {
         FILE_LOG(logERROR)<<"ERROR:mixing parameter > 1 (must be between 0 and 1)";
-        return -1;
+        return false;
+    }
+
+    if(mixing_parameter2 > 1 || mixing_parameter2 <0 )
+    {
+        FILE_LOG(logERROR)<<"ERROR:mixing2 parameter > 1 (must be between 0 and 1)";
+        return false;
     }
 
     if(nmax!= unlikely && nmin!=unlikely)
@@ -161,13 +168,15 @@ bool Parameters::arrange()
     FILE_LOG(logINFO)<<"beta exponent:"<<beta;
     FILE_LOG(logINFO)<<"number of overlapping nodes:"<<overlapping_nodes;
     FILE_LOG(logINFO)<<"number of memberships of the overlapping nodes:"<<overlap_membership;
+
     if(clustering_coeff!=unlikely)
+    {
         FILE_LOG(logINFO) << "Average clustering coefficient: "<<clustering_coeff;
+    }
 
     if (fixed_range)
     {
         FILE_LOG(logINFO)<<"Community size range set equal to ["<<nmin<<" , "<<nmax<<"]";
-
         if (nmin>nmax)
         {
             FILE_LOG(logERROR)<<"ERROR: INVERTED COMMUNITY SIZE BOUNDS";

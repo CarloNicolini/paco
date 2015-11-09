@@ -81,25 +81,23 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     sparsity=sparsity/member_matrix.size();
 
     // CARLO - Inserted output matrix in adjacency matrix format
-    W.setZero(num_nodes,num_nodes);
+    W.setZero(num_nodes+1,num_nodes+1);
+    ofstream out1("network.dat");
+    std::vector<double> all_weights;
     for (int u=0; u<E.size(); u++)
     {
         set<int>::iterator itb=E[u].begin();
         while (itb!=E[u].end())
         {
-            W.coeffRef(u,*(itb++)) = neigh_weigh[u][*(itb)];
+            //out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
+            //cout << u+1 << " " << *(itb++)+1 << " " << neigh_weigh[u][*itb] << endl;
+            //all_weights.push_back(neigh_weigh[u][*(itb++)]);
+            W(u+1,*(itb++)+1) = neigh_weigh[u][*itb];
+            //W(u+1,*itb+1) = neigh_weigh[u][*itb];
         }
     }
 
-    // XXX SISTEMARE RETE DIREZIONATA
-    ofstream out1("network2.dat");
-    for (int u=0; u<E.size(); u++)
-    {
-        set<int>::iterator itb=E[u].begin();
-
-        while (itb!=E[u].end())
-            out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
-    }
+    assert("ERROR HERE PLEASE CHECK");
 
     //ofstream out2("community.dat");
     /*
@@ -144,8 +142,8 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     deque<double> inwij;
     deque<double> outwij;
 
-    double csi=(1. - mu) / (1. - mu0);
-    double csi2=mu /mu0;
+    //double csi=(1. - mu) / (1. - mu0);
+    //double csi2=mu /mu0;
     double tstrength=0;
     deque<double> one_minus_mu2;
 
@@ -436,7 +434,9 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
     s_in_out_id_row[1]=0;
     s_in_out_id_row[2]=0;
 
-    deque<deque<double> > wished;    // 3 numbers for each node: internal, idle and extra strength. the sum of the three is strs[i]. wished is the theoretical, factual the factual one.
+    // 3 numbers for each node: internal, idle and extra strength. the sum of the three is strs[i].
+    // wished is the theoretical, factual the factual one.
+    deque<deque<double> > wished;
     deque<deque<double> > factual;
 
     for (int i=0; i<en.size(); i++)
@@ -468,10 +468,9 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
     while (true)
     {
 
-        time_t t0=time(NULL);
+        //time_t t0=time(NULL);
 
         double pre_var=tot_var;
-
         for (int i=0; i<en.size(); i++)
             propagate(neigh_weigh, member_list, wished, factual, i, tot_var, strs, internal_kin_top);
         double relative_improvement=double(pre_var - tot_var)/pre_var;
@@ -482,8 +481,8 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
         if (relative_improvement < precision2)
             break;
 
-        time_t t1= time(NULL);
-        int deltat= t1 - t0;
+        //time_t t1= time(NULL);
+        //int deltat= t1 - t0;
         step++;
     }
     return 0;
@@ -604,6 +603,6 @@ void erase_file_if_exists(string s)
     {
         char rmb[120];
         sprintf(rmb, "rm %s", b);
-        int erase= system(rmb);
+        //int erase= system(rmb);
     }
 }

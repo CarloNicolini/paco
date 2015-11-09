@@ -1,7 +1,7 @@
 #include "histograms.h"
 #include "print.h"
 
-int int_histogram (vector <int> &c, ostream & out)
+void int_histogram (vector <int> &c, ostream & out)
 {
 
     map<int, double> hist;
@@ -23,10 +23,9 @@ int int_histogram (vector <int> &c, ostream & out)
         it->second=it->second*freq;
 
     prints(hist, out);
-
 }
 
-int int_histogram (deque <int> &c, ostream & out)
+void int_histogram (deque <int> &c, ostream & out)
 {
 
     map<int, double> hist;
