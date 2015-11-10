@@ -34,7 +34,7 @@
 #include "../paco/igraph_utils.h" // to handle conversion from EigenMatrix to igraph object and then to mxArray
 
 #ifdef __linux__
-    #include <mex.h>
+#include <mex.h>
 #endif
 
 #ifdef __APPLE__
@@ -169,8 +169,8 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             }
             else if ( strcasecmp(cpartype,"mut")==0 )
             {
-                pars->mixing_parameter = static_cast<double>((*mxGetPr(parval)));
-                if (pars->mixing_parameter <0 || pars->mixing_parameter > 1)
+                pars->mixing_parameter_topological = static_cast<double>((*mxGetPr(parval)));
+                if (pars->mixing_parameter_topological <0 || pars->mixing_parameter_topological > 1)
                 {
                     *argposerr = argcount+1;
                     return ERROR_ARG_VALUE;
@@ -179,8 +179,8 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             }
             else if ( strcasecmp(cpartype,"muw")==0 )
             {
-                pars->mixing_parameter2 = static_cast<double>((*mxGetPr(parval)));
-                if (pars->mixing_parameter2 <0 || pars->mixing_parameter2 > 1)
+                pars->mixing_parameter_weights = static_cast<double>((*mxGetPr(parval)));
+                if (pars->mixing_parameter_weights <0 || pars->mixing_parameter_weights > 1)
                 {
                     *argposerr = argcount+1;
                     return ERROR_ARG_VALUE;
@@ -275,21 +275,22 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
 
     try
     {
-       // Prepare output
+        // Prepare output
         outputArgs[0] = mxCreateDoubleMatrix(p.num_nodes,p.num_nodes, mxREAL); // final weighted adjacency matrix
         outputArgs[1] = mxCreateDoubleMatrix(1,p.num_nodes, mxREAL); // membership of every vertex
 
-        Eigen::MatrixXd W(p.num_nodes,p.num_nodes);
+        Eigen::MatrixXd W;
         vector<int> membership;
-        benchmark(p.excess, p.defect, p.num_nodes, p.average_k, p.max_degree, p.tau, p.tau2, p.mixing_parameter,  p.mixing_parameter2,  p.beta, p.overlapping_nodes, p.overlap_membership, p.nmin, p.nmax, p.fixed_range, p.clustering_coeff, W, membership);
-        // Copy the result to output arg 0
-        for (int i=0; i<p.num_nodes*p.num_nodes;++i)
-          mxGetPr(outputArgs[0])[i]=W.coeff(i);
+        // Call the main body of LFR weighted
+        benchmark(p.excess, p.defect, p.num_nodes, p.average_k, p.max_degree, p.tau, p.tau2, p.mixing_parameter_topological,  p.mixing_parameter_weights,  p.beta, p.overlapping_nodes, p.overlap_membership, p.nmin, p.nmax, p.fixed_range, p.clustering_coeff, W, membership);
 
-        // Copy the membership to output arg 1
+        // Copy the resulting matrix to output argument #0
+        memcpy(mxGetPr(outputArgs[0]),W.data(),p.num_nodes*p.num_nodes*sizeof(double));
+
+        // Copy the membership to output argument #1
         for (int i=0; i<p.num_nodes;++i)
-          mxGetPr(outputArgs[1])[i]=membership.at(i);
-
+            mxGetPr(outputArgs[1])[i]=membership.at(i);
+        //memcpy(mxGetPr(outputArgs[1]),membership.data(),p.num_nodes*sizeof(int));
     }
     catch (std::exception &e)
     {

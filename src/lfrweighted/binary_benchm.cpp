@@ -246,7 +246,7 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
     // This is to randomize the subgraph
     deque<int> degree_list;
     for(size_t kk=0; kk<member_numbers.size(); kk++)
-        for(size_t k2=0; k2<member_numbers[kk]; k2++)
+        for(int k2=0; k2<member_numbers[kk]; k2++)
             degree_list.push_back(kk);
 
     for(int run=0; run<10; run++)
@@ -338,7 +338,7 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
     // it assigns the internal degree to each node
     int max_degree_actual=0;		// maximum internal degree
 
-    for (int i=0; i<degree_seq.size(); i++)
+    for (unsigned int i=0; i<degree_seq.size(); i++)
     {
 
         double interno=(1-mixing_parameter)*degree_seq[i];
@@ -534,7 +534,7 @@ int internal_degree_and_membership (double mixing_parameter, int overlapping_nod
             member_matrix[i][j]=map_nodes[member_matrix[i][j]];
     }
 
-    for (int i=0; i<member_matrix.size(); i++)
+    for (unsigned int  i=0; i<member_matrix.size(); i++)
         sort(member_matrix[i].begin(), member_matrix[i].end());
 
     return 0;
@@ -644,18 +644,18 @@ int build_subgraph(deque<set<int> > & E, const deque<int> & nodes, const deque<i
 
     deque<int> degree_list;
     for(size_t kk=0; kk<degrees.size(); kk++)
-        for(size_t k2=0; k2<degrees[kk]; k2++)
+        for(int k2=0; k2<degrees[kk]; k2++)
             degree_list.push_back(kk);
 
     // This is to randomize the subgraph
     for(int run=0; run<10; run++)
     {
-        for(size_t node_a=0; node_a<degrees.size(); node_a++)
+        for(unsigned int  node_a=0; node_a<degrees.size(); node_a++)
         {
-            for(size_t krm=0; krm<en[node_a].size(); krm++)
+            for(unsigned int  krm=0; krm<en[node_a].size(); krm++)
             {
-                int random_mate=degree_list.at(irand(degree_list.size()-1));
-                int ntrials = 0;
+                unsigned int random_mate=degree_list.at(irand(degree_list.size()-1));
+                unsigned int ntrials = 0;
                 while (random_mate==node_a)
                 {
                     random_mate=degree_list.at(irand(degree_list.size()-1));
@@ -669,7 +669,8 @@ int build_subgraph(deque<set<int> > & E, const deque<int> & nodes, const deque<i
                 if (en[node_a].insert(random_mate).second)
                 {
                     deque <int> out_nodes;
-                    for (set<int>::iterator it_est=en[node_a].begin(); it_est!=en[node_a].end(); it_est++) if ((*it_est)!=random_mate)
+                    for (set<int>::iterator it_est=en[node_a].begin(); it_est!=en[node_a].end(); it_est++)
+                        if ((*it_est)!=random_mate)
                         out_nodes.push_back(*it_est);
                     int old_node=out_nodes[irand(out_nodes.size()-1)];
                     en[node_a].erase(old_node);
@@ -691,27 +692,30 @@ int build_subgraph(deque<set<int> > & E, const deque<int> & nodes, const deque<i
 
     // Now I try to insert the new links into the already done network. If some multiple links come out, I try to rewire them
     deque < pair<int, int> > multiple_edge;
-    for (int i=0; i<en.size(); i++)
+    for (unsigned int  i=0; i<en.size(); i++)
     {
-        for(set<int>::iterator its=en[i].begin(); its!=en[i].end(); its++) if(i<*its )
+        for(set<int>::iterator its=en[i].begin(); its!=en[i].end(); its++)
         {
-            bool already = !(E[nodes[i]].insert(nodes[*its]).second);		// true is the insertion didn't take place
-            if (already)
-                multiple_edge.push_back(make_pair(nodes[i], nodes[*its]));
-            else
-                E[nodes[*its]].insert(nodes[i]);
+            if(i<*its )
+            {
+                bool already = !(E[nodes[i]].insert(nodes[*its]).second);		// true is the insertion didn't take place
+                if (already)
+                    multiple_edge.push_back(make_pair(nodes[i], nodes[*its]));
+                else
+                    E[nodes[*its]].insert(nodes[i]);
+            }
         }
 
     }
 
     FILE_LOG(logDEBUG4)<<"Multiples "<<multiple_edge.size();
-    for (int i=0; i<multiple_edge.size(); i++)
+    for (unsigned int  i=0; i<multiple_edge.size(); i++)
     {
 
         int &a = multiple_edge[i].first;
         int &b = multiple_edge[i].second;
         // Now, I'll try to rewire this multiple link among the nodes stored in nodes.
-        int stopper_ml=0;
+        unsigned int  stopper_ml=0;
 
         while (true)
         {
@@ -777,14 +781,14 @@ int build_subgraphs(deque<set<int> > & E, const deque<deque<int> > & member_matr
             member_list.push_back(first);
     }
 
-    for (int i=0; i<member_matrix.size(); i++)
-        for (int j=0; j<member_matrix[i].size(); j++)
+    for (unsigned int  i=0; i<member_matrix.size(); i++)
+        for (unsigned int  j=0; j<member_matrix[i].size(); j++)
             member_list[member_matrix[i][j]].push_back(i);
     //printm(member_list);
-    for (int i=0; i<member_list.size(); i++)
+    for (unsigned int  i=0; i<member_list.size(); i++)
     {
         deque<int> liin;
-        for (int j=0; j<member_list[i].size(); j++)
+        for (unsigned int  j=0; j<member_list[i].size(); j++)
         {
             compute_internal_degree_per_node(internal_degree_seq[i], member_list[i].size(), liin);
             liin.push_back(degree_seq[i] - internal_degree_seq[i]);
@@ -795,10 +799,10 @@ int build_subgraphs(deque<set<int> > & E, const deque<deque<int> > & member_matr
     // Now there is the check for the even node (it means that the internal degree of each group has to be even and we want to assure that, otherwise the degree_seq has to change)
     // This is done to check if the sum of the internal degree is an even number. if not, the program will change it in such a way to assure that.
 
-    for (int i=0; i<member_matrix.size(); i++)
+    for (unsigned int i=0; i<member_matrix.size(); i++)
     {
         int internal_cluster=0;
-        for (int j=0; j<member_matrix[i].size(); j++)
+        for (unsigned int  j=0; j<member_matrix[i].size(); j++)
         {
             int right_index= lower_bound(member_list[member_matrix[i][j]].begin(), member_list[member_matrix[i][j]].end(), i) - member_list[member_matrix[i][j]].begin();
 
@@ -819,7 +823,7 @@ int build_subgraphs(deque<set<int> > & E, const deque<deque<int> > & member_matr
 
                 // if this does not work in a reasonable time the degree sequence will be changed
 
-                for (int j=0; j<member_matrix[i].size(); j++)
+                for (unsigned int  j=0; j<member_matrix[i].size(); j++)
                 {
 
                     int random_mate=member_matrix[i][irand(member_matrix[i].size()-1)];
@@ -871,7 +875,7 @@ int build_subgraphs(deque<set<int> > & E, const deque<deque<int> > & member_matr
     {
 
         deque<int> internal_degree_i;
-        for (int j=0; j<member_matrix[i].size(); j++)
+        for (unsigned int  j=0; j<member_matrix[i].size(); j++)
         {
 
             int right_index= lower_bound(member_list[member_matrix[i][j]].begin(), member_list[member_matrix[i][j]].end(), i) - member_list[member_matrix[i][j]].begin();
@@ -893,20 +897,20 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
 {
 
     deque<int> degrees;
-    for(int i=0; i<link_list.size(); i++)
+    for(unsigned int  i=0; i<link_list.size(); i++)
         degrees.push_back(link_list[i][link_list[i].size()-1]);
 
     deque<set<int> > en; // this is the en of the subgraph
 
     {
         set<int> first;
-        for(int i=0; i<member_list.size(); i++)
+        for(unsigned int  i=0; i<member_list.size(); i++)
             en.push_back(first);
     }
 
     multimap <int, int> degree_node;
 
-    for(int i=0; i<degrees.size(); i++)
+    for(unsigned int  i=0; i<degrees.size(); i++)
         degree_node.insert(degree_node.end(), make_pair(degrees[i], i));
 
     int var=0;
@@ -943,7 +947,7 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
 
         }
 
-        for (int i=0; i<erasenda.size(); i++)
+        for (unsigned int  i=0; i<erasenda.size(); i++)
         {
 
             if(erasenda[i]->first>1)
@@ -960,15 +964,15 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
 
     // This is to randomize the subgraph
     deque<int> degree_list;
-    for(int kk=0; kk<degrees.size(); kk++)
+    for(unsigned int  kk=0; kk<degrees.size(); kk++)
         for(int k2=0; k2<degrees[kk]; k2++)
             degree_list.push_back(kk);
 
     for(int run=0; run<10; run++)
     {
-        for(int node_a=0; node_a<degrees.size(); node_a++)
+        for(unsigned int  node_a=0; node_a<degrees.size(); node_a++)
         {
-            for(int krm=0; krm<en[node_a].size(); krm++)
+            for(unsigned int  krm=0; krm<en[node_a].size(); krm++)
             {
                 int random_mate=degree_list.at(irand(degree_list.size()-1));
                 int ntrials=0;
@@ -1013,9 +1017,13 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
     // now there is a rewiring process to avoid "mate nodes" (nodes with al least one membership in common) to link each other
 
     int var_mate=0;
-    for(int i=0; i<degrees.size(); i++) for(set<int>::iterator itss= en[i].begin(); itss!=en[i].end(); itss++) if(they_are_mate(i, *itss, member_list))
+    for(unsigned int i=0; i<degrees.size(); i++)
     {
-        var_mate++;
+        for(set<int>::iterator itss= en[i].begin(); itss!=en[i].end(); itss++)
+            if(they_are_mate(i, *itss, member_list))
+            {
+                var_mate++;
+            }
     }
 
     //cout<<"var mate = "<<var_mate;
@@ -1028,65 +1036,60 @@ int connect_all_the_parts(deque<set<int> > & E, const deque<deque<int> > & membe
         int best_var_mate=var_mate;
 
         // rewiring
-        for(int a=0; a<degrees.size(); a++) for(set<int>::iterator its= en[a].begin(); its!=en[a].end(); its++) if(they_are_mate(a, *its, member_list))
+        for(unsigned int a=0; a<degrees.size(); a++)
         {
-
-            int b=*its;
-            int stopper_m=0;
-
-            while (true)
+            for(set<int>::iterator its= en[a].begin(); its!=en[a].end(); its++) if(they_are_mate(a, *its, member_list))
             {
 
-                stopper_m++;
+                int b=*its;
+                int stopper_m=0;
 
-                int random_mate =  degree_list[irand(degree_list.size()-1)];
-                while (random_mate==a || random_mate==b)
-                    random_mate = degree_list[irand(degree_list.size()-1)];
-
-                if(!(they_are_mate(a, random_mate, member_list)) && (en[a].find(random_mate)==en[a].end()))
+                while (true)
                 {
 
-                    deque <int> not_common;
-                    for (set<int>::iterator it_est=en[random_mate].begin(); it_est!=en[random_mate].end(); it_est++)
-                        if ((b!=(*it_est)) && (en[b].find(*it_est)==en[b].end()))
-                            not_common.push_back(*it_est);
+                    stopper_m++;
 
-                    if(not_common.size()>0)
+                    int random_mate =  degree_list[irand(degree_list.size()-1)];
+                    while (random_mate==a || random_mate==b)
+                        random_mate = degree_list[irand(degree_list.size()-1)];
+
+                    if(!(they_are_mate(a, random_mate, member_list)) && (en[a].find(random_mate)==en[a].end()))
                     {
 
-                        int node_h=not_common[irand(not_common.size()-1)];
+                        deque <int> not_common;
+                        for (set<int>::iterator it_est=en[random_mate].begin(); it_est!=en[random_mate].end(); it_est++)
+                            if ((b!=(*it_est)) && (en[b].find(*it_est)==en[b].end()))
+                                not_common.push_back(*it_est);
 
-                        en[random_mate].erase(node_h);
-                        en[random_mate].insert(a);
+                        if(not_common.size()>0)
+                        {
 
-                        en[node_h].erase(random_mate);
-                        en[node_h].insert(b);
+                            int node_h=not_common[irand(not_common.size()-1)];
 
-                        en[b].erase(a);
-                        en[b].insert(node_h);
+                            en[random_mate].erase(node_h);
+                            en[random_mate].insert(a);
 
-                        en[a].insert(random_mate);
-                        en[a].erase(b);
+                            en[node_h].erase(random_mate);
+                            en[node_h].insert(b);
 
-                        if(!they_are_mate(b, node_h, member_list))
-                            var_mate-=2;
+                            en[b].erase(a);
+                            en[b].insert(node_h);
 
-                        if(they_are_mate(random_mate, node_h, member_list))
-                            var_mate-=2;
+                            en[a].insert(random_mate);
+                            en[a].erase(b);
 
-                        break;
-
+                            if(!they_are_mate(b, node_h, member_list))
+                                var_mate-=2;
+                            if(they_are_mate(random_mate, node_h, member_list))
+                                var_mate-=2;
+                            break;
+                        }
                     }
-
+                    if(stopper_m==en[a].size())
+                        break;
                 }
-
-                if(stopper_m==en[a].size())
-                    break;
-
+                break; // this break is done because if you erased some link you have to stop this loop (en[i] changed)
             }
-
-            break;		// this break is done because if you erased some link you have to stop this loop (en[i] changed)
-
         }
 
         // rewiring

@@ -15,8 +15,8 @@ public:
     int max_degree;
     double tau;
     double tau2;
-    double mixing_parameter;
-    double mixing_parameter2;
+    double mixing_parameter_topological;
+    double mixing_parameter_weights;
     double beta;
     int overlapping_nodes;
     int overlap_membership;

@@ -10,8 +10,8 @@ Parameters::Parameters()
     tau=2;
     tau2=1;
 
-    mixing_parameter=unlikely;
-    mixing_parameter2=unlikely;
+    mixing_parameter_topological=unlikely;
+    mixing_parameter_weights=unlikely;
 
     beta=1.5;
 
@@ -54,8 +54,8 @@ void Parameters::print()
     "max_degree "<< max_degree << endl <<
     "tau "<< tau << endl <<
     "tau2 "<<tau2 << endl <<
-    "mixing_parameter "<< mixing_parameter << endl <<
-    "mixing_parameter2 " << mixing_parameter2 << endl <<
+    "mixing_parameter_topological "<< mixing_parameter_topological << endl <<
+    "mixing_parameter_weights " << mixing_parameter_weights << endl <<
     "beta "<< beta << endl <<
     "overlapping_nodes " << overlapping_nodes << endl <<
     "overlap_membership "<< overlap_membership << endl <<
@@ -73,10 +73,9 @@ void Parameters::print()
  */
 void Parameters::set_random()
 {
-
-    FILE_LOG(logINFO)<<"this is a random network";
-    mixing_parameter=0;
-    mixing_parameter2=0;
+    FILE_LOG(logINFO)<<"This is a random network";
+    mixing_parameter_topological=0;
+    mixing_parameter_weights=0;
     overlapping_nodes=0;
     overlap_membership=0;
     nmax=num_nodes;
@@ -114,14 +113,23 @@ bool Parameters::arrange()
         return false;
     }
 
-    if (mixing_parameter2==unlikely)
+    if(mixing_parameter_topological==unlikely)
+    {
+        mixing_parameter_topological=mixing_parameter_weights;
+    }
+
+    if (mixing_parameter_weights==unlikely)
     {
         FILE_LOG(logERROR) << "ERROR: weight mixing parameter (option -muw) unspecified";
         return false;
     }
 
-    if(mixing_parameter==unlikely)
-        mixing_parameter=mixing_parameter2;
+
+    if(mixing_parameter_topological > 1 || mixing_parameter_topological <0 )
+    {
+        FILE_LOG(logERROR)<<"ERROR:mixing parameter > 1 (must be between 0 and 1)";
+        return false;
+    }
 
     if(overlapping_nodes<0 || overlap_membership<0)
     {
@@ -129,19 +137,14 @@ bool Parameters::arrange()
         return false;
     }
 
-    if (num_nodes<=0 || average_k<=0 || max_degree<=0 || mixing_parameter<0 || mixing_parameter2<0 || (nmax<=0 && nmax!=unlikely) || (nmin<=0 && nmin!=unlikely) )
+    if (num_nodes<=0 || average_k<=0 || max_degree<=0 || mixing_parameter_topological<0 || mixing_parameter_weights<0 || (nmax<=0 && nmax!=unlikely) || (nmin<=0 && nmin!=unlikely) )
     {
         FILE_LOG(logERROR)<<"ERROR:some positive parameters are negative";
         return false;
     }
 
-    if(mixing_parameter > 1 || mixing_parameter <0 )
-    {
-        FILE_LOG(logERROR)<<"ERROR:mixing parameter > 1 (must be between 0 and 1)";
-        return false;
-    }
 
-    if(mixing_parameter2 > 1 || mixing_parameter2 <0 )
+    if(mixing_parameter_weights > 1 || mixing_parameter_weights <0 )
     {
         FILE_LOG(logERROR)<<"ERROR:mixing2 parameter > 1 (must be between 0 and 1)";
         return false;
@@ -163,8 +166,8 @@ bool Parameters::arrange()
     FILE_LOG(logINFO)<<"maximum degree:"<<max_degree;
     FILE_LOG(logINFO)<<"exponent for the degree distribution:"<<tau;
     FILE_LOG(logINFO)<<"exponent for the community size distribution:"<<tau2;
-    FILE_LOG(logINFO)<<"mixing parameter (topology):"<<mixing_parameter;
-    FILE_LOG(logINFO)<<"mixing parameter (weights):"<<mixing_parameter2;
+    FILE_LOG(logINFO)<<"mixing parameter (topology):"<<mixing_parameter_topological;
+    FILE_LOG(logINFO)<<"mixing parameter (weights):"<<mixing_parameter_weights;
     FILE_LOG(logINFO)<<"beta exponent:"<<beta;
     FILE_LOG(logINFO)<<"number of overlapping nodes:"<<overlapping_nodes;
     FILE_LOG(logINFO)<<"number of memberships of the overlapping nodes:"<<overlap_membership;
@@ -200,10 +203,11 @@ bool Parameters::arrange()
  */
 bool Parameters::set(string & flag, string & num)
 {
-    // false is something goes wrong
+    // False if something goes wrong
     FILE_LOG(logINFO)<<"Setting... " << flag << " " << num;
-    double err;
-    if(!cast_string_to_double(num, err))
+
+    double value;
+    if(!cast_string_to_double(num, value))
     {
         FILE_LOG(logERROR) << "ERROR while reading parameters";
         return false;
@@ -211,81 +215,81 @@ bool Parameters::set(string & flag, string & num)
 
     if (flag==command_flags[0])
     {
-        if (fabs(err-int (err))>1e-8)
+        if (fabs(value-int(value))>1e-8)
         {
             FILE_LOG(logERROR) << "ERROR: number of nodes must be an integer";
             return false;
         }
-        num_nodes=cast_int(err);
+        num_nodes=cast_int(value);
     }
     else if(flag==command_flags[1])
     {
-        average_k=err;
+        average_k=value;
     }
     else if(flag==command_flags[2])
     {
-        max_degree=cast_int(err);
+        max_degree=cast_int(value);
     }
     else if(flag==command_flags[3])
     {
-        mixing_parameter=err;
+        mixing_parameter_topological=value;
     }
     else if(flag==command_flags[11])
     {
-        mixing_parameter2=err;
+        mixing_parameter_weights=value;
     }
     else if(flag==command_flags[10])
     {
-        beta=err;
+        beta=value;
     }
     else if(flag==command_flags[4])
     {
-        tau=err;
+        tau=value;
     }
     else if(flag==command_flags[5])
     {
-        tau2=err;
+        tau2=value;
     }
 
     else if(flag==command_flags[6])
     {
-        if (fabs(err-int (err))>1e-8)
+        if (fabs(value-int (value))>1e-8)
         {
             FILE_LOG(logERROR)<<"ERROR: the minumum community size must be an integer";
             return false;
         }
-        nmin=cast_int(err);
+        nmin=cast_int(value);
     }
     else if(flag==command_flags[7])
     {
-        if (fabs(err-int (err))>1e-8)
+        if (fabs(value-int (value))>1e-8)
         {
             FILE_LOG(logERROR) << "ERROR: the maximum community size must be an integer";
             return false;
         }
-        nmax=cast_int(err);
+        nmax=cast_int(value);
     }
     else if(flag==command_flags[8])
     {
-        if (fabs(err-int (err))>1e-8)
+        if (fabs(value-int (value))>1e-8)
         {
             FILE_LOG(logERROR) << "ERROR: the number of overlapping nodes must be an integer";
             return false;
         }
-        overlapping_nodes=cast_int(err);
+        overlapping_nodes=cast_int(value);
     }
     else if(flag==command_flags[9])
     {
-        if (fabs(err-int (err))>1e-8)
+        if (fabs(value-int (value))>1e-8)
         {
             FILE_LOG(logERROR) << "ERROR: the number of membership of the overlapping nodes must be an integer";
             return false;
         }
-        overlap_membership=cast_int(err);
+        overlap_membership=cast_int(value);
     }
     else if(flag==command_flags[12])
     {
-        clustering_coeff=err;
+        clustering_coeff=value;
     }
     else
     {

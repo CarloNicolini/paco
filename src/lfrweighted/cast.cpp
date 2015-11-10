@@ -1,5 +1,6 @@
 #include "cast.h"
 
+/*
 bool cast_string_to_double (std::string &b, double &h)
 {
     // set h= the number written in b[];
@@ -44,6 +45,37 @@ bool cast_string_to_double (std::string &b, double &h)
         j++;
     }
     h=sign*h;
+    return true;
+}
+*/
+
+bool cast_string_to_double (std::string &s, double &r)
+{
+    const char *p = s.c_str();
+    r = 0.0;
+    bool neg = false;
+    if (*p == '-') {
+        neg = true;
+        ++p;
+    }
+    while (*p >= '0' && *p <= '9') {
+        r = (r*10.0) + (*p - '0');
+        ++p;
+    }
+    if (*p == '.') {
+        double f = 0.0;
+        int n = 0;
+        ++p;
+        while (*p >= '0' && *p <= '9') {
+            f = (f*10.0) + (*p - '0');
+            ++p;
+            ++n;
+        }
+        r += f / std::pow(10.0, n);
+    }
+    if (neg) {
+        r = -r;
+    }
     return true;
 }
 

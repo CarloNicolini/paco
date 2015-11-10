@@ -26,11 +26,11 @@ int main(int argc, char * argv[])
 
     Eigen::MatrixXd W; // weighted adjacency matrix
     vector<int> m(p.num_nodes);
-    benchmark(p.excess, p.defect, p.num_nodes, p.average_k, p.max_degree, p.tau, p.tau2, p.mixing_parameter,  p.mixing_parameter2,  p.beta, p.overlapping_nodes, p.overlap_membership, p.nmin, p.nmax, p.fixed_range, p.clustering_coeff, W,m);
+    benchmark(p.excess, p.defect, p.num_nodes, p.average_k, p.max_degree, p.tau, p.tau2, p.mixing_parameter_topological,  p.mixing_parameter_weights,  p.beta, p.overlapping_nodes, p.overlap_membership, p.nmin, p.nmax, p.fixed_range, p.clustering_coeff, W,m);
 
     ofstream os;
     os.open("matrix.dat");
-    os << W.block(500,500,510,510) << endl;
+    os << W.block(0,0,10,10) << endl;
     /*
     ofstream osmemb; osmemb.open("community.dat");
     for (size_t i=0; i<m.size();++i)

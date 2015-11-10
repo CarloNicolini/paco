@@ -49,7 +49,7 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     int edges=0;
     int num_nodes=member_list.size();
     deque<double> double_mixing;
-    for (int i=0; i<E.size(); i++)
+    for (unsigned int i=0; i<E.size(); i++)
     {
         double one_minus_mu = double(internal_kin(E, member_list, i))/E[i].size();
         double_mixing.push_back(1.- one_minus_mu);
@@ -58,11 +58,11 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
 
     double density=0;
     double sparsity=0;
-    for (int i=0; i<member_matrix.size(); i++)
+    for (unsigned int i=0; i<member_matrix.size(); i++)
     {
         double media_int=0;
         double media_est=0;
-        for (int j=0; j<member_matrix[i].size(); j++)
+        for (unsigned int j=0; j<member_matrix[i].size(); j++)
         {
             double kinj = double(internal_kin_only_one(E[member_matrix[i][j]], member_matrix[i]));
             media_int+= kinj;
@@ -81,45 +81,26 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     sparsity=sparsity/member_matrix.size();
 
     // CARLO - Inserted output matrix in adjacency matrix format
-    W.setZero(num_nodes+1,num_nodes+1);
-    ofstream out1("network.dat");
-    std::vector<double> all_weights;
-    for (int u=0; u<E.size(); u++)
+    W.setZero(num_nodes,num_nodes);
+
+    // Fill the adjacency matrix
+    unsigned int u = 0;
+    for (deque< set<int> >::iterator it = E.begin(); it!=E.end();++it)
     {
-        set<int>::iterator itb=E[u].begin();
-        while (itb!=E[u].end())
+        for (set<int>::iterator it2 = it->begin(); it2!=it->end();++it2)
         {
-            //out1<<u+1<<"\t"<<*(itb++)+1<<"\t"<<neigh_weigh[u][*(itb)]<<endl;
-            //cout << u+1 << " " << *(itb++)+1 << " " << neigh_weigh[u][*itb] << endl;
-            //all_weights.push_back(neigh_weigh[u][*(itb++)]);
-            W(u+1,*(itb++)+1) = neigh_weigh[u][*itb];
-            //W(u+1,*itb+1) = neigh_weigh[u][*itb];
+            int v = *it2;
+            W.coeffRef(u,v) = neigh_weigh[u][v];
         }
+        ++u;
     }
 
-    assert("ERROR HERE PLEASE CHECK");
-
-    //ofstream out2("community.dat");
-    /*
-    for (int i=0; i<member_list.size(); i++)
-    {
-        cerr<<i+1<<"\t";
-        for (int j=0; j<member_list[i].size(); j++)
-        {
-            cerr<<member_list[i][j]+1<<" ";
-            //out2<<member_list[i][j]+1<<" ";
-        }
-        //out2<<endl;
-        cerr << endl;
-    }
-    */
-
-    FILE_LOG(logINFO)<<"Network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<<double(edges)/num_nodes;
-    FILE_LOG(logINFO)<<"\nAverage mixing parameter (topology): "<< average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing));
-    FILE_LOG(logINFO)<<"p_in: "<<density<<"\tp_out: "<<sparsity;
+    FILE_LOG(logINFO) << "Network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<< double(edges)/num_nodes;
+    FILE_LOG(logINFO) << "Average mixing parameter (topology): "<< average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing));
+    FILE_LOG(logINFO) << "p_in: " << density << "\tp_out: " << sparsity;
 
     deque<int> degree_seq;
-    for (int i=0; i<E.size(); i++)
+    for (unsigned int i=0; i<E.size(); i++)
         degree_seq.push_back(E[i].size());
 
     /*
@@ -147,7 +128,7 @@ int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, 
     double tstrength=0;
     deque<double> one_minus_mu2;
 
-    for(int i=0; i<neigh_weigh.size(); i++)
+    for(unsigned int i=0; i<neigh_weigh.size(); i++)
     {
 
         double internal_strength_i=0;
@@ -207,7 +188,7 @@ int check_weights(deque<map <int, double > > & neigh_weigh, const deque<deque<in
     double d3t=0;
     double var_check=0;
 
-    for (int k=0; k<member_list.size(); k++)
+    for (unsigned int k=0; k<member_list.size(); k++)
     {
         double in_s=0;
         double out_s=0;
@@ -412,12 +393,12 @@ int propagate(deque<map <int, double > > & neigh_weigh, const deque<deque<int> >
 int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const double beta, const double mu, deque<map <int, double > > & neigh_weigh)
 {
     double tstrength=0;
-    for(int i=0; i<en.size(); i++)
+    for(unsigned int i=0; i<en.size(); i++)
         tstrength+=pow(en[i].size(), beta);
 
     double strs[en.size()]; // strength of the nodes
     // build a matrix like this: deque < map <int, double > > each row corresponds to link - weights
-    for(int i=0; i<en.size(); i++)
+    for(unsigned int i=0; i<en.size(); i++)
     {
 
         map<int, double> new_map;
@@ -439,14 +420,14 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
     deque<deque<double> > wished;
     deque<deque<double> > factual;
 
-    for (int i=0; i<en.size(); i++)
+    for (unsigned int i=0; i<en.size(); i++)
     {
 
         wished.push_back(s_in_out_id_row);
         factual.push_back(s_in_out_id_row);
     }
     double tot_var=0;
-    for (int i=0; i<en.size(); i++)
+    for (unsigned int i=0; i<en.size(); i++)
     {
 
         wished[i][0]=(1. -mu)*strs[i];
@@ -457,7 +438,7 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
         tot_var+= wished[i][0] * wished[i][0] + wished[i][1] * wished[i][1] + strs[i] * strs[i];
     }
     deque<int> internal_kin_top;
-    for(int i=0; i<en.size(); i++)
+    for(unsigned int i=0; i<en.size(); i++)
         internal_kin_top.push_back(internal_kin(en, member_list, i));
 
     double precision = 1e-9;
@@ -471,7 +452,7 @@ int weights(deque<set<int> > & en, const deque<deque<int> > & member_list, const
         //time_t t0=time(NULL);
 
         double pre_var=tot_var;
-        for (int i=0; i<en.size(); i++)
+        for (unsigned int i=0; i<en.size(); i++)
             propagate(neigh_weigh, member_list, wished, factual, i, tot_var, strs, internal_kin_top);
         double relative_improvement=double(pre_var - tot_var)/pre_var;
 
@@ -582,7 +563,7 @@ int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  m
 
     // Copy the membership
     membership.resize(member_list.size());
-    for (int i=0; i<member_list.size();++i)
+    for (unsigned int i=0; i<member_list.size();++i)
     {
         membership[i]=member_list[i][0];
     }
