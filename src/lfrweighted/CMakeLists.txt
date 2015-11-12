@@ -34,6 +34,9 @@ target_link_libraries(LFRW ${IGRAPH_LIBRARIES})
 add_executable(test_benchm test_benchm.cpp)
 target_link_libraries(test_benchm LFRW)
 
+add_executable(test_powerlaw test_powerlaw.cpp)
+target_link_libraries(test_powerlaw LFRW)
+
 if(MATLAB_SUPPORT)
     add_mex(lfrw_mx lfr.cpp)
     target_link_libraries(lfrw_mx LFRW ${MATLAB_LIBRARIES})
