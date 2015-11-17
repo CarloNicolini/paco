@@ -46,6 +46,7 @@ class GraphC
 {
 public:
     GraphC();
+    GraphC(const GraphC &rhs);
     GraphC(size_t nvertices);
     GraphC(const Eigen::MatrixXd &W);
     GraphC(double *W, int n, int m);

@@ -37,6 +37,28 @@ GraphC::GraphC()
 
 /**
  * @brief GraphC::GraphC
+ * @param rhs
+ */
+GraphC::GraphC(const GraphC &rhs)
+{
+    igraph_copy(&this->ig,rhs.get_igraph());
+    // Copy edge weights
+    this->edge_weights_stl = rhs.edge_weights_stl;
+    igraph_vector_copy(&this->edge_weights,rhs.get_edge_weights());
+    // Copy vertices strenghts
+    this->vertices_strenghts_stl = rhs.vertices_strenghts_stl;
+    igraph_vector_copy(&this->vertices_strenghts,&rhs.vertices_strenghts);
+    // Copy vertices degrees
+    this->vertices_degrees_stl = rhs.vertices_degrees_stl;
+    igraph_vector_copy(&this->vertices_degrees,&rhs.vertices_degrees);
+    // Copy other private internals
+    this->_is_weighted = rhs._is_weighted;
+    this->_is_directed = rhs._is_directed;
+    this->_must_delete = rhs._must_delete;
+}
+
+/**
+ * @brief GraphC::GraphC
  * @param g
  */
 GraphC::GraphC(igraph_t *g)
