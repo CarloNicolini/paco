@@ -110,6 +110,7 @@ protected:
 
     bool _is_weighted;
     bool _is_directed;
+    bool _has_selfloops;
   private:
     bool _must_delete;
 };

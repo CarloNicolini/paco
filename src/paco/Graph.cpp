@@ -32,6 +32,8 @@ GraphC::GraphC()
 {
     IGRAPH_TRY(igraph_empty(&this->ig,0,IGRAPH_UNDIRECTED));
     _is_directed = false;
+    _is_weighted = false;
+    _has_selfloops = false;
     _must_delete=true;
 }
 
@@ -42,19 +44,22 @@ GraphC::GraphC()
 GraphC::GraphC(const GraphC &rhs)
 {
     igraph_copy(&this->ig,rhs.get_igraph());
-    // Copy edge weights
-    this->edge_weights_stl = rhs.edge_weights_stl;
-    igraph_vector_copy(&this->edge_weights,rhs.get_edge_weights());
-    // Copy vertices strenghts
-    this->vertices_strenghts_stl = rhs.vertices_strenghts_stl;
-    igraph_vector_copy(&this->vertices_strenghts,&rhs.vertices_strenghts);
-    // Copy vertices degrees
-    this->vertices_degrees_stl = rhs.vertices_degrees_stl;
-    igraph_vector_copy(&this->vertices_degrees,&rhs.vertices_degrees);
+
     // Copy other private internals
     this->_is_weighted = rhs._is_weighted;
     this->_is_directed = rhs._is_directed;
     this->_must_delete = rhs._must_delete;
+    this->_has_selfloops = rhs._has_selfloops;
+
+    // Copy edge weights
+    this->edge_weights_stl = rhs.edge_weights_stl;
+    // Copy vertices strenghts
+    this->vertices_strenghts_stl = rhs.vertices_strenghts_stl;
+    // Copy vertices degrees
+    this->vertices_degrees_stl = rhs.vertices_degrees_stl;
+
+    // Set the edge weights vector as a view on underlying STL structure
+    igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
 }
 
 /**
@@ -176,6 +181,8 @@ const igraph_vector_t* GraphC::get_edge_weights() const
  */
 void GraphC::compute_vertex_degrees(bool loops)
 {
+    if (this->number_of_nodes()==0)
+        return;
     igraph_degree(&ig,&vertices_degrees,igraph_vss_all(),IGRAPH_ALL,loops);
 }
 
@@ -202,6 +209,10 @@ void GraphC::compute_vertex_strenghts(bool loops)
  */
 const igraph_vector_t* GraphC::get_degrees() const
 {
+    if (igraph_vector_size(&vertices_degrees)==0)
+    {
+        throw std::runtime_error("Vertex degrees vector is empty. Call compute_vertex_degrees() first");
+    }
     return &vertices_degrees;
 }
 
@@ -212,9 +223,21 @@ const igraph_vector_t* GraphC::get_degrees() const
 const igraph_vector_t* GraphC::get_strenghts() const
 {
     if ( is_weighted())
+    {
+        if (igraph_vector_size(&vertices_strenghts)==0)
+        {
+            throw std::runtime_error("Vertex strenghts vector is empty. Call compute_vertex_strenghts() first");
+        }
         return &vertices_strenghts;
+    }
     else
+    {
+        if (igraph_vector_size(&vertices_degrees)==0)
+        {
+            throw std::runtime_error("Vertex degrees vector is empty. Call compute_vertex_degrees() first");
+        }
         return &vertices_degrees;
+    }
 }
 
 /**
@@ -223,7 +246,9 @@ const igraph_vector_t* GraphC::get_strenghts() const
 GraphC::~GraphC()
 {
     if (_must_delete)
+    {
         igraph_destroy(&this->ig);
+    }
 }
 
 /**
