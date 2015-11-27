@@ -40,6 +40,8 @@ target_link_libraries(test_powerlaw LFRW)
 if(MATLAB_SUPPORT)
     add_mex(lfrw_mx lfr.cpp)
     target_link_libraries(lfrw_mx LFRW ${MATLAB_LIBRARIES})
+    add_mex(powerlaw_comm_sizes powerlaw_comm_sizes.cpp)
+    target_link_libraries(powerlaw_comm_sizes LFRW ${MATLAB_LIBRARIES})
 endif(MATLAB_SUPPORT)
 
 if(OCTAVE_SUPPORT)
