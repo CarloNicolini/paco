@@ -23,31 +23,51 @@
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
+
 #include "Graph.h"
-
+#include "SignificanceFunction.h"
+#include "SurpriseFunction.h"
+#include "AsymptoticSurpriseFunction.h"
+#include "Community.h"
+#include "PartitionHelper.h"
+#include "RandomOptimizer.h"
+#include "AnnealOptimizer.h"
+#include "AgglomerativeOptimizer.h"
+#include "Timer.h"
+#include "ModularityFunction.h"
+#include "AnnealOptimizer.h"
 using namespace std;
-
-#include <Eigen/Core>
 
 int main(int argc, char *argv[])
 {
-    srand(time(0));
+    GraphC h;
+    h.read_gml(string(argv[1]));
 
-    FILELog::ReportingLevel() = logDEBUG4;// static_cast<TLogLevel>(params.verbosity);
+    CommunityStructure c(&h);
+    c.set_random_seed();
+    c.sort_edges();
 
-    Eigen::MatrixXd W(10,10);
-    W << 0, 197, 0, 0, 101, 0, 0, 130, 0, 0, 197, 0, 0, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 138, 0, 164, 147, 0, 101, 0, 0, 0, 143, 151, 164, 167, 105, 101, 109, 0, 0, 0, 151, 159, 172, 130, 118, 0, 0, 130, 143, 151, 0, 0, 0, 0, 101, 0, 0, 138, 151, 159, 0, 0, 0, 0, 109, 130, 0, 0, 164, 172, 0, 0, 0, 0, 122, 0, 0, 164, 167, 130, 0, 0, 0, 0, 0, 0, 0, 147, 105, 118, 101, 109, 122, 0, 0;
+    AgglomerativeOptimizer opt;
 
-    GraphC g;
-    g.read_gml(string(argv[1]));
-    g.read_weights_from_file(string(argv[2]));
-    g.info();
+    AsymptoticSurpriseFunction fun;
+    //c.sort_edges();
+    //opt.set_edges_order(c.get_sorted_edges_indices());
 
-    GraphC y;
-    y.compute_vertex_degrees(false);
-    y.compute_vertex_strenghts(false);
+    //for (int i=0; i<1;i++)
+    //    cerr << "AS=" << opt.optimize(h.get_igraph(),fun,c.get_membership(),NULL) << endl;
 
-    GraphC x(y);
+    AnnealOptimizer ann;
+    AnnealParameters pars;
+    pars.temperature = 1;
+    ann.set_parameters(pars);
+
+    cerr << "Annealing AS=" << ann.optimize(h.get_igraph(),fun,c.get_membership(),NULL) << endl;
+
+    c.reindex_membership();
+    c.save_membership("test.csv");
+
+    igraph_vector_print(c.get_membership());
 
     return 0;
 }

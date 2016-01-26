@@ -53,6 +53,9 @@ endif(MATLAB_SUPPORT)
 add_executable(test_graphc test_graphc.cpp)
 target_link_libraries(test_graphc PACO)
 
+add_executable(test_paco_multiple test_paco_multiple.cpp)
+target_link_libraries(test_paco_multiple PACO)
+
 add_executable(test_igraph_matrix_view test_igraph_matrix_view.cpp)
 target_link_libraries(test_igraph_matrix_view PACO)
 
