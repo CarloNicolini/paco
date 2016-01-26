@@ -388,7 +388,7 @@ void PartitionHelper::print() const
         printf("%zu\t%.2f\t%zu\t%zu\t{",c,incomm_weight.at(c),incomm_nvert.at(c),incomm_pairs.at(c));
         for ( std::set<size_t>::const_iterator it2 = communities.at(c).begin(); it2!=communities.at(c).end(); ++it2)
         {
-            //printf("%zu,",*it2);
+            printf("%zu,",*it2);
         }
         printf("}\n");
     }

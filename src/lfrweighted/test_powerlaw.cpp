@@ -63,6 +63,12 @@ int main(int argc, char *argv[])
     }
     cout<<endl;
     cout << "Total= " << total_nodes << " Asked= " << num_nodes << endl;
+    ofstream outhist; outhist.open("bars.txt");
+    
+    for (int i=0; i<num_seq.size(); i++)
+    {
+        outhist << num_seq[i] << "\n";
+    }
 
     return 0;
 }
