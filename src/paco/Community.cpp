@@ -29,6 +29,7 @@
 #include "QualityFunction.h"
 #include "SurpriseFunction.h"
 #include "AsymptoticSurpriseFunction.h"
+#include "AsymptoticModularityFunction.h"
 #include "SignificanceFunction.h"
 
 #include "QualityOptimizer.h"
@@ -225,6 +226,11 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     {
         igraph_community_infomap(pgraph->get_igraph(),edge_weights,NULL,nrep,&membership,&finalqual);
         return finalqual;
+    }
+    case QualityAsymptoticModularity:
+    {
+        fun = dynamic_cast<AsymptoticModularityFunction*>(new AsymptoticModularityFunction);
+        break;
     }
     default:
     {
