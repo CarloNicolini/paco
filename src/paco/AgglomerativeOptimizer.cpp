@@ -59,12 +59,24 @@ AgglomerativeOptimizer::~AgglomerativeOptimizer()
  * @param dest_comm
  * @return
  */
+#include "SurpriseFunction.h"
+#include "AsymptoticSurpriseFunction.h"
+#include <typeinfo>
+
 double AgglomerativeOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights)
 {
+    int orig_comm = memb->stor_begin[vert]; // save old original community of vert
+
+    // Control the type of quality function with RTTI
+    // Heuristic to skip edges in the same community. Surprise and AsymptoticSurprise do not change if the edge is already intracluster
+    if (orig_comm == (int)dest_comm && (typeid(fun)==typeid(SurpriseFunction) || typeid(fun)==typeid(AsymptoticSurpriseFunction)) )
+        return 0.0;
+
     // try to join the vertices
     double pre = fun(par);
-    int orig_comm = memb->stor_begin[vert]; // save old original community of vert
     bool vertex_moved = par->move_vertex(g, memb,vert,dest_comm,weights);
+
+
     if (vertex_moved)
     {
         double post = fun(par);
@@ -118,15 +130,32 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
         int e = edges_order.at(i); // edge to consider
         int vert1, vert2;
         igraph_edge(g,e,&vert1,&vert2);
+        double deltaS=0;
+        printf(ANSI_COLOR_RED "Evaluating edge %d-%d\n",vert1,vert2);
+
         if ( rand()%2 ) // Randomly choose to aggregate vert1-->comm2 or vert2-->comm1
         {
             size_t dest_comm = memb->stor_begin[vert2];
-            diff_move(g,fun,memb,vert1,dest_comm,weights);
+            deltaS=diff_move(g,fun,memb,vert1,dest_comm,weights);
         }
         else
         {
             size_t dest_comm = memb->stor_begin[vert1];
-            diff_move(g,fun,memb,vert2,dest_comm,weights);
+            deltaS=diff_move(g,fun,memb,vert2,dest_comm,weights);
+        }
+
+        if (deltaS>0)
+        {
+            printf(ANSI_COLOR_RED "Edge %d-%d merged\n",vert1,vert2);
+            par->print();
+            printf(ANSI_COLOR_GREEN "Surprise increment %g\n",deltaS);
+            printf(ANSI_COLOR_GREEN "==============\n");
+        }
+        if (deltaS<=0)
+        {
+            printf(ANSI_COLOR_RED "Edge %d-%d NOT merged\n",vert1,vert2);
+            printf(ANSI_COLOR_GREEN "Surprise increment %g\n",deltaS);
+            printf(ANSI_COLOR_GREEN "==============\n");
         }
     }
     //par->reindex(memb);

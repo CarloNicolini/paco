@@ -46,34 +46,16 @@ int main(int argc, char *argv[])
 
     CommunityStructure c(&h);
     c.set_random_seed();
-    /*
-    c.sort_edges();
 
-    try
-    {
-        c.optimize(QualityAsymptoticSurprise,MethodAgglomerative,1);
-        AsymptoticSurpriseFunction fun;
-        cout << "Final AS=" << fun(h.get_igraph(),c.get_membership(),h.get_edge_weights()) << endl;
-        SurpriseFunction fun2;
-        cout << fun2(h.get_igraph(),c.get_membership()) << endl;
-        c.save_membership("MEMB");
-    }
-    catch (std::exception &e)
-    {
-        cerr << e.what() << endl;
-    }
-*/
+
     AgglomerativeOptimizer opt;
-    AsymptoticSurpriseFunction fun;
+    SurpriseFunction fun;
     c.sort_edges();
     opt.set_edges_order(c.get_sorted_edges_indices());
 
     for (int i=0; i<5;i++)
-        cerr << "AS=" << opt.optimize(h.get_igraph(),fun,c.get_membership(),h.get_edge_weights()) << endl;
-    c.reindex_membership();
-    c.save_membership("test.csv");
-
-    igraph_vector_print(c.get_membership());
-
+        cerr << "Final S=" << opt.optimize(h.get_igraph(),fun,c.get_membership()) << endl;
+    //c.reindex_membership();
+    //c.save_membership("test.csv");
     return 0;
 }
