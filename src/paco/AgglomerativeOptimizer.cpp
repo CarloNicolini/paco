@@ -131,7 +131,7 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
         int vert1, vert2;
         igraph_edge(g,e,&vert1,&vert2);
         double deltaS=0;
-        printf(ANSI_COLOR_RED "Evaluating edge %d-%d\n",vert1,vert2);
+        //printf(ANSI_COLOR_RED "Evaluating edge %d-%d\n",vert1,vert2);
 
         if ( rand()%2 ) // Randomly choose to aggregate vert1-->comm2 or vert2-->comm1
         {
@@ -143,7 +143,7 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
             size_t dest_comm = memb->stor_begin[vert1];
             deltaS=diff_move(g,fun,memb,vert2,dest_comm,weights);
         }
-
+        /*
         if (deltaS>0)
         {
             printf(ANSI_COLOR_RED "Edge %d-%d merged\n",vert1,vert2);
@@ -157,6 +157,7 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
             printf(ANSI_COLOR_GREEN "Surprise increment %g\n",deltaS);
             printf(ANSI_COLOR_GREEN "==============\n");
         }
+        */
     }
     //par->reindex(memb);
     //par->print();
