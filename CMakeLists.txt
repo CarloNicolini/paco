@@ -43,6 +43,26 @@ if(OCTAVE_SUPPORT)
     add_definitions("-DOCTAVE_SUPPORT")
 endif(OCTAVE_SUPPORT)
 
+if(PYTHON_SUPPORT)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    find_package(PythonLibs REQUIRED )
+        # Print some informations on python libraries linked and included
+        message(STATUS "Python libraries are ${PYTHON_LIBRARIES}")
+        message(STATUS "Python libraries are included in ${PYTHON_INCLUDE_DIRS}")
+        message(STATUS "Python versions found is ${PYTHONLIBS_VERSION_STRING}")
+        include_directories("${PYTHON_INCLUDE_DIR}")
+    include(UseCython)
+    include_directories()
+    include_directories("${PYTHON_INCLUDE_DIR}/numpy")
+    message(STATUS "${PYTHON_INCLUDE_DIR}/numpy")
+    add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
+      ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+    # This definition avoids a stupid warning message
+    #add_definitions("-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION")
+endif(PYTHON_SUPPORT)
+
 find_package(IGraph)
 include_directories(${IGRAPH_INCLUDES})
 
