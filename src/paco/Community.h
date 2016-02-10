@@ -64,6 +64,7 @@ public:
     // Methods that work on membership
     void read_membership_from_file(const std::string &filename);
     const igraph_vector_t* get_membership() const;
+    vector<int> get_membership_vector() const; // for python version of PACO
     size_t get_membership(size_t i) const;
     void reindex_membership();
     void print_membership();

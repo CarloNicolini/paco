@@ -3,7 +3,7 @@ project(Paco)
 
 # Include Eigen matrix libraries
 include_directories(eigen)
-
+include_directories(paco)
 add_subdirectory(paco)
 if (COMPILE_LFR)
 add_subdirectory(lfrweighted)

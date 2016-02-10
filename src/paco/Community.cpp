@@ -353,6 +353,23 @@ const igraph_vector_t* CommunityStructure::get_membership() const
     return &this->membership;
 }
 
+/**
+ * @brief CommunityStructure::get_membership_vector
+ * @return
+ */
+vector<int> CommunityStructure::get_membership_vector() const
+{
+    vector<int> memb(this->nVertices);
+    for (int i=0; i<nVertices; ++i)
+        memb.at(i) = this->membership.stor_begin[i];
+    return memb;
+}
+
+/**
+ * @brief CommunityStructure::get_membership
+ * @param i
+ * @return
+ */
 size_t CommunityStructure::get_membership(size_t i) const
 {
     return static_cast<size_t>(std::floor(this->membership.stor_begin[i]));

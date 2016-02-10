@@ -55,6 +55,9 @@ octave_add_oct(paco_oct SOURCES paco.cpp LINK_LIBRARIES PACO EXTENSION "mex")
 endif(OCTAVE_SUPPORT)
 
 if(PYTHON_SUPPORT)
+    set_source_files_properties(pypaco.pyx PROPERTIES CYTHON_IS_CXX 1 )
+    cython_add_module(pypaco pypaco.pyx)
+    target_link_libraries(pypaco PACO)
 endif(PYTHON_SUPPORT)
 
 add_executable(test_graphc test_graphc.cpp)
