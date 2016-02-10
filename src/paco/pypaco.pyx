@@ -52,7 +52,45 @@ cdef extern from "Community.h":
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def paco(np.ndarray[double, ndim=2, mode="c"] input not None, **kwargs):
+    """
+    PACO: PArtitioning Cost Optimization
+    
+    Example:
+      import numpy as np
+      from pypaco import paco
+      G = nx.karate_club_graph()
+      A  = nx.to_numpy_matrix(G)
+      [membership,quality] = paco(A, quality=0, nreps=10)
+    
+    Usage:
+        [membership, quality] = paco(A, **kwargs)
 
+    Args: 
+        input: Adjacency matrix of the graph as a numpy 2D array, symmetric, binary or weighted.
+    Kwargs:
+        quality: quality function to maximize
+            0: Surprise
+            1: Significance
+            2: Asymptotic Surprise
+            3: Infomap
+            4: Modularity (EXPERIMENTAL)
+            5: Asymptotic Modularity (EXPERIMENTAL)
+
+        opt_method: Optimization method
+            0: Agglomerative,
+            1: Random,
+            2: SimulatedAnnealing,
+            3: Infomap
+
+        nreps: number of repetitions of PACO (can increase the quality of the partition), (default 1).
+        seed: random seed for randomization (integer value)
+        
+        save_solution: 1 to save ongoing solution, 0 otherwise (default 0)
+        
+    Out:
+        membership: a list of vertices community membership
+        surprise: the value of Surprise for the current partition
+    """
     args = ['nreps','quality', 'seed', ',opt_method']
 
     args_diff = set(kwargs.keys()) - set(args)
