@@ -80,3 +80,5 @@ target_link_libraries(test_partition_helper PACO)
 
 add_executable(test_optimizer test_optimizer.cpp)
 target_link_libraries(test_optimizer PACO)
+
+add_executable(test_hypergeometric test_hypergeometric.cpp Surprise.cpp)

@@ -325,3 +325,34 @@ bool sumLogProbabilities(const long double& nextLogP, long double& logP)
         return true;
     return false;
 }
+
+long double computeConditionedSurprise(const long p, const long pi,
+                            const long m, const long mi)
+{
+    try
+    {
+        bool argsok = checkArguments(p,pi,m,mi);
+        if (argsok==false)
+            return 0;
+    }
+    catch ( const std::logic_error &e)
+    {
+        throw e;
+    }
+
+    long double j = mi;
+    long double logP = logHyperProbability(p, pi, m, j);
+    long double minsum = pi;
+    if(m < pi)
+        minsum = m;
+    bool isEnough = false;
+    while(!isEnough && j < minsum)
+    {
+        j++;
+        long double nextLogP = logHyperProbability(p, pi, m, j);
+        isEnough = sumLogProbabilities(nextLogP, logP);
+    }
+    if(logP == 0)
+        logP *= -1;
+    return -logP;
+}
