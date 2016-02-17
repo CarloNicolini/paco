@@ -23,51 +23,21 @@
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-#include <fstream>
+#ifndef ConditionalSurpriseFunction_H
+#define ConditionalSurpriseFunction_H
 
-#include <igraph.h>
-#include <igraph_iterators.h>
+#include "QualityFunction.h"
+#include "Surprise.h"
 
-#include "Graph.h"
-#include "SurpriseFunction.h"
-#include "SignificanceFunction.h"
-#include "AsymptoticSurpriseFunction.h"
-#include "RandomOptimizer.h"
-#include "AnnealOptimizer.h"
-#include "Community.h"
-
-#include "PartitionHelper.h"
-#include "AgglomerativeOptimizer.h"
-#include "ModularityFunction.h"
-
-using namespace std;
-
-int main(int argc, char *argv[])
+class ConditionalSurpriseFunction : public QualityFunction
 {
+public:
+    ConditionalSurpriseFunction();
+    ~ConditionalSurpriseFunction() {}
 
-    srand(time(0));
+protected:
+    void eval(const igraph_t *g, const igraph_vector_t *memb, const igraph_vector_t *weights=NULL) const;
+    void eval(const PartitionHelper *par) const;
+};
 
-    FILELog::ReportingLevel() = logDEBUG4;// static_cast<TLogLevel>(params.verbosity);
-    GraphC g;
-    g.read_adj_matrix(std::string(argv[1]));
-    //g.read_gml("/home/carlo/workspace/BCT/Coactivation_matrix.gml");
-    //g.read_gml(argv[1]);
-
-    CommunityStructure c(&g);
-    c.read_membership_from_file(argv[2]);
-
-
-    QualityFunction *fun;
-    fun = dynamic_cast<ModularityFunction*>( new ModularityFunction);
-    cout << (*fun)(g.get_igraph(),c.get_membership()) << endl;
-    delete fun;
-
-    QualityOptimizer *opt;
-    opt = ( new RandomOptimizer);
-    
-    delete fun;
-    delete opt;
-
-    return 0;
-}
+#endif // ConditionalSurpriseFunction_H

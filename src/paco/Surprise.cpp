@@ -327,7 +327,7 @@ bool sumLogProbabilities(const long double& nextLogP, long double& logP)
 }
 
 long double computeConditionedSurprise(const long p, const long pi,
-                            const long m, const long mi)
+                            const long m, const long mi, const long ni)
 {
     try
     {
@@ -339,20 +339,9 @@ long double computeConditionedSurprise(const long p, const long pi,
     {
         throw e;
     }
-
-    long double j = mi;
-    long double logP = logHyperProbability(p, pi, m, j);
-    long double minsum = pi;
-    if(m < pi)
-        minsum = m;
-    bool isEnough = false;
-    while(!isEnough && j < minsum)
-    {
-        j++;
-        long double nextLogP = logHyperProbability(p, pi, m, j);
-        isEnough = sumLogProbabilities(nextLogP, logP);
-    }
-    if(logP == 0)
-        logP *= -1;
-    return -logP;
+    // Using the addiction-subtraction formula
+    // https://en.wikipedia.org/wiki/List_of_logarithmic_identities
+    double surprise = computeSurprise(p,pi,m,mi);
+    double conditional = computeSurprise(p,pi,m,ni-1);
+    return surprise-conditional;
 }

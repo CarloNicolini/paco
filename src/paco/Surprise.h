@@ -119,5 +119,5 @@ bool sumLogProbabilities(const long double& nextLogP, long double& logP);
 
 // experimental
 long double computeConditionedSurprise(const long p, const long pi,
-                            const long m, const long mi);
+                            const long m, const long mi, const long ni);
 #endif

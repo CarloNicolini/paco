@@ -8,6 +8,7 @@ Surprise.cpp
 AsymptoticSurprise.cpp
 igraph_utils.cpp
 SurpriseFunction.cpp
+ConditionalSurpriseFunction.cpp
 AsymptoticSurpriseFunction.cpp
 SignificanceFunction.cpp
 ModularityFunction.cpp
@@ -28,6 +29,7 @@ AsymptoticSurprise.h
 igraph_utils.h
 QualityFunction.h
 SurpriseFunction.h
+ConditionalSurpriseFunction.h
 AsymptoticSurprise.h
 AsymptoticSurpriseFunction.h
 SignificanceFunction.h
@@ -81,4 +83,5 @@ target_link_libraries(test_partition_helper PACO)
 add_executable(test_optimizer test_optimizer.cpp)
 target_link_libraries(test_optimizer PACO)
 
-add_executable(test_hypergeometric test_hypergeometric.cpp Surprise.cpp)
+add_executable(test_hypergeometric test_hypergeometric.cpp)
+target_link_libraries(test_hypergeometric PACO)
