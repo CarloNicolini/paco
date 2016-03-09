@@ -345,3 +345,29 @@ long double computeConditionedSurprise(const long p, const long pi,
     double conditional = computeSurprise(p,pi,m,ni-1);
     return surprise-conditional;
 }
+
+/**
+ * @brief cumulativeHyperGeometricDistribution Returns the logarithm of the cumulative inverse hypergeometric distribution
+ * sum_{i=drawWhiteBalls}^{drawnBalls} binom(whiteBallsInUrn, i) binom(totalBallsInUrn-whiteBallsInUrn, drawnBalls - i) / binom(totalBallsInUrn,drawnBalls)
+ * @param totalBallsInUrn
+ * @param whiteBallsInUrn
+ * @param drawnBalls
+ * @param drawnWhiteBalls
+ * @return
+ */
+long double cumulativeHyperGeometricDistribution(const long totalBallsInUrn, const long whiteBallsInUrn, const long drawnBalls, const long drawnWhiteBalls)
+{
+    try
+    {
+        bool argsok = checkArguments(totalBallsInUrn,whiteBallsInUrn,drawnBalls,drawnWhiteBalls);
+        if (argsok==false)
+            return 0;
+    }
+    catch ( const std::logic_error &e)
+    {
+        throw e;
+    }
+
+    double logchyper = computeSurprise(totalBallsInUrn,whiteBallsInUrn,drawnBalls,drawnWhiteBalls)/log(10);
+    return logchyper;
+}

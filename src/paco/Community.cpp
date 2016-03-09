@@ -195,7 +195,7 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
         edge_weights=NULL;
     }
 
-    double finalqual = 0;
+    double finalqual = std::numeric_limits<double>::min();
 
     // Select the quality function
     switch (qual)
@@ -224,6 +224,7 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     }
     case QualityInfoMap:
     {
+        // For Infomap it selects the partition with the minimum description length (last argument) and it saves it to final qual
         igraph_community_infomap(pgraph->get_igraph(),edge_weights,NULL,nrep,&membership,&finalqual);
         return finalqual;
     }
@@ -263,12 +264,23 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     }
     }
 
+    // Now select the partition with the MAXIMUM quality value
+    igraph_vector_t best_membership;
+    igraph_vector_init(&best_membership,pgraph->number_of_nodes());
     try
     {
         for (int i=0; i<nrep; ++i)
         {
-            finalqual = opt->optimize(pgraph->get_igraph(),*fun,&membership,edge_weights);
+            double qual = opt->optimize(pgraph->get_igraph(),*fun,&membership,edge_weights);
+            if (qual>finalqual)
+            {
+                finalqual = qual;
+                igraph_vector_update(&best_membership,&membership);
+            }
         }
+        // then copy back the content of best_membership to membership
+        igraph_vector_update(&membership,&best_membership);
+        igraph_vector_destroy(&best_membership);
     }
     catch ( std::exception &e )
     {

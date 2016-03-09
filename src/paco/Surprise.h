@@ -117,7 +117,25 @@ long double sumFactorial(const long& n);
  */
 bool sumLogProbabilities(const long double& nextLogP, long double& logP);
 
-// experimental
+/**
+ * @brief computeConditionedSurprise
+ * @param p
+ * @param pi
+ * @param m
+ * @param mi
+ * @param ni
+ * @return
+ */
 long double computeConditionedSurprise(const long p, const long pi,
                             const long m, const long mi, const long ni);
+
+/**
+ * @brief cumulativeHyperGeometricDistribution
+ * @param totalBallsInUrn
+ * @param whiteBallsInUrn
+ * @param drawnBalls
+ * @param drawnWhiteBalls
+ * @return
+ */
+long double cumulativeHyperGeometricDistribution(const long totalBallsInUrn, const long whiteBallsInUrn, const long drawnBalls, const long drawnWhiteBalls);
 #endif

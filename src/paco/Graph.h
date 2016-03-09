@@ -81,6 +81,8 @@ public:
     bool remove_edge(size_t source, size_t target);
     bool remove_edges(igraph_es_t &es);
 
+    GraphC* line_graph();
+
     std::pair<igraph_integer_t,igraph_integer_t> get_edge(size_t edgeid) const;
     const igraph_vector_t* get_edge_weights() const;
 

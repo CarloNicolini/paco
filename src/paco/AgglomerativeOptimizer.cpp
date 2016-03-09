@@ -120,11 +120,14 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
             edges_order.push_back(i);
     }
 
+#ifdef EXPERIMENTAL
+    igraph_vector_t degs;
+    igraph_degree(g,&degs,igraph_vss_all(),IGRAPH_TOTAL,0);
+#endif
 #ifdef _DEBUG
     printf(ANSI_COLOR_RED "AGGLOMERATIVE Initial Qual=%g\n" ANSI_COLOR_RESET,fun(par));
 #endif
     size_t m = edges_order.size();
-
     for (size_t i=0; i<m; ++i)
     {
         int e = edges_order.at(i); // edge to consider
@@ -132,6 +135,7 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
         igraph_edge(g,e,&vert1,&vert2);
         double deltaS=0;
         //printf(ANSI_COLOR_RED "Evaluating edge %d-%d\n",vert1,vert2);
+
 
         if ( rand()%2 ) // Randomly choose to aggregate vert1-->comm2 or vert2-->comm1
         {

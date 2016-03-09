@@ -69,18 +69,22 @@ void printUsage()
     mexPrintf("		1: Random\n");
     mexPrintf("		2: Annealing (EXPERIMENTAL)\n");
     mexPrintf("[m, qual] = paco(W,'quality',val);\n");
-    mexPrintf("	quality is one of the following integers: {0,1,2}:\n");
+    mexPrintf("	val is one of the following integers: {0,1,2}:\n");
     mexPrintf("		0: Surprise (discrete)\n");
     mexPrintf("		1: Significance\n");
     mexPrintf("		2: AsymptoticSurprise\n");
     mexPrintf("		3: Infomap\n");
     mexPrintf("		4: Modularity\n");
-    mexPrintf("[m, qual] = paco(W,'seed',val);\n");
+    mexPrintf("[m, qual] = paco(W,'nrep',val)\n");
+    mexPrintf("[m, qual] = paco(W,'nrep',val)\n");
+    mexPrintf("	val is the number of repetitions to run over which to choose the best quality value (the lowest for Infomap, the highest for the other methods\n");
     mexPrintf("		val: to provide a specific random seed to the algorithm, in order to have reproducible results.\n");
     mexPrintf("\n\n");
     mexPrintf("Example:\n");
+    mexPrintf("%Create a random symmetric thresholded network\n");
     mexPrintf(">> A=rand(100,100); A=(A+A')/2; A=A.*(A>0.5);\n");
-    mexPrintf(">> [memb, qual] = paco(A,'method',2);\n");
+    mexPrintf("% Run asymptotical surprise optimization on A 1000 times and return the highest surprise\n% partition memb together with the quality value\n");
+    mexPrintf(">> [memb, qual] = paco(A,'method',2,'nrep',1000);\n");
 }
 
 enum error_type

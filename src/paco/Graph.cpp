@@ -465,6 +465,18 @@ bool GraphC::remove_edges(igraph_es_t &es)
 }
 
 /**
+ * @brief GraphC::line_graph Create a line graph from the current graph.
+ * The line graph L(G) of a G undirected graph is defined as follows. L(G) has one vertex for each edge in G and two vertices in L(G) are connected by an edge if their corresponding edges share an end point.
+ * @return a pointer to a GraphC representing the line graph. Must be deleted.
+ */
+GraphC* GraphC::line_graph()
+{
+    igraph_t *lg;
+    igraph_linegraph(&(this->ig),lg);
+    return new GraphC(lg);
+}
+
+/**
  * @brief GraphC::is_edge
  * @param source
  * @param target
