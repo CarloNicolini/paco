@@ -50,6 +50,8 @@ public:
     inline size_t get_membership(const igraph_vector_t *memb, int vert) const;
     void reindex(const igraph_vector_t *memb);
     void print() const;
+    void print_membership(std::ostream &out);
+
 
     const double& get_graph_total_pairs() const
     {

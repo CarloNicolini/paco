@@ -67,6 +67,7 @@ public:
     vector<int> get_membership_vector() const; // for python version of PACO
     size_t get_membership(size_t i) const;
     void reindex_membership();
+    void order_membership();
     void print_membership();
     void save_membership(const char *filename, const igraph_vector_t *m=NULL);
 

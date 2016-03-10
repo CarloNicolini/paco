@@ -395,3 +395,18 @@ void PartitionHelper::print() const
     printf(ANSI_COLOR_RESET);
 }
 
+/**
+ * @brief PartitionHelper::print_membership
+ * @param out
+ */
+void PartitionHelper::print_membership(std::ostream &out)
+{
+    out << "[ ";
+    for (size_t i=0; i<num_vertices; ++i)
+    {
+        out << curmemb->stor_begin[i];
+        if (i<num_vertices-1)
+            out << ", ";
+    }
+    out << "]" << endl;
+}

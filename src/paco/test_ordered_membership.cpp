@@ -26,16 +26,11 @@
 #include <iostream>
 
 #include "Graph.h"
-#include "SignificanceFunction.h"
 #include "SurpriseFunction.h"
 #include "AsymptoticSurpriseFunction.h"
+#include "ModularityFunction.h"
 #include "Community.h"
 #include "PartitionHelper.h"
-#include "RandomOptimizer.h"
-#include "AnnealOptimizer.h"
-#include "AgglomerativeOptimizer.h"
-#include "Timer.h"
-#include "ModularityFunction.h"
 
 using namespace std;
 
@@ -43,19 +38,13 @@ int main(int argc, char *argv[])
 {
     GraphC h;
     h.read_adj_matrix(string(argv[1]));
-
+    const igraph_t *g = h.get_igraph();
     CommunityStructure c(&h);
-    c.set_random_seed();
+    c.read_membership_from_file(argv[2]);
 
+    const igraph_vector_t *m = c.get_membership();
 
-    AgglomerativeOptimizer opt;
-    SurpriseFunction fun;
-    c.sort_edges();
-    opt.set_edges_order(c.get_sorted_edges_indices());
+    c.order_membership();
 
-
-    cerr << "Final S=" << opt.optimize(h.get_igraph(),fun,c.get_membership()) << endl;
-    //c.reindex_membership();
-    //c.save_membership("test.csv");
     return 0;
 }

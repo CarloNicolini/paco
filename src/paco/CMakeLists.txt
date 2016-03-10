@@ -62,6 +62,9 @@ if(PYTHON_SUPPORT)
     target_link_libraries(pypaco PACO)
 endif(PYTHON_SUPPORT)
 
+add_executable(test_ordered_membership test_ordered_membership.cpp)
+target_link_libraries(test_ordered_membership PACO)
+
 add_executable(test_graphc test_graphc.cpp)
 target_link_libraries(test_graphc PACO)
 

@@ -173,6 +173,49 @@ void CommunityStructure::reindex_membership()
 }
 
 /**
+ * @brief CommunityStructure::order_membership
+ * Order the membership vector such that
+ * c_i <= max(c_1,c_2,...,c_(i-i))+1 (see http://tuvalu.santafe.edu/~aaronc/modularity/ for details)
+ */
+void CommunityStructure::order_membership()
+{
+    // groupmap
+    igraph_vector_t group_map; igraph_vector_init(&group_map,this->nVertices);
+    igraph_vector_fill(&group_map,-1);
+    int current_number=0;
+    for (size_t i=0; i<this->nVertices; ++i)
+    {
+        if (group_map.stor_begin[int(membership.stor_begin[i])] < 0)
+        {
+            group_map.stor_begin[int(membership.stor_begin[i])] = current_number;
+            ++current_number;
+        }
+    }
+
+
+    igraph_vector_t newmemb;
+    igraph_vector_init(&newmemb,this->nVertices);
+    igraph_vector_fill(&newmemb,-1);
+
+    for (size_t i=0; i<this->nVertices; ++i)
+    {
+        int val = group_map.stor_begin[int(membership.stor_begin[i])];
+        if (val<0)
+            val = *(group_map.stor_end);
+        newmemb.stor_begin[i] = val;
+    }
+
+    //igraph_vector_print(&group_map);
+    //igraph_vector_print(&newmemb);
+
+    igraph_vector_update(&membership,&newmemb);
+    // Clean memory
+    igraph_vector_destroy(&group_map);
+    igraph_vector_destroy(&newmemb);
+}
+
+
+/**
  * @brief CommunityStructure::optimize
  * @param qual
  * @param optmethod

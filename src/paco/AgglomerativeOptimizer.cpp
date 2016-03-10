@@ -124,12 +124,17 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
     igraph_vector_t degs;
     igraph_degree(g,&degs,igraph_vss_all(),IGRAPH_TOTAL,0);
 #endif
+
+    std::ofstream samplingfile; samplingfile.open("sampled.out");
+
 #ifdef _DEBUG
     printf(ANSI_COLOR_RED "AGGLOMERATIVE Initial Qual=%g\n" ANSI_COLOR_RESET,fun(par));
 #endif
     size_t m = edges_order.size();
     for (size_t i=0; i<m; ++i)
     {
+        samplingfile << fun(par) << ", ";
+        par->print_membership(samplingfile);
         int e = edges_order.at(i); // edge to consider
         int vert1, vert2;
         igraph_edge(g,e,&vert1,&vert2);
