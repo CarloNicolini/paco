@@ -31,11 +31,13 @@
 #include "ModularityFunction.h"
 #include "Community.h"
 #include "PartitionHelper.h"
+#include "igraph_utils.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+/*
     GraphC h;
     h.read_adj_matrix(string(argv[1]));
     const igraph_t *g = h.get_igraph();
@@ -45,6 +47,13 @@ int main(int argc, char *argv[])
     const igraph_vector_t *m = c.get_membership();
 
     c.order_membership();
+*/
+    double v[34] = {4, 7, 3, 3, 4, 4, 4, 3, 8, 9, 4, 11, 12, 3, 8, 8, 4, 17, 8, 19, 8, 21, 22, 27, 31, 25, 26, 27, 25, 26, 8, 25, 8, 8};
 
+    const igraph_vector_t *memb = new igraph_vector_t;
+    memb = igraph_vector_view(memb,v,34);
+
+    igraph_vector_t *newmemb = order_membership(memb);
+    igraph_vector_print(newmemb);
     return 0;
 }

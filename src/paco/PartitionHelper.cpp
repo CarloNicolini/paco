@@ -401,12 +401,15 @@ void PartitionHelper::print() const
  */
 void PartitionHelper::print_membership(std::ostream &out)
 {
-    out << "[ ";
+    igraph_vector_t *newmemb = order_membership(curmemb);
+    out << "[";
     for (size_t i=0; i<num_vertices; ++i)
     {
-        out << curmemb->stor_begin[i];
+        out << newmemb->stor_begin[i];
         if (i<num_vertices-1)
             out << ", ";
     }
     out << "]" << endl;
+    igraph_vector_destroy(newmemb);
+    delete newmemb;
 }

@@ -33,3 +33,39 @@ void igraph_matrix_view(igraph_matrix_t *A, igraph_real_t *data, int nrows, int 
     A->data.stor_end = data+ncols*nrows;
     A->data.end = A->data.stor_end;
 }
+
+igraph_vector_t* order_membership(const igraph_vector_t *curmemb)
+{
+        int nVertices = igraph_vector_size(curmemb);
+        // groupmap
+        igraph_vector_t group_map; igraph_vector_init(&group_map,nVertices);
+        igraph_vector_fill(&group_map,-1);
+        int current_number=0;
+        for (int i=0; i<nVertices; ++i)
+        {
+            if (group_map.stor_begin[int(curmemb->stor_begin[i])] < 0)
+            {
+                group_map.stor_begin[int(curmemb->stor_begin[i])] = current_number;
+                ++current_number;
+            }
+        }
+
+
+        igraph_vector_t *newmemb = new igraph_vector_t;
+        igraph_vector_init(newmemb,nVertices);
+        igraph_vector_fill(newmemb,-1);
+
+        for (int i=0; i<nVertices; ++i)
+        {
+            int val = group_map.stor_begin[int(curmemb->stor_begin[i])];
+            if (val<0)
+                val = *(group_map.stor_end);
+            newmemb->stor_begin[i] = val;
+        }
+
+
+        // Clean memory
+        igraph_vector_destroy(&group_map);
+
+        return newmemb;
+}

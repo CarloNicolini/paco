@@ -49,4 +49,6 @@
 
 void igraph_matrix_view(igraph_matrix_t *A, igraph_real_t *data, int nrows, int ncols);
 
+igraph_vector_t* order_membership(const igraph_vector_t *curmemb);
+
 #endif

@@ -183,7 +183,7 @@ void CommunityStructure::order_membership()
     igraph_vector_t group_map; igraph_vector_init(&group_map,this->nVertices);
     igraph_vector_fill(&group_map,-1);
     int current_number=0;
-    for (size_t i=0; i<this->nVertices; ++i)
+    for (int i=0; i<this->nVertices; ++i)
     {
         if (group_map.stor_begin[int(membership.stor_begin[i])] < 0)
         {
@@ -197,7 +197,7 @@ void CommunityStructure::order_membership()
     igraph_vector_init(&newmemb,this->nVertices);
     igraph_vector_fill(&newmemb,-1);
 
-    for (size_t i=0; i<this->nVertices; ++i)
+    for (int i=0; i<this->nVertices; ++i)
     {
         int val = group_map.stor_begin[int(membership.stor_begin[i])];
         if (val<0)
