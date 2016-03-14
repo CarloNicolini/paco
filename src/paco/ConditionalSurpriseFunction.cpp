@@ -35,7 +35,7 @@ void ConditionalSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t 
     size_t m = igraph_ecount(g);
     size_t p = n*(n-1)/2;
 
-    if (n != igraph_vector_size(memb) )
+    if (n != (size_t)igraph_vector_size(memb) )
         throw std::runtime_error("Non consistent length of membership vector");
 
     // Sum of intracluster edge weights
@@ -51,21 +51,22 @@ void ConditionalSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t 
 
     // iterate all edges and check where the endpoints of the edges are
     // if they are in the same community
-    for (igraph_integer_t edge_id=0; edge_id<m; edge_id++)
+    for (size_t edge_id=0; edge_id<m; edge_id++)
     {
-        igraph_edge(g, (igraph_integer_t) edge_id, &from, &to);
+        igraph_edge(g, edge_id, &from, &to);
         igraph_integer_t comm_from=*(memb->stor_begin+from); // Community node "from" belongs
         igraph_integer_t comm_to=*(memb->stor_begin+to);  // Community node "to" belongs
         mzeta += size_t(comm_from==comm_to);
     }
 
     // Sum the count of vertex pairs in every community
-    for (igraph_integer_t c=0; c<nComms; c++)
+    for (size_t c=0; c<nComms; c++)
     {
         size_t vertices_count = std::count(memb->stor_begin, memb->stor_end, c);
         pzeta += vertices_count*(vertices_count-1)/2;
     }
-    #pragma message("Error FIX compute conditional Surprise")
+    cerr <<"Error FIX compute conditional Surprise" << endl;
+    //#pragma message("Error FIX compute conditional Surprise")
     quality = computeConditionedSurprise(p,pzeta,m,mzeta,n);
 }
 
@@ -76,6 +77,7 @@ void ConditionalSurpriseFunction::eval(const PartitionHelper *par) const
     double m = par->get_graph_total_weight();
     double mi = par->get_total_incomm_weight();
     size_t n = par->get_num_vertices();
-    #pragma message("Error FIX compute conditional Surprise")
+    cerr <<"Error FIX compute conditional Surprise" << endl;
+    //#pragma message("Error FIX compute conditional Surprise")
     quality = computeConditionedSurprise(p,pi,m,mi,n);
 }
