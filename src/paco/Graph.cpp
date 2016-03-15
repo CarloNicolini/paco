@@ -471,7 +471,7 @@ bool GraphC::remove_edges(igraph_es_t &es)
  */
 GraphC* GraphC::line_graph()
 {
-    igraph_t *lg;
+    igraph_t *lg=NULL;
     igraph_linegraph(&(this->ig),lg);
     return new GraphC(lg);
 }

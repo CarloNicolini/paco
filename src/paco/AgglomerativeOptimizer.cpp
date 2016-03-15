@@ -23,8 +23,11 @@
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "AgglomerativeOptimizer.h"
+#include <typeinfo>
 #include <iostream>
+#include "AgglomerativeOptimizer.h"
+#include "SurpriseFunction.h"
+#include "AsymptoticSurpriseFunction.h"
 
 /**
  * @brief AgglomerativeOptimizer::AgglomerativeOptimizer
@@ -59,10 +62,6 @@ AgglomerativeOptimizer::~AgglomerativeOptimizer()
  * @param dest_comm
  * @return
  */
-#include "SurpriseFunction.h"
-#include "AsymptoticSurpriseFunction.h"
-#include <typeinfo>
-
 double AgglomerativeOptimizer::diff_move(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, int vert, size_t dest_comm, const igraph_vector_t *weights)
 {
     int orig_comm = memb->stor_begin[vert]; // save old original community of vert
@@ -120,31 +119,29 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
             edges_order.push_back(i);
     }
 
-#ifdef EXPERIMENTAL
-    igraph_vector_t degs;
-    igraph_degree(g,&degs,igraph_vss_all(),IGRAPH_TOTAL,0);
+
+#ifdef SAMPLE_LANDSCAPE
+    std::stringstream ss; ss << "sampled_" << rand() << ".out" ;
+    std::ofstream samplingfile(ss.str());
 #endif
-
-
 
 #ifdef _DEBUG
     printf(ANSI_COLOR_RED "AGGLOMERATIVE Initial Qual=%g\n" ANSI_COLOR_RESET,fun(par));
 #endif
     size_t m = edges_order.size();
-
-    std::stringstream ss; ss << "sampled_" << rand() << ".out" ;
-    std::ofstream samplingfile(ss.str());
     for (size_t i=0; i<m; ++i)
     {
+#ifdef SAMPLE_LANDSCAPE
         samplingfile << fun(par) << ",";
         par->print_membership(samplingfile);
+#endif
         int e = edges_order.at(i); // edge to consider
         int vert1, vert2;
         igraph_edge(g,e,&vert1,&vert2);
         double deltaS=0;
+#ifdef _DEBUG
         //printf(ANSI_COLOR_RED "Evaluating edge %d-%d\n",vert1,vert2);
-
-
+#endif
         if ( rand()%2 ) // Randomly choose to aggregate vert1-->comm2 or vert2-->comm1
         {
             size_t dest_comm = memb->stor_begin[vert2];
@@ -155,7 +152,7 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
             size_t dest_comm = memb->stor_begin[vert1];
             deltaS=diff_move(g,fun,memb,vert2,dest_comm,weights);
         }
-        /*
+#ifdef _DEBUG
         if (deltaS>0)
         {
             printf(ANSI_COLOR_RED "Edge %d-%d merged\n",vert1,vert2);
@@ -169,14 +166,13 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
             printf(ANSI_COLOR_GREEN "Surprise increment %g\n",deltaS);
             printf(ANSI_COLOR_GREEN "==============\n");
         }
-        */
+#endif
     }
-    //par->reindex(memb);
-    //par->print();
-    return fun(par);
-
 #ifdef _DEBUG
     par->print();
     printf(ANSI_COLOR_RED "AGGLOMERATIVE Final Qual=%g\n" ANSI_COLOR_RESET,fun(par));
 #endif
+    //par->reindex(memb);
+    //par->print();
+    return fun(par);
 }
