@@ -24,6 +24,7 @@ set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
 option(MATLAB_SUPPORT "Mex with MATLAB" OFF)
 option(OCTAVE_SUPPORT "Oct with Octave mkoctfile" OFF)
 option(COMPILE_LFR "Compile the Lancichinetti-Fortunato-Radicchi benchmark network" OFF)
+option(SAMPLE_LANDSCAPE "Enable the SAMPLE_LANDSCAPE option, to write down at every stage of the optimization process, the quality function and the membership")
 
 set(MATLAB_ROOT "/usr/local/MATLAB/R2015a")
 
@@ -42,6 +43,10 @@ if(OCTAVE_SUPPORT)
     include_directories(${OCTAVE_INCLUDE_DIRS})
     add_definitions("-DOCTAVE_SUPPORT")
 endif(OCTAVE_SUPPORT)
+
+if(SAMPLE_LANDSCAPE)
+    add_definitions("-DSAMPLE_LANDSCAPE")
+endif()
 
 if(PYTHON_SUPPORT)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
