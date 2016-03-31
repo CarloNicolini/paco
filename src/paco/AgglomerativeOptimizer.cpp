@@ -119,7 +119,6 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
             edges_order.push_back(i);
     }
 
-
 #ifdef SAMPLE_LANDSCAPE
     std::stringstream ss; ss << "sampled_" << rand() << ".out" ;
     std::ofstream samplingfile(ss.str());

@@ -76,7 +76,6 @@ void printUsage()
     mexPrintf("		3: Infomap\n");
     mexPrintf("		4: Modularity\n");
     mexPrintf("[m, qual] = paco(W,'nrep',val)\n");
-    mexPrintf("[m, qual] = paco(W,'nrep',val)\n");
     mexPrintf("	val is the number of repetitions to run over which to choose the best quality value (the lowest for Infomap, the highest for the other methods\n");
     mexPrintf("		val: to provide a specific random seed to the algorithm, in order to have reproducible results.\n");
     mexPrintf("\n\n");
