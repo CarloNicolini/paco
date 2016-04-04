@@ -10,6 +10,7 @@ igraph_utils.cpp
 SurpriseFunction.cpp
 ConditionalSurpriseFunction.cpp
 AsymptoticSurpriseFunction.cpp
+WonderFunction.cpp
 SignificanceFunction.cpp
 ModularityFunction.cpp
 AsymptoticModularityFunction.cpp
@@ -32,6 +33,7 @@ SurpriseFunction.h
 ConditionalSurpriseFunction.h
 AsymptoticSurprise.h
 AsymptoticSurpriseFunction.h
+WonderFunction.h
 SignificanceFunction.h
 ModularityFunction.h
 AsymptoticModularityFunction.h

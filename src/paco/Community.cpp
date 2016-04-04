@@ -31,6 +31,7 @@
 #include "AsymptoticSurpriseFunction.h"
 #include "AsymptoticModularityFunction.h"
 #include "SignificanceFunction.h"
+#include "WonderFunction.h"
 
 #include "QualityOptimizer.h"
 #include "AnnealOptimizer.h"
@@ -274,6 +275,11 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     case QualityAsymptoticModularity:
     {
         fun = dynamic_cast<AsymptoticModularityFunction*>(new AsymptoticModularityFunction);
+        break;
+    }
+    case QualityWonder:
+    {
+        fun = dynamic_cast<WonderFunction*>(new WonderFunction);
         break;
     }
     default:
