@@ -63,6 +63,7 @@ PartitionHelper::~PartitionHelper()
  */
 void PartitionHelper::init(const igraph_t*graph, const igraph_vector_t *memb, const igraph_vector_t *weights)
 {
+    this->ig = graph;
     this->communities.clear();
     this->incomm_deg.clear();
     this->incomm_nvert.clear();

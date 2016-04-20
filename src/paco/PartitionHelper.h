@@ -118,6 +118,12 @@ public:
         return communities;
     }
 
+    // helper function
+    double get_weight_to_from(const igraph_vector_t *memb, size_t from, size_t to)
+    {
+        //  XXX da implementare!
+    }
+
 protected:
     igraph_vector_t all_degrees;
     igraph_vector_t all_strenght;
@@ -140,6 +146,7 @@ protected:
     double graph_total_pairs; // // n*(n-1)/2, number of total graph vertex pairs
 
 private:
+    const igraph_t *ig;
     inline bool check_comm(int dest_comm);
     void fill_communities(const igraph_vector_t *memb);
     const double weight_to_from_community(const igraph_t *g, const igraph_vector_t* memb, size_t v, size_t comm, igraph_neimode_t mode, const igraph_vector_t *weights=NULL);

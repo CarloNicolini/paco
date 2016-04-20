@@ -9,6 +9,7 @@ AsymptoticSurprise.cpp
 igraph_utils.cpp
 SurpriseFunction.cpp
 ConditionalSurpriseFunction.cpp
+DegreeCorrectedSurpriseFunction.cpp
 AsymptoticSurpriseFunction.cpp
 WonderFunction.cpp
 SignificanceFunction.cpp
@@ -31,6 +32,7 @@ igraph_utils.h
 QualityFunction.h
 SurpriseFunction.h
 ConditionalSurpriseFunction.h
+DegreeCorrectedSurpriseFunction.h
 AsymptoticSurprise.h
 AsymptoticSurpriseFunction.h
 WonderFunction.h
@@ -90,3 +92,6 @@ target_link_libraries(test_optimizer PACO)
 
 add_executable(test_hypergeometric test_hypergeometric.cpp)
 target_link_libraries(test_hypergeometric PACO)
+
+add_executable(test_dcsurprise test_dcsurprise.cpp)
+target_link_libraries(test_dcsurprise PACO)

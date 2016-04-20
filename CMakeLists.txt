@@ -25,8 +25,6 @@ option(MATLAB_SUPPORT "Mex with MATLAB" OFF)
 option(OCTAVE_SUPPORT "Oct with Octave mkoctfile" OFF)
 option(SAMPLE_LANDSCAPE "Enable the SAMPLE_LANDSCAPE option, to write down at every stage of the optimization process, the quality function and the membership")
 
-set(MATLAB_ROOT "/usr/local/MATLAB/R2015a")
-
 if(MATLAB_SUPPORT)
     find_package(MyMatlab)
     message(STATUS "Matlab include directories: ${MATLAB_INCLUDE_DIRS}")

@@ -51,7 +51,8 @@ enum QualityType
     QualityInfoMap = 3,
     QualityModularity = 4,
     QualityAsymptoticModularity = 5,
-    QualityWonder = 6
+    QualityWonder = 6,
+    QualityDegreeCorrectedSurprise = 7
 };
 
 class CommunityStructure
