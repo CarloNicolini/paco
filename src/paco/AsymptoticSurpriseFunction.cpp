@@ -45,7 +45,7 @@ void AsymptoticSurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *
     par->init(g,memb,weights);
     this->eval(par);
     delete par;
-    //printf("--> AS=%f -- mi=%f pi=%f m=%f p=%f\n",quality, mi,pi,m,p);
+
 }
 
 /**
@@ -70,6 +70,6 @@ void AsymptoticSurpriseFunction::eval(const PartitionHelper *par) const
         mi += mc;
         pi += pc;
     }
-
+    //printf("--> AS=%f -- mi=%f pi=%f m=%f p=%f\n",quality, mi,pi,m,p);
     quality = m*KL(mi/m,pi/p);
 }

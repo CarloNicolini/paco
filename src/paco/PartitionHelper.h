@@ -118,11 +118,6 @@ public:
         return communities;
     }
 
-    // helper function
-    double get_weight_to_from(const igraph_vector_t *memb, size_t from, size_t to)
-    {
-        //  XXX da implementare!
-    }
 
 protected:
     igraph_vector_t all_degrees;

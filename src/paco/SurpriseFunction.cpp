@@ -51,7 +51,7 @@ void SurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *memb, cons
 
     // iterate all edges and check where the endpoints of the edges are
     // if they are in the same community
-    for (igraph_integer_t edge_id=0; edge_id<m; edge_id++)
+    for (size_t edge_id=0; edge_id<m; edge_id++)
     {
         igraph_edge(g, (igraph_integer_t) edge_id, &from, &to);
         igraph_integer_t comm_from=*(memb->stor_begin+from); // Community node "from" belongs
@@ -60,7 +60,7 @@ void SurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *memb, cons
     }
 
     // Sum the count of vertex pairs in every community
-    for (igraph_integer_t c=0; c<nComms; c++)
+    for (size_t c=0; c<nComms; c++)
     {
         size_t vertices_count = std::count(memb->stor_begin, memb->stor_end, c);
         pzeta += vertices_count*(vertices_count-1)/2;
