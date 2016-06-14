@@ -48,7 +48,7 @@
     }
 
 #ifndef SQR
-#define SQR(x) (x*x)
+#define SQR(x) ((x)*(x))
 #endif
 
 void igraph_matrix_view(igraph_matrix_t *A, igraph_real_t *data, int nrows, int ncols);
