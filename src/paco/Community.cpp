@@ -349,11 +349,36 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
 
 /**
  * @brief CommunityStructure::compute_edges_similarities
+ * See the implementation of "Density-based shrinkage for revealing hierarchical and overlapping
+community structure in networks" Physica A 390 (2011) 2160-2171
  */
 void CommunityStructure::compute_edges_similarities()
 {
-    // Query the similarities for all edges
-    igraph_similarity_jaccard_es(this->pgraph->get_igraph(), &edges_sim, igraph_ess_all(IGRAPH_EDGEORDER_ID), IGRAPH_ALL, false);
+    if (!this->pgraph->is_weighted())
+    {
+        // Query the similarities for all edges
+        igraph_similarity_jaccard_es(this->pgraph->get_igraph(),
+                                     &edges_sim,
+                                     igraph_ess_all(IGRAPH_EDGEORDER_ID),
+                                     IGRAPH_ALL,
+                                     false);
+    }
+    else
+    {
+        igraph_similarity_jaccard_weighted_es(this->pgraph->get_igraph(),&edges_sim,
+                                              igraph_ess_all(IGRAPH_EDGEORDER_ID),
+                                              this->pgraph->get_edge_weights(),
+                                              IGRAPH_ALL,
+                                              false);
+        /*
+        cerr << "=== EDGE WEIGHTS ===" << endl;
+        for (igraph_integer_t i=0; i<this->nEdges; ++i)
+        {
+            cout << "(" << this->pgraph->get_edge(i).first << " " << this->pgraph->get_edge(i).second << ")" ;
+            cout << "\t" << this->pgraph->get_edge_weights()->stor_begin[i] << endl;
+        }
+        */
+    }
 }
 
 /**
@@ -368,13 +393,18 @@ void CommunityStructure::sort_edges()
     {
         sorted_edges.at(i).first = i;
         sorted_edges.at(i).second = edges_sim.stor_begin[i];
-        if (this->pgraph->is_weighted()) //XXX Jaccard index is then weighted by edge weight
-            sorted_edges.at(i).second  *= this->pgraph->get_edge_weights()->stor_begin[i];
+        //if (this->pgraph->is_weighted()) //XXX Jaccard index is then weighted by edge weight
+       //     sorted_edges.at(i).second  *= this->pgraph->get_edge_weights()->stor_begin[i];
     }
 
     // Edges are sorted by jaccard index. Edges endpoints can be found by IGRAPH_TO and IGRAPH_FROM macros
     std::sort(sorted_edges.begin(),sorted_edges.end(),sort_second<igraph_real_t>);
 
+    /*
+    cerr << "=== JACCARD WEIGHTED ===" << endl;
+    for (igraph_integer_t i=0; i<nEdges; ++i)
+        cerr << "(" << pgraph->get_edge(sorted_edges.at(i).first).first << "," << pgraph->get_edge(sorted_edges.at(i).first).second << ") jacc_sim=" << edges_sim.stor_begin[i] << endl;
+    */
     // Randomize the edges with the same jaccard index. Introduces some variability in
     // the final partitioning.
     igraph_integer_t i=0;

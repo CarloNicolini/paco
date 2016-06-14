@@ -95,3 +95,6 @@ target_link_libraries(test_hypergeometric PACO)
 
 add_executable(test_dcsurprise test_dcsurprise.cpp)
 target_link_libraries(test_dcsurprise PACO)
+
+add_executable(test_structural_sim test_structural_sim.cpp)
+target_link_libraries(test_structural_sim PACO)

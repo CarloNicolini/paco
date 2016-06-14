@@ -47,8 +47,19 @@
     IGRAPH_ERROR("std::bad_alloc thrown in C++ code", IGRAPH_ENOMEM); \
     }
 
+#ifndef SQR
+#define SQR(x) (x*x)
+#endif
+
 void igraph_matrix_view(igraph_matrix_t *A, igraph_real_t *data, int nrows, int ncols);
 
 igraph_vector_t* order_membership(const igraph_vector_t *curmemb);
 
+int igraph_similarity_jaccard_weighted_pairs(const igraph_t *graph, igraph_vector_t *res,
+                                             const igraph_vector_t *pairs, const igraph_vector_t *weights, igraph_neimode_t mode, igraph_bool_t loops);
+
+int igraph_similarity_jaccard_weighted_es(const igraph_t *graph, igraph_vector_t *res,
+                                          const igraph_es_t es, const igraph_vector_t *weights, igraph_neimode_t mode, igraph_bool_t loops);
+
+int igraph_i_neisets_intersect(const igraph_t *graph, const igraph_vector_t *v1, const igraph_vector_t *v2, const igraph_vector_t *weights, double *weight_union, double *weight_intersection);
 #endif
