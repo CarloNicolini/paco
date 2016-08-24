@@ -26,6 +26,7 @@
 #ifndef _IGRAPH_ADDITIONAL_UTILS_
 #define _IGRAPH_ADDITIONAL_UTILS_
 
+#include <vector>
 #include <igraph.h>
 #include <igraph_error.h>
 #include <stdexcept>
