@@ -70,7 +70,7 @@ void printUsage()
     mexPrintf("		1: Random\n");
     mexPrintf("		2: Annealing (EXPERIMENTAL)\n");
     mexPrintf("[m, qual] = paco(W,'quality',val);\n");
-    mexPrintf("	val is one of the following integers: {0,1,2}:\n");
+    mexPrintf("	val is one of the following integers: {0,1,2,3,4,5,6}:\n");
     mexPrintf("		0: Surprise (discrete)\n");
     mexPrintf("		1: Significance\n");
     mexPrintf("		2: AsymptoticSurprise\n");
