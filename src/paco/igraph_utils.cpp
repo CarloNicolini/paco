@@ -23,7 +23,7 @@
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include<algorithm>
+#include <algorithm>
 #include "igraph_utils.h"
 
 void igraph_matrix_view(igraph_matrix_t *A, igraph_real_t *data, int nrows, int ncols)
