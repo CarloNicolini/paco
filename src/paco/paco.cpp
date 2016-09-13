@@ -76,11 +76,12 @@ void printUsage()
     mexPrintf("		2: AsymptoticSurprise\n");
     mexPrintf("		3: Infomap\n");
     mexPrintf("		4: Modularity\n");
-    mexPrintf("		5: AsymptoticModularity\n");
+    mexPrintf("		5: AsymptoticModularity (EXPERIMENTAL)\n");
     mexPrintf("		6: Wonder (EXPERIMENTAL)\n");
     mexPrintf("[m, qual] = paco(W,'nrep',val)\n");
     mexPrintf("	val is the number of repetitions to run over which to choose the best quality value (the lowest for Infomap, the highest for the other methods\n");
-    mexPrintf("		val: to provide a specific random seed to the algorithm, in order to have reproducible results.\n");
+    mexPrintf("[m, qual] = paco(W,'seed',val)\n");
+    mexPrintf(" val is a specific random seed to the algorithm, in order to have reproducible results.\n");
     mexPrintf("\n\n");
     mexPrintf("Example:\n");
     mexPrintf("%Create a random symmetric thresholded network\n");
