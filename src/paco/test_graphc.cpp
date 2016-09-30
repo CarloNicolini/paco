@@ -41,23 +41,16 @@ int main(int argc, char *argv[])
     //    W << 0, 197, 0, 0, 101, 0, 0, 130, 0, 0, 197, 0, 0, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 138, 0, 164, 147, 0, 101, 0, 0, 0, 143, 151, 164, 167, 105, 101, 109, 0, 0, 0, 151, 159, 172, 130, 118, 0, 0, 130, 143, 151, 0, 0, 0, 0, 101, 0, 0, 138, 151, 159, 0, 0, 0, 0, 109, 130, 0, 0, 164, 172, 0, 0, 0, 0, 122, 0, 0, 164, 167, 130, 0, 0, 0, 0, 0, 0, 0, 147, 105, 118, 101, 109, 122, 0, 0;
 
     GraphC g;
-    //g.read_gml(string(argv[1]));
-    //g.read_edge_list(string(argv[1]),51653);
-    //g.read_weights_from_file(string(argv[2]));
     g.read_weighted_edge_list(string(argv[1]),51653);
     g.info();
-        for (int i=0; i<51653; i++)
-            cout << g.get_edge_weights()->stor_begin[i]<<endl;
 
     CommunityStructure comm(&g);
-    comm.read_membership_from_file("membership.csv");
-    //comm.optimize(QualityAsymptoticSurprise,MethodAgglomerative);
-    //comm.reindex_membership();
+    comm.optimize(QualityAsymptoticSurprise,MethodAgglomerative);
+    comm.reindex_membership();
 
-    //comm.save_membership("membership.csv",comm.get_membership());
+    comm.save_membership("membership.csv",comm.get_membership());
     AsymptoticSurpriseFunction qual;
-
-    cout << qual(g.get_igraph(),comm.get_membership(),g.get_edge_weights()) << endl;
+    cout << "Final quality=" << qual(g.get_igraph(),comm.get_membership(),g.get_edge_weights()) << endl;
     //    GraphC y;
     //    y.compute_vertex_degrees(false);
     //    y.compute_vertex_strenghts(false);
