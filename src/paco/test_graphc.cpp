@@ -28,6 +28,7 @@
 using namespace std;
 
 #include <Eigen/Core>
+#include "Community.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,19 +36,23 @@ int main(int argc, char *argv[])
 
     FILELog::ReportingLevel() = logDEBUG4;// static_cast<TLogLevel>(params.verbosity);
 
-    Eigen::MatrixXd W(10,10);
-    W << 0, 197, 0, 0, 101, 0, 0, 130, 0, 0, 197, 0, 0, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 138, 0, 164, 147, 0, 101, 0, 0, 0, 143, 151, 164, 167, 105, 101, 109, 0, 0, 0, 151, 159, 172, 130, 118, 0, 0, 130, 143, 151, 0, 0, 0, 0, 101, 0, 0, 138, 151, 159, 0, 0, 0, 0, 109, 130, 0, 0, 164, 172, 0, 0, 0, 0, 122, 0, 0, 164, 167, 130, 0, 0, 0, 0, 0, 0, 0, 147, 105, 118, 101, 109, 122, 0, 0;
+//    Eigen::MatrixXd W(10,10);
+//    W << 0, 197, 0, 0, 101, 0, 0, 130, 0, 0, 197, 0, 0, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 138, 0, 164, 147, 0, 101, 0, 0, 0, 143, 151, 164, 167, 105, 101, 109, 0, 0, 0, 151, 159, 172, 130, 118, 0, 0, 130, 143, 151, 0, 0, 0, 0, 101, 0, 0, 138, 151, 159, 0, 0, 0, 0, 109, 130, 0, 0, 164, 172, 0, 0, 0, 0, 122, 0, 0, 164, 167, 130, 0, 0, 0, 0, 0, 0, 0, 147, 105, 118, 101, 109, 122, 0, 0;
 
     GraphC g;
-    g.read_gml(string(argv[1]));
+    //g.read_gml(string(argv[1]));
+    g.read_edge_list(string(argv[1]),51653);
     g.read_weights_from_file(string(argv[2]));
     g.info();
 
-    GraphC y;
-    y.compute_vertex_degrees(false);
-    y.compute_vertex_strenghts(false);
+    CommunityStructure comm(&g);
+    comm.optimize(QualityAsymptoticSurprise,MethodAgglomerative);
+    comm.save_membership("membership.csv",comm.get_membership());
+//    GraphC y;
+//    y.compute_vertex_degrees(false);
+//    y.compute_vertex_strenghts(false);
 
-    GraphC x(y);
+//    GraphC x(y);
 
     return 0;
 }

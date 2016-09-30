@@ -120,6 +120,7 @@ struct PacoParams
     QualityType qual;
     size_t nrep;      // Maximum number of consecutive repetitions to perform.
     int rand_seed; // random seed for the louvain algorithm
+    int verbosity_level;
 };
 
 error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[], PacoParams *pars, int *argposerr )
@@ -204,6 +205,11 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
                 pars->rand_seed = static_cast<int>(std::floor(*mxGetPr(parval)));
                 argcount+=2;
             }
+            else if ( strcasecmp(cpartype,static_cast<const char*>("verbosity"))==0 )
+            {
+                pars->verbosity_level = static_cast<int>(std::floor(*mxGetPr(parval)));
+                argcount+=2;
+            }
             else
             {
                 *argposerr = argcount;
@@ -222,13 +228,15 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
 
 void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[])
 {
-    FILELog::ReportingLevel() = static_cast<TLogLevel>(7);
     PacoParams pars;
     // Set default values for parameters
     pars.qual = QualitySurprise;
     pars.method = MethodAgglomerative;
     pars.nrep = 1;
+    pars.verbosity_level=7;
     pars.rand_seed = -1; // default value for the random seed, if -1 than microseconds time is used.
+
+    FILELog::ReportingLevel() = static_cast<TLogLevel>(pars.verbosity_level);
 
     // Check the arguments of the function
     int error_arg_pos=-1;
