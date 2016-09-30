@@ -246,3 +246,63 @@ int igraph_similarity_jaccard_weighted_es(const igraph_t *graph, igraph_vector_t
 
     return IGRAPH_SUCCESS;
 }
+
+int igraph_read_graph_weighted_edgelist(igraph_t *graph, FILE *instream,
+                   igraph_integer_t n, igraph_bool_t directed, igraph_vector_t *edge_weights)
+{
+
+  igraph_vector_t edges=IGRAPH_VECTOR_NULL;
+  long int from, to;
+  double weight;
+  int c;
+
+  IGRAPH_VECTOR_INIT_FINALLY(&edges, 0);
+  IGRAPH_CHECK(igraph_vector_reserve(&edges, 100));
+
+  /* skip all whitespace */
+  do {
+    c = getc (instream);
+  } while (isspace (c));
+  ungetc (c, instream);
+
+  int linenumber=1;
+  std::vector<double> eweights;
+  while (!feof(instream))
+  {
+    int read;
+
+    //IGRAPH_ALLOW_INTERRUPTION();
+
+    read=fscanf(instream, "%li", &from);
+    if (read != 1)
+    {
+      IGRAPH_ERROR("parsing edgelist file failed", IGRAPH_PARSEERROR);
+    }
+    read=fscanf(instream, "%li", &to);
+    if (read != 1)
+    {
+      IGRAPH_ERROR("parsing edgelist file failed", IGRAPH_PARSEERROR);
+    }
+    read=fscanf(instream, "%g", &weight);
+    if (read != 1)
+    {
+      IGRAPH_ERROR("parsing edgelist file failed (invalid weight)", IGRAPH_PARSEERROR);
+    }
+    IGRAPH_CHECK(igraph_vector_push_back(&edges, from));
+    IGRAPH_CHECK(igraph_vector_push_back(&edges, to));
+    eweights.push_back(weight);
+    /* skip all whitespace */
+    do {
+      c = getc (instream);
+    } while (isspace (c));
+    ungetc (c, instream);
+    ++linenumber;
+  }
+  // copy all the weights to the weight vector
+  igraph_vector_init_copy(edge_weights, eweights.data(), eweights.size());
+
+  IGRAPH_CHECK(igraph_create(graph, &edges, n, directed));
+  igraph_vector_destroy(&edges);
+  IGRAPH_FINALLY_CLEAN(1);
+  return 0;
+}

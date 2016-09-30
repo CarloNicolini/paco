@@ -63,4 +63,7 @@ int igraph_similarity_jaccard_weighted_es(const igraph_t *graph, igraph_vector_t
                                           const igraph_es_t es, const igraph_vector_t *weights, igraph_neimode_t mode, igraph_bool_t loops);
 
 int igraph_i_neisets_intersect(const igraph_t *graph, const igraph_vector_t *v1, const igraph_vector_t *v2, const igraph_vector_t *weights, double *weight_union, double *weight_intersection);
+
+int igraph_read_graph_weighted_edgelist(igraph_t *graph, FILE *instream, igraph_integer_t n, igraph_bool_t directed, igraph_vector_t *edge_weights);
+
 #endif

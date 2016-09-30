@@ -41,8 +41,9 @@ int main(int argc, char *argv[])
 
     GraphC g;
     //g.read_gml(string(argv[1]));
-    g.read_edge_list(string(argv[1]),51653);
-    g.read_weights_from_file(string(argv[2]));
+    //g.read_edge_list(string(argv[1]),51653);
+    //g.read_weights_from_file(string(argv[2]));
+    g.read_weighted_edge_list(string(argv[1]),51653);
     g.info();
 
     CommunityStructure comm(&g);

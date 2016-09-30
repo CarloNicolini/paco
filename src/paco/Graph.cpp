@@ -338,6 +338,24 @@ bool GraphC::read_edge_list(const std::string &filename, int nvertices)
 }
 
 /**
+ * @brief GraphC::read_weighted_edge_list
+ * @param filename
+ * @param nvertices
+ * @param edge_weights vector
+ * @return
+ */
+bool GraphC::read_weighted_edge_list(const std::string &filename, int nvertices)
+{
+    IGRAPH_TRY(igraph_destroy(&this->ig));
+    FILE *f = fopen(filename.c_str(),"r");
+    IGRAPH_TRY(igraph_read_graph_weighted_edgelist(&this->ig,f,nvertices,0,&this->edge_weights));
+    fclose(f);
+    this->_is_weighted = true;
+    return true;
+}
+
+
+/**
  * @brief GraphC::read_weights_from_file
  * @param filename
  * @return
