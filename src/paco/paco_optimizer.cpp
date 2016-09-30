@@ -29,33 +29,31 @@
 using namespace std;
 
 
-/**
- * @brief exit_with_help
- */
+
 void exit_with_help()
 {
-    std::printf(
-                "Usage: paco_optimizer [options] graph_file [output_suffix]\n"
-                "options:\n"
-                "-q [quality]"
-                "   0 Binary Surprise"
-                "   1 Significance"
-                "   2 Asymptotic Surprise"
-                "   3 Infomap\n"
-                "   4 Modularity\n"
-                "   5 Asymptotical Modularity (EXPERIMENTAL)\n"
-                "   6 Wonder (EXPERIMENTAL)\n"
-                "-m [method]:
-                "   0 Agglomerative Optimizer\n"
-                "   1 Random\n"
-                "   2 Simulated Annealing\n"
-                "-V [report_level] ERROR=0, WARNING=1, INFO=2, DEBUG=3, DEBUG1=4, DEBUG2=5, DEBUG3=6, DEBUG4=7\n"
-                "-S [seed] specify the random seed, default time(0)\n"
-                "-b [bool] wheter to start with initial random cluster or every node in its community\n"
-                "-r [repetitions], number of repetitions of PACO, default=1\n"
-                "-p [print solution]\n"
-                "\n"
-                );
+//    std::printf(
+//                "Usage: paco_optimizer [options] graph_file [output_suffix]\n"
+//                "options:\n"
+//                "-q [quality]"
+//                "   0 Binary Surprise"
+//                "   1 Significance"
+//                "   2 Asymptotic Surprise"
+//                "   3 Infomap\n"
+//                "   4 Modularity\n"
+//                "   5 Asymptotical Modularity (EXPERIMENTAL)\n"
+//                "   6 Wonder (EXPERIMENTAL)\n"
+//                "-m [method]:
+//                "   0 Agglomerative Optimizer\n"
+//                "   1 Random\n"
+//                "   2 Simulated Annealing\n"
+//                "-V [report_level] ERROR=0, WARNING=1, INFO=2, DEBUG=3, DEBUG1=4, DEBUG2=5, DEBUG3=6, DEBUG4=7\n"
+//                "-S [seed] specify the random seed, default time(0)\n"
+//                "-b [bool] wheter to start with initial random cluster or every node in its community\n"
+//                "-r [repetitions], number of repetitions of PACO, default=1\n"
+//                "-p [print solution]\n"
+//                "\n"
+//                );
     exit(1);
 }
 
