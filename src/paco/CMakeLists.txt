@@ -101,3 +101,6 @@ target_link_libraries(test_dcsurprise PACO)
 
 add_executable(test_structural_sim test_structural_sim.cpp)
 target_link_libraries(test_structural_sim PACO)
+
+add_executable(test_sparse_load test_sparse_load.cpp)
+target_link_libraries(test_sparse_load PACO)

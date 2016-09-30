@@ -75,15 +75,6 @@ GraphC::GraphC(igraph_t *g)
     _must_delete = true;
 }
 
-/**
- * @brief GraphC::GraphC
- * @param edges
- * @param weights
- */
-GraphC::GraphC(const std::vector<int> &edges, const std::vector<int> &weights)
-{
-
-}
 
 /**
  * @brief GraphC::GraphC
@@ -123,16 +114,15 @@ GraphC::GraphC(double *W, int n, int m)
  * @param edges
  * @param weights
  */
-void GraphC::initC(const std::vector<int> &edges_list, const std::vector<double> &weights)
+void GraphC::init(const std::vector<double> &edges_list_stl, const std::vector<double> &weights)
 {
-   igraph_vector_t edges;
-   igraph_vector_view(&edges,edges_list.data(),edges_list.size());
-   int n = std::max(edges_list);
-   IGRAPH_CHECK(igraph_create(&this->ig, &edges, n, FALSE));
+   igraph_vector_t edges_list;
+   igraph_vector_view(&edges_list,edges_list_stl.data(),edges_list_stl.size());
+   int n = *std::max(edges_list_stl.begin(),edges_list_stl.end());
+   igraph_create(&this->ig, &edges_list, n, 0);
 
    _is_directed = false;
-
-   size_t num_different_edge_weight_values = set<double>(weights.data(),weights.data()+weights.size()).size();
+    size_t num_different_edge_weight_values = set<double>(weights.data(),weights.data()+weights.size()).size();
    _is_weighted = num_different_edge_weight_values!=2;
 }
 

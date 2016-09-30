@@ -47,7 +47,6 @@ class GraphC
 public:
     GraphC();
     GraphC(const GraphC &rhs);
-    GraphC(const std::vector<int> &edges, const std::vector<double> &weights);
     GraphC(size_t nvertices);
     GraphC(const Eigen::MatrixXd &W);
     GraphC(double *W, int n, int m);
@@ -55,7 +54,7 @@ public:
     ~GraphC();
 
     void init(const Eigen::MatrixXd &W);
-    void init(const std::vector<int> &edges, const std::vector<double> &weights);
+    void init(const std::vector<double> &edges_list, const std::vector<double> &weights);
 
     const igraph_t *get_igraph() const; // allows only const copies of the pointer.
     bool read_adj_matrix(const std::string &filename);
