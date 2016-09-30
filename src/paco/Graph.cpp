@@ -77,6 +77,16 @@ GraphC::GraphC(igraph_t *g)
 
 /**
  * @brief GraphC::GraphC
+ * @param edges
+ * @param weights
+ */
+GraphC::GraphC(const std::vector<int> &edges, const std::vector<int> &weights)
+{
+
+}
+
+/**
+ * @brief GraphC::GraphC
  * @param nvertices
  */
 GraphC::GraphC(size_t nvertices)
@@ -106,6 +116,24 @@ GraphC::GraphC(double *W, int n, int m)
 {
     Eigen::MatrixXd MW = Eigen::Map<Eigen::MatrixXd>(W,n,m);
     this->init(MW);
+}
+
+/**
+ * @brief GraphC::initC
+ * @param edges
+ * @param weights
+ */
+void GraphC::initC(const std::vector<int> &edges_list, const std::vector<double> &weights)
+{
+   igraph_vector_t edges;
+   igraph_vector_view(&edges,edges_list.data(),edges_list.size());
+   int n = std::max(edges_list);
+   IGRAPH_CHECK(igraph_create(&this->ig, &edges, n, FALSE));
+
+   _is_directed = false;
+
+   size_t num_different_edge_weight_values = set<double>(weights.data(),weights.data()+weights.size()).size();
+   _is_weighted = num_different_edge_weight_values!=2;
 }
 
 /**
