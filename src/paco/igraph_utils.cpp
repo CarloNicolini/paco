@@ -283,7 +283,7 @@ int igraph_read_graph_weighted_edgelist(igraph_t *graph, FILE *instream,
     {
       IGRAPH_ERROR("parsing edgelist file failed", IGRAPH_PARSEERROR);
     }
-    read=fscanf(instream, "%g", &weight);
+    read=fscanf(instream, "%lf", &weight);
     if (read != 1)
     {
       IGRAPH_ERROR("parsing edgelist file failed (invalid weight)", IGRAPH_PARSEERROR);

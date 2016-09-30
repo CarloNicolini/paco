@@ -351,6 +351,10 @@ bool GraphC::read_weighted_edge_list(const std::string &filename, int nvertices)
     IGRAPH_TRY(igraph_read_graph_weighted_edgelist(&this->ig,f,nvertices,0,&this->edge_weights));
     fclose(f);
     this->_is_weighted = true;
+    int m = igraph_vector_size(&this->edge_weights);
+    this->edge_weights_stl.resize(m);
+    for (int i=0; i<m; ++i)
+        edge_weights_stl.at(i) = edge_weights.stor_begin[i];
     return true;
 }
 
