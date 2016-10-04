@@ -109,6 +109,11 @@ GraphC::GraphC(double *W, int n, int m)
     this->init(MW);
 }
 
+GraphC::GraphC(const std::vector<double> &edges_list_stl, const std::vector<double> &weights)
+{
+    this->init(edges_list_stl,weights);
+}
+
 /**
  * @brief GraphC::initC
  * @param edges
@@ -116,14 +121,38 @@ GraphC::GraphC(double *W, int n, int m)
  */
 void GraphC::init(const std::vector<double> &edges_list_stl, const std::vector<double> &weights)
 {
-   igraph_vector_t edges_list;
-   igraph_vector_view(&edges_list,edges_list_stl.data(),edges_list_stl.size());
-   int n = *std::max(edges_list_stl.begin(),edges_list_stl.end());
-   igraph_create(&this->ig, &edges_list, n, 0);
+    igraph_vector_t edges_list;
+    igraph_vector_view(&edges_list,edges_list_stl.data(),edges_list_stl.size());
+    igraph_create(&this->ig, &edges_list, 0, 0);
 
-   _is_directed = false;
+    _is_directed = false;
+
+    this->set_edge_weights(weights);
     size_t num_different_edge_weight_values = set<double>(weights.data(),weights.data()+weights.size()).size();
-   _is_weighted = num_different_edge_weight_values!=2;
+    this->_is_weighted = num_different_edge_weight_values!=1; //because here we just insert nonzeros
+    igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
+    this->_must_delete = true;
+}
+
+/**
+ * @brief GraphC::init
+ * @param elist
+ * @param weights
+ * @param num_edges
+ */
+void GraphC::init(const double *elist, const double *weights, int num_edges)
+{
+    igraph_vector_t edges_list;
+    igraph_vector_view(&edges_list,elist,num_edges);
+    int n = *std::max(elist,elist+num_edges);
+    igraph_create(&this->ig, &edges_list, n, 0);
+
+    // Assing weights
+    const vector<igraph_real_t> weights_stl(weights,weights+num_edges);
+    this->set_edge_weights(weights_stl);
+    igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
+    _is_directed = false;
+    _must_delete = true;
 }
 
 /**
@@ -626,9 +655,10 @@ void GraphC::print() const
     igraph_adjlist_t adjlist;
     igraph_neimode_t mode = IGRAPH_TOTAL;
     igraph_adjlist_init(&this->ig,&adjlist,mode);
+    FILE_LOG(logINFO) << "Graph adjacencly list" ;
     igraph_adjlist_print(&adjlist);
+    FILE_LOG(logINFO) << "End adjacencly list" ;
     igraph_adjlist_destroy(&adjlist);
-    //igraph_write_graph_dot(&this->ig,stderr);
 }
 
 /**

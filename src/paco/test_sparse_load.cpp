@@ -57,6 +57,7 @@ vector<double> read_vector(const string &filename)
     return vmemb;
 }
 
+#include "Community.h"
 int main(int argc, char *argv[])
 {
     srand(time(0));
@@ -73,10 +74,16 @@ int main(int argc, char *argv[])
         e.push_back(j[l]-1);
     }
 
-    GraphC g;
-    g.init(e,w);
+    GraphC *g = new GraphC(e,w);
 
-    g.info();
-    g.print();
+
+    g->info();
+    g->print();
+
+    CommunityStructure c(g);
+    //c.set_random_seed(pars.rand_seed);
+    double finalquality=c.optimize(QualitySurprise,MethodAgglomerative,5);
+    cout << finalquality << endl;
+    delete g;
     return 0;
 }

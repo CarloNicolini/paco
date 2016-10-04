@@ -50,10 +50,12 @@ public:
     GraphC(size_t nvertices);
     GraphC(const Eigen::MatrixXd &W);
     GraphC(double *W, int n, int m);
+    GraphC(const std::vector<double> &edges_list_stl, const std::vector<double> &weights);
     GraphC(igraph_t *g);
     ~GraphC();
 
     void init(const Eigen::MatrixXd &W);
+    void init(const double *elist, const double *weights, int num_edges);
     void init(const std::vector<double> &edges_list, const std::vector<double> &weights);
 
     const igraph_t *get_igraph() const; // allows only const copies of the pointer.

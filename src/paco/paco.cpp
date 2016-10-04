@@ -109,7 +109,8 @@ static const char *error_strings[] =
     "Not enough input arguments.",
     "Non valid argument value.",
     "Non valid argument type.",
-    "Non valid input adjacency matrix. Must be symmetric real dense-type square matrix.",
+    "Non valid input adjacency matrix. PACO accepts symmetric real dense-type (n x n) matrices or sparse edges-list representation \
+[num_edges x 3] array of edges list with edge endpoints and weight.",
     "Expected some argument value but empty found.",
     "Unkwown argument."
 };
@@ -141,8 +142,16 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
 
     int M = mxGetM(W);
     int N = mxGetN(W);
+    // In this case we are feeding instead of the adjacency matrix, the result of [i j w]=find(A);
+    bool feedingSparseMatrix=false;
+    if (N==3 && M>3)
+    {
+        feedingSparseMatrix=true;
+    }
 
     bool v1 = M!=N;
+    if (feedingSparseMatrix)
+        v1=false;
     bool v2 = mxIsComplex(W);
     bool v3 = mxIsEmpty(W);
     bool v4 = mxIsCell(W);
@@ -225,7 +234,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
     }
     return NO_ERROR;
 }
-
+#include <valarray>
 void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[])
 {
     PacoParams pars;
@@ -255,18 +264,42 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     printf("[INFO] Method=%d\n[INFO] Consider_comms=%d\n[INFO] CPMgamma=%f\n[INFO] Delta=%f\n[INFO] Max_itr=%zu\n[INFO] Random_order=%d rand_seed=%d\n",pars.method, pars.consider_comms, pars.cpmgamma, pars.delta, pars.max_itr, pars.random_order, pars.rand_seed);
 #endif
     // Get number of vertices in the network
-    int N = mxGetN(inputArgs[0]);
+    int N = mxGetN(inputArgs[0]); // number of columns
+    int M = mxGetM(inputArgs[0]); // number of rows
+    double *W = mxGetPr(inputArgs[0]);
+
+    // In this case we are feeding instead of the adjacency matrix, the result of [i j w]=find(A);
+    bool feedingSparseMatrix=false;
+    if (M>3 && N==3)
+    {
+        feedingSparseMatrix=true;
+    }
 
     // Create the Graph helper object specifying edge weights too
     GraphC *G=NULL;
     try
     {
-        G  = new GraphC(mxGetPr(inputArgs[0]),N,N);
+        if (feedingSparseMatrix)
+        {
+            vector<double> edges_stl,edges_weights_stl;
+            for (int i=0; i<M;++i)
+            {
+                edges_stl.push_back(*(W+i)-1);
+                edges_stl.push_back(*(W+i+M)-1);
+                edges_weights_stl.push_back(*(W+i+2*M));
+            }
+            G = new GraphC(edges_stl,edges_weights_stl);
+        }
+           else
+        {
+            G  = new GraphC(mxGetPr(inputArgs[0]),N,N);
+        }
+        G->info();
+        G->print();
         // Create an instance of the optimizer
         CommunityStructure c(G);
         c.set_random_seed(pars.rand_seed);
-        double finalquality=c.optimize(pars.qual,pars.method,pars.nrep);
-
+        double finalquality=c.optimize(pars.qual,pars.method,1);
         // Prepare output
         outputArgs[0] = mxCreateDoubleMatrix(1,(mwSize)N, mxREAL);
         // Copy the membership vector to outputArgs[0] which has been already preallocated
