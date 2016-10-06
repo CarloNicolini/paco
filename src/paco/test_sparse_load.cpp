@@ -25,17 +25,9 @@
 
 #include <Eigen/Core>
 #include "Graph.h"
+#include "Community.h"
 
 using namespace std;
-
-// 1     0     1
-// 0     0     1
-// 0     1     0
-
-//  (1,1)        1
-//  (3,2)        1
-//  (1,3)        1
-//  (2,3)        1
 
 vector<double> read_vector(const string &filename)
 {
@@ -57,7 +49,7 @@ vector<double> read_vector(const string &filename)
     return vmemb;
 }
 
-#include "Community.h"
+
 int main(int argc, char *argv[])
 {
     srand(time(0));
@@ -68,22 +60,21 @@ int main(int argc, char *argv[])
     vector<double> w = read_vector("w.csv");
 
     vector<double> e;
-    for (int l=0;l<i.size();++l)
+    for (int l=0; l<i.size(); ++l)
     {
         e.push_back(i[l]-1);
         e.push_back(j[l]-1);
     }
 
-    GraphC *g = new GraphC(e,w);
-
+    GraphC *g = new GraphC(e.data(),w.data(),w.size());
 
     g->info();
     g->print();
 
-    CommunityStructure c(g);
-    //c.set_random_seed(pars.rand_seed);
-    double finalquality=c.optimize(QualitySurprise,MethodAgglomerative,5);
-    cout << finalquality << endl;
+//    CommunityStructure c(g);
+//    //c.set_random_seed(pars.rand_seed);
+//    double finalquality=c.optimize(QualitySurprise,MethodAgglomerative,5);
+//    cout << finalquality << endl;
     delete g;
     return 0;
 }

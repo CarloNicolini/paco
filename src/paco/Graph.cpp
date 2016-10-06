@@ -109,29 +109,14 @@ GraphC::GraphC(double *W, int n, int m)
     this->init(MW);
 }
 
-GraphC::GraphC(const std::vector<double> &edges_list_stl, const std::vector<double> &weights)
-{
-    this->init(edges_list_stl,weights);
-}
-
 /**
- * @brief GraphC::initC
- * @param edges
+ * @brief GraphC::GraphC
+ * @param edges_list_stl
  * @param weights
  */
-void GraphC::init(const std::vector<double> &edges_list_stl, const std::vector<double> &weights)
+GraphC::GraphC(const double *edges_list, const double *edges_weights, int nedges)
 {
-    igraph_vector_t edges_list;
-    igraph_vector_view(&edges_list,edges_list_stl.data(),edges_list_stl.size());
-    igraph_create(&this->ig, &edges_list, 0, 0);
-
-    _is_directed = false;
-
-    this->set_edge_weights(weights);
-    size_t num_different_edge_weight_values = set<double>(weights.data(),weights.data()+weights.size()).size();
-    this->_is_weighted = num_different_edge_weight_values!=1; //because here we just insert nonzeros
-    igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
-    this->_must_delete = true;
+    this->init(edges_list,edges_weights,nedges);
 }
 
 /**
@@ -144,8 +129,7 @@ void GraphC::init(const double *elist, const double *weights, int num_edges)
 {
     igraph_vector_t edges_list;
     igraph_vector_view(&edges_list,elist,num_edges);
-    int n = *std::max(elist,elist+num_edges);
-    igraph_create(&this->ig, &edges_list, n, 0);
+    igraph_create(&this->ig, &edges_list, 0, 0);
 
     // Assing weights
     const vector<igraph_real_t> weights_stl(weights,weights+num_edges);
@@ -207,7 +191,7 @@ void GraphC::init(const Eigen::MatrixXd &W)
     _is_directed = false;
 
     size_t num_different_edge_weight_values = set<double>(W.data(),W.data()+W.rows()*W.cols()).size();
-    _is_weighted = num_different_edge_weight_values!=2;
+    _is_weighted = num_different_edge_weight_values > 1;
 }
 
 /**
@@ -439,7 +423,7 @@ bool GraphC::read_weights_from_file(const string &filename)
         throw std::logic_error("Edge weights vector not consistent with number of graph edges");
 
     size_t num_different_edge_weight_values = set<double>(edge_weights_stl.begin(),edge_weights_stl.end()).size();
-    _is_weighted = num_different_edge_weight_values!=2; // set if the graph is weighted or just has two different weights
+    _is_weighted = num_different_edge_weight_values > 1; // set if the graph is weighted or just has two different weights
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size()); // copy to weights vector
     return true;
 }
@@ -448,12 +432,13 @@ bool GraphC::read_weights_from_file(const string &filename)
  * @brief GraphC::set_edge_weights
  * @param w
  */
-void GraphC::set_edge_weights(const vector<igraph_real_t> &w)
+void GraphC::set_edge_weights(const vector<igraph_real_t> &w, bool override_is_weighted)
 {
     this->edge_weights_stl = w;
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
+
     size_t num_different_edge_weight_values = set<double>(edge_weights_stl.begin(),edge_weights_stl.end()).size();
-    _is_weighted = num_different_edge_weight_values!=2;
+    _is_weighted = num_different_edge_weight_values > 1;
 }
 
 

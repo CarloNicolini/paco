@@ -234,7 +234,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
     }
     return NO_ERROR;
 }
-#include <valarray>
+
 void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[])
 {
     PacoParams pars;
@@ -243,7 +243,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     pars.method = MethodAgglomerative;
     pars.nrep = 1;
     pars.verbosity_level=7;
-    pars.rand_seed = -1; // default value for the random seed, if -1 than microseconds time is used.
+    pars.rand_seed = -1; // default value for the random seed, if -1 then microseconds time is used.
 
     FILELog::ReportingLevel() = static_cast<TLogLevel>(pars.verbosity_level);
 
@@ -277,25 +277,25 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
 
     // Create the Graph helper object specifying edge weights too
     GraphC *G=NULL;
+    vector<double> edges_stl,edges_weights_stl;
     try
     {
         if (feedingSparseMatrix)
         {
-            vector<double> edges_stl,edges_weights_stl;
             for (int i=0; i<M;++i)
             {
                 edges_stl.push_back(*(W+i)-1);
                 edges_stl.push_back(*(W+i+M)-1);
                 edges_weights_stl.push_back(*(W+i+2*M));
             }
-            G = new GraphC(edges_stl,edges_weights_stl);
+            G = new GraphC(edges_stl.data(),edges_weights_stl.data(),edges_weights_stl.size());
         }
            else
         {
             G  = new GraphC(mxGetPr(inputArgs[0]),N,N);
         }
-        G->info();
-        G->print();
+        //G->info();
+        //G->print();
         // Create an instance of the optimizer
         CommunityStructure c(G);
         c.set_random_seed(pars.rand_seed);

@@ -50,7 +50,7 @@ public:
     GraphC(size_t nvertices);
     GraphC(const Eigen::MatrixXd &W);
     GraphC(double *W, int n, int m);
-    GraphC(const std::vector<double> &edges_list_stl, const std::vector<double> &weights);
+    GraphC(const double *edges, const double *edge_weights, int nedges);
     GraphC(igraph_t *g);
     ~GraphC();
 
@@ -65,7 +65,7 @@ public:
     bool read_edge_list(const std::string &filename, int nvertices);
     bool read_gml(const std::string &filename);
     bool read_weights_from_file(const string &filename);
-    void set_edge_weights(const std::vector<igraph_real_t> &w);
+    void set_edge_weights(const std::vector<igraph_real_t> &w, bool override_is_weighted=false);
 
     void compute_vertex_strenghts(bool loops=false);
     void compute_vertex_degrees(bool loops=false);
