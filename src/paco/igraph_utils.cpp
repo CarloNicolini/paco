@@ -86,7 +86,7 @@ int igraph_i_neisets_intersect(const igraph_t *graph, const igraph_vector_t *v1,
     long int i=0, j=0, v1size=igraph_vector_size(v1), v2size=igraph_vector_size(v2);
     *weight_union = 0;
     *weight_intersection = 0;
-/*
+    /*
     while (i < v1size && j < v2size)
     {
         if (VECTOR(*v1)[i] == VECTOR(*v2)[j])
@@ -248,61 +248,76 @@ int igraph_similarity_jaccard_weighted_es(const igraph_t *graph, igraph_vector_t
 }
 
 int igraph_read_graph_weighted_edgelist(igraph_t *graph, FILE *instream,
-                   igraph_integer_t n, igraph_bool_t directed, igraph_vector_t *edge_weights)
+                                        igraph_integer_t n, igraph_bool_t directed, igraph_vector_t *edge_weights)
 {
 
-  igraph_vector_t edges=IGRAPH_VECTOR_NULL;
-  long int from, to;
-  double weight;
-  int c;
+    igraph_vector_t edges=IGRAPH_VECTOR_NULL;
+    long int from, to;
+    double weight;
+    int c;
 
-  IGRAPH_VECTOR_INIT_FINALLY(&edges, 0);
-  IGRAPH_CHECK(igraph_vector_reserve(&edges, 100));
+    IGRAPH_VECTOR_INIT_FINALLY(&edges, 0);
+    IGRAPH_CHECK(igraph_vector_reserve(&edges, 100));
 
-  /* skip all whitespace */
-  do {
-    c = getc (instream);
-  } while (isspace (c));
-  ungetc (c, instream);
-
-  int linenumber=1;
-  std::vector<double> eweights;
-  while (!feof(instream))
-  {
-    int read;
-
-    //IGRAPH_ALLOW_INTERRUPTION();
-
-    read=fscanf(instream, "%li", &from);
-    if (read != 1)
-    {
-      IGRAPH_ERROR("parsing edgelist file failed", IGRAPH_PARSEERROR);
-    }
-    read=fscanf(instream, "%li", &to);
-    if (read != 1)
-    {
-      IGRAPH_ERROR("parsing edgelist file failed", IGRAPH_PARSEERROR);
-    }
-    read=fscanf(instream, "%lf", &weight);
-    if (read != 1)
-    {
-      IGRAPH_ERROR("parsing edgelist file failed (invalid weight)", IGRAPH_PARSEERROR);
-    }
-    IGRAPH_CHECK(igraph_vector_push_back(&edges, from));
-    IGRAPH_CHECK(igraph_vector_push_back(&edges, to));
-    eweights.push_back(weight);
     /* skip all whitespace */
     do {
-      c = getc (instream);
+        c = getc (instream);
     } while (isspace (c));
     ungetc (c, instream);
-    ++linenumber;
-  }
-  // copy all the weights to the weight vector
-  igraph_vector_init_copy(edge_weights, eweights.data(), eweights.size());
 
-  IGRAPH_CHECK(igraph_create(graph, &edges, n, directed));
-  igraph_vector_destroy(&edges);
-  IGRAPH_FINALLY_CLEAN(1);
-  return 0;
+    int linenumber=1;
+    std::vector<double> eweights;
+    while (!feof(instream))
+    {
+        int read;
+
+        //IGRAPH_ALLOW_INTERRUPTION();
+
+        read=fscanf(instream, "%li", &from);
+        if (read != 1)
+        {
+            IGRAPH_ERROR("parsing edgelist file failed", IGRAPH_PARSEERROR);
+        }
+        read=fscanf(instream, "%li", &to);
+        if (read != 1)
+        {
+            IGRAPH_ERROR("parsing edgelist file failed", IGRAPH_PARSEERROR);
+        }
+        read=fscanf(instream, "%lf", &weight);
+        if (read != 1)
+        {
+            IGRAPH_ERROR("parsing edgelist file failed (invalid weight)", IGRAPH_PARSEERROR);
+        }
+        IGRAPH_CHECK(igraph_vector_push_back(&edges, from));
+        IGRAPH_CHECK(igraph_vector_push_back(&edges, to));
+        eweights.push_back(weight);
+        /* skip all whitespace */
+        do {
+            c = getc (instream);
+        } while (isspace (c));
+        ungetc (c, instream);
+        ++linenumber;
+    }
+    // copy all the weights to the weight vector
+    igraph_vector_init_copy(edge_weights, eweights.data(), eweights.size());
+
+    IGRAPH_CHECK(igraph_create(graph, &edges, n, directed));
+    igraph_vector_destroy(&edges);
+    IGRAPH_FINALLY_CLEAN(1);
+    return 0;
+}
+
+/**
+ * @brief free_complist See the example in documentation about igraph_decompose
+ * @param complist
+ */
+void free_complist(igraph_vector_ptr_t *complist)
+{
+    long int i;
+    for (i=0; i<igraph_vector_ptr_size(complist); i++)
+    {
+        igraph_t *c = static_cast<igraph_t*>(complist->stor_begin[i]);
+        igraph_destroy(c);
+        free(c);
+    }
 }

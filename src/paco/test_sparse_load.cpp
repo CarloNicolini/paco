@@ -55,26 +55,35 @@ int main(int argc, char *argv[])
     srand(time(0));
     FILELog::ReportingLevel() = logDEBUG4;// static_cast<TLogLevel>(params.verbosity);
     
-    vector<double> i = read_vector("i.csv");
-    vector<double> j = read_vector("j.csv");
-    vector<double> w = read_vector("w.csv");
+    vector<double> i = read_vector("ic.txt");
+    vector<double> j = read_vector("jc.txt");
+    vector<double> w = read_vector("wc.txt");
 
     vector<double> e;
     for (int l=0; l<i.size(); ++l)
     {
         e.push_back(i[l]-1);
         e.push_back(j[l]-1);
+        cout << "(i,j) = " << i[l] << " " << j[l] << endl;
     }
 
-    GraphC *g = new GraphC(e.data(),w.data(),w.size());
+    for (int l=0; l<e.size()-1; l+=2)
+    {
+        cout << e[l]+1 << " " << e[l+1]+1 << endl;
+    }
 
+
+    GraphC *g = new GraphC(e.data(),w.data(),w.size());
     g->info();
     g->print();
-
-//    CommunityStructure c(g);
-//    //c.set_random_seed(pars.rand_seed);
-//    double finalquality=c.optimize(QualitySurprise,MethodAgglomerative,5);
-//    cout << finalquality << endl;
+    CommunityStructure c(g);
+    //c.set_random_seed(pars.rand_seed);
+    double finalquality=c.optimize(QualitySurprise,MethodAgglomerative,5);
+    cout << finalquality << endl;
     delete g;
+
+
+
+
     return 0;
 }

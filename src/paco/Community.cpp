@@ -31,8 +31,8 @@
 #include "AsymptoticSurpriseFunction.h"
 #include "AsymptoticModularityFunction.h"
 #include "SignificanceFunction.h"
-#include "WonderFunction.h"
-#include "DegreeCorrectedSurpriseFunction.h"
+//#include "WonderFunction.h"
+#//include "DegreeCorrectedSurpriseFunction.h"
 
 #include "QualityOptimizer.h"
 #include "AnnealOptimizer.h"
@@ -229,16 +229,7 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     QualityOptimizer *opt;
     QualityFunction *fun;
 
-    const igraph_vector_t *edge_weights;
-
-    try
-    {
-        edge_weights= pgraph->get_edge_weights();
-    }
-    catch ( ... )
-    {
-        edge_weights=NULL;
-    }
+    const igraph_vector_t *edge_weights = pgraph->get_edge_weights();
 
     double finalqual = std::numeric_limits<double>::min();
 
@@ -273,21 +264,21 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
         igraph_community_infomap(pgraph->get_igraph(),edge_weights,NULL,nrep,&membership,&finalqual);
         return finalqual;
     }
-    case QualityAsymptoticModularity:
-    {
-        fun = dynamic_cast<AsymptoticModularityFunction*>(new AsymptoticModularityFunction);
-        break;
-    }
-    case QualityWonder:
-    {
-        fun = dynamic_cast<WonderFunction*>(new WonderFunction);
-        break;
-    }
-    case QualityDegreeCorrectedSurprise:
-    {
-        fun = dynamic_cast<DegreeCorrectedSurpriseFunction*>(new DegreeCorrectedSurpriseFunction);
-        break;
-    }
+//    case QualityAsymptoticModularity:
+//    {
+//        fun = dynamic_cast<AsymptoticModularityFunction*>(new AsymptoticModularityFunction);
+//        break;
+//    }
+//    case QualityWonder:
+//    {
+//        fun = dynamic_cast<WonderFunction*>(new WonderFunction);
+//        break;
+//    }
+//    case QualityDegreeCorrectedSurprise:
+//    {
+//        fun = dynamic_cast<DegreeCorrectedSurpriseFunction*>(new DegreeCorrectedSurpriseFunction);
+//        break;
+//    }
     default:
     {
         throw std::logic_error("Non supported quality function");
@@ -322,8 +313,8 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
     // Now select the partition with the MAXIMUM quality value
     igraph_vector_t best_membership;
     igraph_vector_init(&best_membership,pgraph->number_of_nodes());
-    try
-    {
+    //try
+    //{
         for (int i=0; i<nrep; ++i)
         {
             double qual = opt->optimize(pgraph->get_igraph(),*fun,&membership,edge_weights);
@@ -336,11 +327,11 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
         // then copy back the content of best_membership to membership
         igraph_vector_update(&membership,&best_membership);
         igraph_vector_destroy(&best_membership);
-    }
-    catch ( std::exception &e )
-    {
-        throw e;
-    }
+    //}
+    //catch ( std::exception &e )
+    //{
+    //    throw e;
+    //}
 
     delete opt;
     delete fun;

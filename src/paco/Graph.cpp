@@ -23,6 +23,7 @@
 *  PACO. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sstream>
 #include "Graph.h"
 
 /**
@@ -135,8 +136,15 @@ void GraphC::init(const double *elist, const double *weights, int num_edges)
     const vector<igraph_real_t> weights_stl(weights,weights+num_edges);
     this->set_edge_weights(weights_stl);
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
-    _is_directed = false;
     _must_delete = true;
+
+    // Check for self-loops
+    _is_directed = this->ig.directed;
+    for (int i=0; i<num_edges*2; i+=2)
+    {
+        _has_selfloops = (elist[i]==elist[i+1]);
+    }
+
 }
 
 /**
@@ -191,7 +199,7 @@ void GraphC::init(const Eigen::MatrixXd &W)
     _is_directed = false;
 
     size_t num_different_edge_weight_values = set<double>(W.data(),W.data()+W.rows()*W.cols()).size();
-    _is_weighted = num_different_edge_weight_values > 1;
+    _is_weighted = num_different_edge_weight_values != 2;
 }
 
 /**
@@ -203,7 +211,7 @@ const igraph_vector_t* GraphC::get_edge_weights() const
     if (_is_weighted)
         return &this->edge_weights;
     else
-        throw std::logic_error("Graph is not weighted. Invalid call to get_edge_weights()");
+        return NULL;
 }
 
 /**
@@ -290,7 +298,7 @@ const igraph_t* GraphC::get_igraph() const
 {
     return &this->ig;
 }
-#include <sstream>
+
 /**
  * @brief GraphC::read_adj_matrix
  * @param filename
@@ -423,7 +431,7 @@ bool GraphC::read_weights_from_file(const string &filename)
         throw std::logic_error("Edge weights vector not consistent with number of graph edges");
 
     size_t num_different_edge_weight_values = set<double>(edge_weights_stl.begin(),edge_weights_stl.end()).size();
-    _is_weighted = num_different_edge_weight_values > 1; // set if the graph is weighted or just has two different weights
+    _is_weighted = num_different_edge_weight_values != 2; // set if the graph is weighted or just has two different weights
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size()); // copy to weights vector
     return true;
 }
@@ -619,16 +627,18 @@ double GraphC::clustering_coefficient() const
  * @brief GraphC::number_connected_components
  * @return
  */
+
 size_t GraphC::number_connected_components()
 {
     long min_num_vertices=1;
     long max_num_components=-1;
-    // Need to init components vector pointer, otherwise segfault
-    igraph_vector_ptr_t comps;
-    igraph_vector_ptr_init(&comps,0);
-    IGRAPH_TRY(igraph_decompose(&this->ig, &comps, IGRAPH_WEAK, max_num_components, min_num_vertices));
-    long ncomps = igraph_vector_ptr_size(const_cast<igraph_vector_ptr_t*>(&comps));
-    igraph_vector_ptr_destroy(&comps);
+
+    igraph_vector_ptr_t complist;
+    igraph_vector_ptr_init(&complist, 0);
+    igraph_decompose(&this->ig, &complist, IGRAPH_WEAK, max_num_components, min_num_vertices);
+    long ncomps = igraph_vector_ptr_size(&complist);
+    free_complist(&complist);
+    igraph_vector_ptr_destroy(&complist);
     return ncomps;
 }
 
@@ -652,9 +662,9 @@ void GraphC::print() const
 void GraphC::info()
 {
     printf(ANSI_COLOR_YELLOW);
+    FILE_LOG(logINFO) << "Num vertices=" << number_of_nodes() << " Num edges=" << number_of_edges();
     FILE_LOG(logINFO) << "Is directed? " << is_directed();
     FILE_LOG(logINFO) << "Is weighted? " << is_weighted();
-    FILE_LOG(logINFO) << "Num vertices=" << number_of_nodes() << " Num edges=" << number_of_edges();
     FILE_LOG(logINFO) << "Density (no loops)=" << density(false);
     FILE_LOG(logINFO) << "Density (with loops)=" << density(true);
     FILE_LOG(logINFO) << "Num connected components=" << number_connected_components();

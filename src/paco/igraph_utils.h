@@ -66,4 +66,7 @@ int igraph_i_neisets_intersect(const igraph_t *graph, const igraph_vector_t *v1,
 
 int igraph_read_graph_weighted_edgelist(igraph_t *graph, FILE *instream, igraph_integer_t n, igraph_bool_t directed, igraph_vector_t *edge_weights);
 
+void free_complist(igraph_vector_ptr_t *complist);
+
+
 #endif

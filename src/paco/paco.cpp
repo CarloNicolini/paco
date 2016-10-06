@@ -70,14 +70,14 @@ void printUsage()
     mexPrintf("		1: Random\n");
     mexPrintf("		2: Annealing (EXPERIMENTAL)\n");
     mexPrintf("[m, qual] = paco(W,'quality',val);\n");
-    mexPrintf("	val is one of the following integers: {0,1,2,3,4,5,6}:\n");
+    mexPrintf("	val is one of the following integers: {0,1,2,3}:\n");
     mexPrintf("		0: Surprise (discrete)\n");
     mexPrintf("		1: Significance\n");
     mexPrintf("		2: AsymptoticSurprise\n");
     mexPrintf("		3: Infomap\n");
-    mexPrintf("		4: Modularity\n");
-    mexPrintf("		5: AsymptoticModularity (EXPERIMENTAL)\n");
-    mexPrintf("		6: Wonder (EXPERIMENTAL)\n");
+    //mexPrintf("		4: Modularity\n");
+    //mexPrintf("		5: AsymptoticModularity (EXPERIMENTAL)\n");
+    //mexPrintf("		6: Wonder (EXPERIMENTAL)\n");
     mexPrintf("[m, qual] = paco(W,'nrep',val)\n");
     mexPrintf("	val is the number of repetitions to run over which to choose the best quality value (the lowest for Infomap, the highest for the other methods\n");
     mexPrintf("[m, qual] = paco(W,'seed',val)\n");
@@ -86,7 +86,7 @@ void printUsage()
     mexPrintf("Example:\n");
     mexPrintf("%Create a random symmetric thresholded network\n");
     mexPrintf(">> A=rand(100,100); A=(A+A')/2; A=A.*(A>0.5);\n");
-    mexPrintf("% Run asymptotical surprise optimization on A 1000 times and return the highest surprise\n% partition memb together with the quality value\n");
+    mexPrintf("\t % Run Asymptotical Surprise optimization on A for 1000 repetitions and return the highest Surprise\n partition membership together with the quality value\n");
     mexPrintf(">> [memb, qual] = paco(A,'method',2,'nrep',1000);\n");
 }
 
@@ -197,7 +197,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             else if ( strcasecmp(cpartype,"Quality")==0 )
             {
                 pars->qual = static_cast<QualityType>(*mxGetPr(parval));
-                if (pars->qual<0 || pars->qual>7)
+                if (pars->qual<0 || pars->qual>3)
                 {
                     *argposerr = argcount+1;
                     return ERROR_ARG_VALUE;
@@ -277,29 +277,28 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
 
     // Create the Graph helper object specifying edge weights too
     GraphC *G=NULL;
-    vector<double> edges_stl,edges_weights_stl;
-    try
-    {
+    //try
+    //{
+        cerr << "M=" << M << " N=" << N << endl;
         if (feedingSparseMatrix)
         {
-            for (int i=0; i<M;++i)
-            {
-                edges_stl.push_back(*(W+i)-1);
-                edges_stl.push_back(*(W+i+M)-1);
-                edges_weights_stl.push_back(*(W+i+2*M));
-            }
-            G = new GraphC(edges_stl.data(),edges_weights_stl.data(),edges_weights_stl.size());
+            Eigen::MatrixXd IJW = Eigen::Map<Eigen::MatrixXd>(W,M,N);
+            Eigen::MatrixXd IJ(M,2);
+            IJ << (IJW.col(0).array()-1),(IJW.col(1).array()-1);
+            cout << IJ << endl;
+            G = new GraphC(IJ.data(), IJW.col(2).data(), IJ.rows());
+            G->info();
+            G->print();
         }
            else
         {
             G  = new GraphC(mxGetPr(inputArgs[0]),N,N);
         }
-        //G->info();
-        //G->print();
+
         // Create an instance of the optimizer
         CommunityStructure c(G);
         c.set_random_seed(pars.rand_seed);
-        double finalquality=c.optimize(pars.qual,pars.method,1);
+        double finalquality=c.optimize(pars.qual,pars.method,pars.nrep);
         // Prepare output
         outputArgs[0] = mxCreateDoubleMatrix(1,(mwSize)N, mxREAL);
         // Copy the membership vector to outputArgs[0] which has been already preallocated
@@ -312,12 +311,12 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
         q[0] = finalquality;
         // Cleanup the memory (follow this order)
         delete G;
-    }
-    catch (std::exception &e)
-    {
-        cerr << e.what() << endl;
-        mexErrMsgTxt(e.what());
-    }
+    //}
+    //catch (std::exception &e)
+    //{
+    //    cerr << e.what() << endl;
+    //    mexErrMsgTxt(e.what());
+    //}
 
     // Finish the function
     return;
