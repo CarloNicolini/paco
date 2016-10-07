@@ -29,10 +29,13 @@
 #include "QualityFunction.h"
 #include "SurpriseFunction.h"
 #include "AsymptoticSurpriseFunction.h"
-#include "AsymptoticModularityFunction.h"
 #include "SignificanceFunction.h"
-//#include "WonderFunction.h"
-#//include "DegreeCorrectedSurpriseFunction.h"
+
+#ifdef EXPERIMENTAL
+#include "AsymptoticModularityFunction.h"
+#include "WonderFunction.h"
+#include "DegreeCorrectedSurpriseFunction.h"
+#endif
 
 #include "QualityOptimizer.h"
 #include "AnnealOptimizer.h"

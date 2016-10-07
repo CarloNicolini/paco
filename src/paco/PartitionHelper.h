@@ -73,12 +73,12 @@ public:
         return total_incomm_weight;
     }
 
-    const size_t& get_num_vertices() const
+    const igraph_integer_t& get_num_vertices() const
     {
         return num_vertices;
     }
 
-    const size_t& get_num_edges() const
+    const igraph_integer_t& get_num_edges() const
     {
         return num_edges;
     }
@@ -131,9 +131,9 @@ protected:
     const igraph_vector_t *curmemb;
 
     CommMap communities;
-    size_t num_comms;
-    size_t num_vertices;    // number of vertices
-    size_t num_edges; // number of edges
+    igraph_integer_t num_comms;
+    igraph_integer_t num_vertices;    // number of vertices
+    igraph_integer_t num_edges; // number of edges
     double total_incomm_weight; // sum of all edge weights inside communities
     double total_incomm_pairs;  // sum of all vertex pairs inside communities
 

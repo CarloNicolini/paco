@@ -83,7 +83,7 @@ int igraph_i_neisets_intersect(const igraph_t *graph, const igraph_vector_t *v1,
     std::set_union(vv1.begin(),vv1.end(),vv2.begin(),vv2.end(),         std::back_inserter(vunion));
 
     /* ASSERT: v1 and v2 are sorted */
-    long int i=0, j=0, v1size=igraph_vector_size(v1), v2size=igraph_vector_size(v2);
+    //long int i=0, j=0, v1size=igraph_vector_size(v1), v2size=igraph_vector_size(v2);
     *weight_union = 0;
     *weight_intersection = 0;
     /*
@@ -120,7 +120,6 @@ int igraph_similarity_jaccard_weighted_pairs(const igraph_t *graph, igraph_vecto
     long int v;
 
     igraph_vector_t *v1, *v2;
-    igraph_bool_t *seen;
 
     k = igraph_vector_size(pairs);
     if (k % 2 != 0)
@@ -130,6 +129,7 @@ int igraph_similarity_jaccard_weighted_pairs(const igraph_t *graph, igraph_vecto
     IGRAPH_CHECK(igraph_lazy_adjlist_init(graph, &al, mode, IGRAPH_SIMPLIFY));
     IGRAPH_FINALLY(igraph_lazy_adjlist_destroy, &al);
     /*
+    igraph_bool_t *seen;
     if (loops)
     {
         // Add the loop edges

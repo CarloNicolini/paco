@@ -49,10 +49,12 @@ enum QualityType
     QualitySignificance = 1,
     QualityAsymptoticSurprise = 2,
     QualityInfoMap = 3,
-    //QualityModularity = 4,
-    //QualityAsymptoticModularity = 5,
-    //QualityWonder = 6,
-    //QualityDegreeCorrectedSurprise = 7
+#ifdef EXPERIMENTAL
+    QualityModularity = 4,
+    QualityAsymptoticModularity = 5,
+    QualityWonder = 6,
+    QualityDegreeCorrectedSurprise = 7
+#endif
 };
 
 class CommunityStructure

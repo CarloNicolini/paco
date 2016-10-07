@@ -8,13 +8,8 @@ Surprise.cpp
 AsymptoticSurprise.cpp
 igraph_utils.cpp
 SurpriseFunction.cpp
-ConditionalSurpriseFunction.cpp
-DegreeCorrectedSurpriseFunction.cpp
 AsymptoticSurpriseFunction.cpp
-WonderFunction.cpp
 SignificanceFunction.cpp
-ModularityFunction.cpp
-AsymptoticModularityFunction.cpp
 RandomOptimizer.cpp
 AnnealOptimizer.cpp
 PartitionHelper.cpp
@@ -22,6 +17,7 @@ AgglomerativeOptimizer.cpp
 KLDivergence.cpp
 Timer.cpp
 )
+
 
 set(PACO_HDRS
 Graph.h
@@ -31,14 +27,9 @@ AsymptoticSurprise.h
 igraph_utils.h
 QualityFunction.h
 SurpriseFunction.h
-ConditionalSurpriseFunction.h
-DegreeCorrectedSurpriseFunction.h
 AsymptoticSurprise.h
 AsymptoticSurpriseFunction.h
-WonderFunction.h
 SignificanceFunction.h
-ModularityFunction.h
-AsymptoticModularityFunction.h
 QualityOptimizer.h
 RandomOptimizer.h
 AnnealOptimizer.h
@@ -47,6 +38,25 @@ AgglomerativeOptimizer.h
 KLDivergence.h
 Timer.h
 )
+
+if(EXPERIMENTAL_FEATURES)
+    set(PACO_SRCS
+    ${PACO_SRCS}
+    ConditionalSurpriseFunction.cpp
+    DegreeCorrectedSurpriseFunction.cpp
+    WonderFunction.cpp
+    ModularityFunction.cpp
+    AsymptoticModularityFunction.cpp
+    )
+    set(PACO_HDRS
+    ${PACO_HDRS}
+    ConditionalSurpriseFunction.h
+    DegreeCorrectedSurpriseFunction.h
+    WonderFunction.h
+    ModularityFunction.h
+    AsymptoticModularityFunction.h
+    )
+endif()
 
 add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
 target_link_libraries(PACO ${IGRAPH_LIBRARIES})
@@ -69,38 +79,40 @@ endif(PYTHON_SUPPORT)
 add_executable(paco_optimizer paco_optimizer.cpp)
 target_link_libraries(paco_optimizer PACO)
 
-add_executable(test_ordered_membership test_ordered_membership.cpp)
-target_link_libraries(test_ordered_membership PACO)
+if(COMPILE_TESTS)
+    add_executable(test_ordered_membership test_ordered_membership.cpp)
+    target_link_libraries(test_ordered_membership PACO)
 
-add_executable(test_graphc test_graphc.cpp)
-target_link_libraries(test_graphc PACO)
+    add_executable(test_graphc test_graphc.cpp)
+    target_link_libraries(test_graphc PACO)
 
-add_executable(test_paco_multiple test_paco_multiple.cpp)
-target_link_libraries(test_paco_multiple PACO)
+    add_executable(test_paco_multiple test_paco_multiple.cpp)
+    target_link_libraries(test_paco_multiple PACO)
 
-add_executable(test_igraph_matrix_view test_igraph_matrix_view.cpp)
-target_link_libraries(test_igraph_matrix_view PACO)
+    add_executable(test_igraph_matrix_view test_igraph_matrix_view.cpp)
+    target_link_libraries(test_igraph_matrix_view PACO)
 
-add_executable(test_igraph_matrix test_igraph_matrix.cpp)
-target_link_libraries(test_igraph_matrix PACO)
+    add_executable(test_igraph_matrix test_igraph_matrix.cpp)
+    target_link_libraries(test_igraph_matrix PACO)
 
-add_executable(test_quality_function test_quality_function.cpp)
-target_link_libraries(test_quality_function PACO)
+    add_executable(test_quality_function test_quality_function.cpp)
+    target_link_libraries(test_quality_function PACO)
 
-add_executable(test_partition_helper test_partition_helper.cpp)
-target_link_libraries(test_partition_helper PACO)
+    add_executable(test_partition_helper test_partition_helper.cpp)
+    target_link_libraries(test_partition_helper PACO)
 
-add_executable(test_optimizer test_optimizer.cpp)
-target_link_libraries(test_optimizer PACO)
+    add_executable(test_optimizer test_optimizer.cpp)
+    target_link_libraries(test_optimizer PACO)
 
-add_executable(test_hypergeometric test_hypergeometric.cpp)
-target_link_libraries(test_hypergeometric PACO)
+    add_executable(test_hypergeometric test_hypergeometric.cpp)
+    target_link_libraries(test_hypergeometric PACO)
 
-add_executable(test_dcsurprise test_dcsurprise.cpp)
-target_link_libraries(test_dcsurprise PACO)
+    add_executable(test_dcsurprise test_dcsurprise.cpp)
+    target_link_libraries(test_dcsurprise PACO)
 
-add_executable(test_structural_sim test_structural_sim.cpp)
-target_link_libraries(test_structural_sim PACO)
+    add_executable(test_structural_sim test_structural_sim.cpp)
+    target_link_libraries(test_structural_sim PACO)
 
-add_executable(test_sparse_load test_sparse_load.cpp)
-target_link_libraries(test_sparse_load PACO)
+    add_executable(test_sparse_load test_sparse_load.cpp)
+    target_link_libraries(test_sparse_load PACO)
+endif()

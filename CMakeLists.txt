@@ -23,6 +23,8 @@ set(CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations ${CMAKE_CXX_FLAGS}")
 option(MATLAB_SUPPORT "Mex with MATLAB" OFF)
 option(OCTAVE_SUPPORT "Oct with Octave mkoctfile" OFF)
 option(SAMPLE_LANDSCAPE "Enable the SAMPLE_LANDSCAPE option, to write down at every stage of the optimization process, the quality function and the membership")
+option(EXPERIMENTAL_FEATURES "Enable compilation of some experimental features, default FALSE" OFF)
+option(COMPILE_TESTS "Compile all debugging tests" OFF)
 
 if(MATLAB_SUPPORT)
     find_package(MyMatlab)
@@ -42,6 +44,10 @@ endif(OCTAVE_SUPPORT)
 
 if(SAMPLE_LANDSCAPE)
     add_definitions("-DSAMPLE_LANDSCAPE")
+endif()
+
+if(EXPERIMENTAL_FEATURES)
+    add_definitions("-DEXPERIMENTAL_FEATURES")
 endif()
 
 if(PYTHON_SUPPORT)

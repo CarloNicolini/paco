@@ -168,7 +168,7 @@ void PartitionHelper::fill_communities(const igraph_vector_t *memb)
     for (size_t c=0; c < mlen; c++)
         communities[memb->stor_begin[c]].insert(c); // insert node c into community memb[c]
 
-    this->num_comms = communities.size();
+    this->num_comms = (igraph_integer_t)communities.size();
 }
 
 /**
@@ -179,7 +179,7 @@ void PartitionHelper::reindex(const igraph_vector_t *memb)
 {
     IGRAPH_TRY(igraph_reindex_membership(const_cast<igraph_vector_t *>(memb),NULL));
     int minC = igraph_vector_min(memb)-1; // so to start from 1 to |C| included
-    for (size_t i=0; i<igraph_vector_size(memb); ++i)
+    for (long int i=0; i<igraph_vector_size(memb); ++i)
         memb->stor_begin[i] -= minC;
 }
 
@@ -404,7 +404,7 @@ void PartitionHelper::print_membership(std::ostream &out)
 {
     igraph_vector_t *newmemb = order_membership(curmemb);
     out << "[";
-    for (size_t i=0; i<num_vertices; ++i)
+    for (igraph_integer_t i=0; i<num_vertices; ++i)
     {
         out << newmemb->stor_begin[i];
         if (i<num_vertices-1)

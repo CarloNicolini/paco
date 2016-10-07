@@ -60,19 +60,34 @@ int main(int argc, char *argv[])
     vector<double> w = read_vector("wc.txt");
 
     vector<double> e;
-    for (int l=0; l<i.size(); ++l)
+    for (size_t l=0; l<i.size(); ++l)
     {
         e.push_back(i[l]-1);
         e.push_back(j[l]-1);
-        cout << "(i,j) = " << i[l] << " " << j[l] << endl;
+        //cout << "(i,j) = " << i[l] << " " << j[l] << endl;
     }
 
-    for (int l=0; l<e.size()-1; l+=2)
+//    for (int l=0; l<e.size()-1; l+=2)
+//    {
+//        cout << e[l]+1 << " " << e[l+1]+1 << endl;
+//    }
+
+    Eigen::MatrixXd edges_list_weights(33,3);
+    Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> edges_list(33,2);
+
+    for (int l=0; l<33; l++)
     {
-        cout << e[l]+1 << " " << e[l+1]+1 << endl;
+        edges_list_weights.row(l) << i[l],j[l],w[l];
     }
+    //cout << edges_list_weights << endl;
 
+    edges_list << (edges_list_weights.col(0).array()),(edges_list_weights.col(1).array());
+    cout << edges_list << endl;
 
+    for (int i=0; i<edges_list.rows()*edges_list.cols();++i)
+        cout << edges_list.coeffRef(i) << " " << endl;
+
+    //GraphC *g = new GraphC(e.data(),w.data(),w.size());
     GraphC *g = new GraphC(e.data(),w.data(),w.size());
     g->info();
     g->print();

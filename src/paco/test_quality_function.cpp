@@ -39,7 +39,6 @@
 
 #include "PartitionHelper.h"
 #include "AgglomerativeOptimizer.h"
-#include "ModularityFunction.h"
 
 using namespace std;
 
@@ -59,7 +58,7 @@ int main(int argc, char *argv[])
 
 
     QualityFunction *fun;
-    fun = dynamic_cast<ModularityFunction*>( new ModularityFunction);
+    fun = dynamic_cast<AsymptoticSurpriseFunction*>( new AsymptoticSurpriseFunction);
     cout << (*fun)(g.get_igraph(),c.get_membership()) << endl;
     delete fun;
 

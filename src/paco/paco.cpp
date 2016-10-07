@@ -40,16 +40,17 @@
 #include "SurpriseFunction.h"
 #include "AsymptoticSurpriseFunction.h"
 #include "SignificanceFunction.h"
-#include "WonderFunction.h"
 
 #ifdef __linux__
-    #include <mex.h>
+#include <mex.h>
 #endif
 
 #ifdef __APPLE__
 #include "mex.h"
 #endif
 
+typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixXdCol;
+typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> MatrixXdRow;
 using namespace std;
 
 void printUsage()
@@ -75,9 +76,11 @@ void printUsage()
     mexPrintf("		1: Significance\n");
     mexPrintf("		2: AsymptoticSurprise\n");
     mexPrintf("		3: Infomap\n");
-    //mexPrintf("		4: Modularity\n");
-    //mexPrintf("		5: AsymptoticModularity (EXPERIMENTAL)\n");
-    //mexPrintf("		6: Wonder (EXPERIMENTAL)\n");
+#ifdef EXPERIMENTAL_FEATURES
+    mexPrintf("		4: Modularity\n");
+    mexPrintf("		5: AsymptoticModularity (EXPERIMENTAL)\n");
+    mexPrintf("		6: Wonder (EXPERIMENTAL)\n");
+#endif
     mexPrintf("[m, qual] = paco(W,'nrep',val)\n");
     mexPrintf("	val is the number of repetitions to run over which to choose the best quality value (the lowest for Infomap, the highest for the other methods\n");
     mexPrintf("[m, qual] = paco(W,'seed',val)\n");
@@ -110,7 +113,7 @@ static const char *error_strings[] =
     "Non valid argument value.",
     "Non valid argument type.",
     "Non valid input adjacency matrix. PACO accepts symmetric real dense-type (n x n) matrices or sparse edges-list representation \
-[num_edges x 3] array of edges list with edge endpoints and weight.",
+    [num_edges x 3] array of edges list with edge endpoints and weight.",
     "Expected some argument value but empty found.",
     "Unkwown argument."
 };
@@ -235,13 +238,15 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
     return NO_ERROR;
 }
 
+#include <algorithm>
+#include <Eigen/Sparse>
 void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[])
 {
     PacoParams pars;
     // Set default values for parameters
     pars.qual = QualitySurprise;
     pars.method = MethodAgglomerative;
-    pars.nrep = 1;
+    pars.nrep = 2; // two are necessary
     pars.verbosity_level=7;
     pars.rand_seed = -1; // default value for the random seed, if -1 then microseconds time is used.
 
@@ -277,46 +282,86 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
 
     // Create the Graph helper object specifying edge weights too
     GraphC *G=NULL;
-    //try
-    //{
-        cerr << "M=" << M << " N=" << N << endl;
+    try
+    {
         if (feedingSparseMatrix)
         {
+            // Map the Mx3 array memory to an Eigen container, to facilitate handling
             Eigen::MatrixXd IJW = Eigen::Map<Eigen::MatrixXd>(W,M,N);
-            Eigen::MatrixXd IJ(M,2);
-            IJ << (IJW.col(0).array()-1),(IJW.col(1).array()-1);
-            cout << IJ << endl;
-            G = new GraphC(IJ.data(), IJW.col(2).data(), IJ.rows());
-            G->info();
-            G->print();
+            Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> B1,B2;
+            B1 = (IJW.col(0).array() >= IJW.col(1).array()).cast<int>();
+            B2 = (IJW.col(0).array() < IJW.col(1).array()).cast<int>();
+
+            bool isUpperTriangular=false;
+            bool isLowerTriangular=false;
+            bool isSymmetric=false;
+            int sum1 = B1.sum();
+            int sum2 = B2.sum();
+            // Condizione semplice da verificare facendo [i j w]=find(A), oppure [i j w]=find(triu(A)) oppure [i j w]=find(tril(A))
+            if (sum1 == sum2)
+                isSymmetric=true;
+            if (sum1==0 && sum2==M)
+                isUpperTriangular=true;
+            if (sum1==M && sum2==0)
+                isLowerTriangular=true;
+
+            //printf("sum1=%d sum2=%d Is Symmetric=%d Is isUpperTriangular=%d isLowerTriangular=%d\n",sum1,sum2,isSymmetric,isUpperTriangular,isLowerTriangular);
+            
+            if (!isSymmetric && !isUpperTriangular && !isLowerTriangular)
+            {
+                throw std::logic_error("Matrix is not symmetric, nor triangular lower or upper triangular. Check diagonal and non symmetric values.");
+            }
+
+            std::vector<double> edges_list;
+            std::vector<double> edges_weights;
+
+            for (int l=0; l<M; ++l)
+            {
+                double row_node = IJW(l,0); //indice riga della find
+                double column_node = IJW(l,1); //indice colonna della find
+                double w = IJW(l,2);
+
+                if ( isUpperTriangular || isLowerTriangular) // keeps only symmetric and also avoid self-loops (implicitly inserting upper triangular)
+                {
+                    edges_list.push_back(column_node-1);
+                    edges_list.push_back(row_node-1);
+                    edges_weights.push_back(w);
+                }
+                else if (isSymmetric)
+                {
+                    if (row_node<column_node)
+                    {
+                        edges_list.push_back(column_node-1);
+                        edges_list.push_back(row_node-1);
+                        edges_weights.push_back(w);
+                    }
+                }
+            }
+            
+            G = new GraphC(edges_list.data(),edges_weights.data(),edges_weights.size());
         }
-           else
+        else
         {
             G  = new GraphC(mxGetPr(inputArgs[0]),N,N);
         }
-
         // Create an instance of the optimizer
         CommunityStructure c(G);
         c.set_random_seed(pars.rand_seed);
         double finalquality=c.optimize(pars.qual,pars.method,pars.nrep);
         // Prepare output
-        outputArgs[0] = mxCreateDoubleMatrix(1,(mwSize)N, mxREAL);
+        outputArgs[0] = mxCreateDoubleMatrix(1,(mwSize)G->number_of_nodes(), mxREAL);
         // Copy the membership vector to outputArgs[0] which has been already preallocated
         igraph_vector_copy_to(c.get_membership(),mxGetPr(outputArgs[0]));
-
         // Copy the value of partition quality
-        outputArgs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
-        double *q = mxGetPr(outputArgs[1]);
-        // Copy final quality value
-        q[0] = finalquality;
+        outputArgs[1] = mxCreateDoubleScalar(finalquality);
         // Cleanup the memory (follow this order)
         delete G;
-    //}
-    //catch (std::exception &e)
-    //{
-    //    cerr << e.what() << endl;
-    //    mexErrMsgTxt(e.what());
-    //}
+    }
+    catch (std::exception &e)
+    {
+        cerr << e.what() << endl;
+        mexErrMsgTxt(e.what());
+    }
 
     // Finish the function
     return;

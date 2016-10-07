@@ -140,7 +140,7 @@ double AnnealOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, 
     }
     //par->reindex(memb);
     // Copy the best solution to final membership
-    for (size_t i=0; i<igraph_vector_size(memb); ++i)
+    for (igraph_integer_t i=0; i<igraph_vector_size(memb); ++i)
         VECTOR(*memb)[i] = VECTOR(best_memb)[i];
     igraph_vector_destroy(&best_memb); // dispose memory
     return fun(g,memb,weights);

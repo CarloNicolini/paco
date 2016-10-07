@@ -129,7 +129,7 @@ GraphC::GraphC(const double *edges_list, const double *edges_weights, int nedges
 void GraphC::init(const double *elist, const double *weights, int num_edges)
 {
     igraph_vector_t edges_list;
-    igraph_vector_view(&edges_list,elist,num_edges);
+    igraph_vector_view(&edges_list,elist,2*num_edges);
     igraph_create(&this->ig, &edges_list, 0, 0);
 
     // Assing weights
@@ -144,7 +144,6 @@ void GraphC::init(const double *elist, const double *weights, int num_edges)
     {
         _has_selfloops = (elist[i]==elist[i+1]);
     }
-
 }
 
 /**

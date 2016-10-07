@@ -35,7 +35,7 @@ void SurpriseFunction::eval(const igraph_t *g, const igraph_vector_t *memb, cons
     size_t m = igraph_ecount(g);
     size_t p = n*(n-1)/2;
 
-    if (n != igraph_vector_size(memb) )
+    if ((int)n != igraph_vector_size(memb) )
         throw std::runtime_error("Non consistent length of membership vector");
 
     // Sum of intracluster edge weights

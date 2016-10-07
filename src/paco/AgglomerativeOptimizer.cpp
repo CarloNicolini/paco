@@ -40,7 +40,7 @@ AgglomerativeOptimizer::AgglomerativeOptimizer(const igraph_t *g, const QualityF
 {
     if (edges_order.empty())
     {
-        for (size_t i=0; i<par->get_num_edges(); ++i)
+        for (igraph_integer_t i=0; i<par->get_num_edges(); ++i)
             edges_order.push_back(i);
     }
     this->optimize(g,fun,memb,weights);
@@ -115,7 +115,7 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
     par->init(g,memb,weights);
     if (edges_order.empty())
     {
-        for (size_t i=0; i<par->get_num_edges(); ++i)
+        for (igraph_integer_t i=0; i<par->get_num_edges(); ++i)
             edges_order.push_back(i);
     }
 
@@ -137,19 +137,25 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
         int e = edges_order.at(i); // edge to consider
         int vert1, vert2;
         igraph_edge(g,e,&vert1,&vert2);
-        double deltaS=0;
 #ifdef _DEBUG
+        double deltaS=0;
         //printf(ANSI_COLOR_RED "Evaluating edge %d-%d\n",vert1,vert2);
 #endif
         if ( rand()%2 ) // Randomly choose to aggregate vert1-->comm2 or vert2-->comm1
         {
             size_t dest_comm = memb->stor_begin[vert2];
-            deltaS=diff_move(g,fun,memb,vert1,dest_comm,weights);
+#ifdef DEBUG
+            deltaS=
+#endif
+            diff_move(g,fun,memb,vert1,dest_comm,weights);
         }
         else
         {
             size_t dest_comm = memb->stor_begin[vert1];
-            deltaS=diff_move(g,fun,memb,vert2,dest_comm,weights);
+#ifdef DEBUG
+            deltaS=
+#endif
+            diff_move(g,fun,memb,vert2,dest_comm,weights);
         }
 #ifdef _DEBUG
         if (deltaS>0)

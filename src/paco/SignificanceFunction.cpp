@@ -38,11 +38,11 @@ void SignificanceFunction::eval(const igraph_t *g, const igraph_vector_t *memb, 
     igraph_real_t density;
     igraph_density(g,&density,0);
 
-    if (n != igraph_vector_size(memb) )
+    if ((int)n != igraph_vector_size(memb) )
         throw std::runtime_error("Non consistent length of membership vector");
 
     // Initialize the vectors of edges and configuration model
-    size_t nComms=(size_t)igraph_vector_max(memb)+1;
+    igraph_integer_t nComms=(igraph_integer_t)igraph_vector_max(memb)+1;
 
     igraph_vector_t observed;
     igraph_vector_init(&observed,nComms);
