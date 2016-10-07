@@ -32,59 +32,195 @@ using namespace std;
 
 void exit_with_help()
 {
-//    std::printf(
-//                "Usage: paco_optimizer [options] graph_file [output_suffix]\n"
-//                "options:\n"
-//                "-q [quality]"
-//                "   0 Binary Surprise"
-//                "   1 Significance"
-//                "   2 Asymptotic Surprise"
-//                "   3 Infomap\n"
-//                "   4 Modularity\n"
-//                "   5 Asymptotical Modularity (EXPERIMENTAL)\n"
-//                "   6 Wonder (EXPERIMENTAL)\n"
-//                "-m [method]:
-//                "   0 Agglomerative Optimizer\n"
-//                "   1 Random\n"
-//                "   2 Simulated Annealing\n"
-//                "-V [report_level] ERROR=0, WARNING=1, INFO=2, DEBUG=3, DEBUG1=4, DEBUG2=5, DEBUG3=6, DEBUG4=7\n"
-//                "-S [seed] specify the random seed, default time(0)\n"
-//                "-b [bool] wheter to start with initial random cluster or every node in its community\n"
-//                "-r [repetitions], number of repetitions of PACO, default=1\n"
-//                "-p [print solution]\n"
-//                "\n"
-//                );
+    std::printf(
+                "Usage: paco_optimizer graph_file [options]\n"
+                "graph_file the file containing the graph. Accepted formats are pajek, graph_ml, adjacency matrix or"
+                "\nedges list (the ncol format), additionally with a third column with edge weights"
+                "options:\n"
+                "-q [quality]"
+                "   0 Binary Surprise"
+                "   1 Significance"
+                "   2 Asymptotic Surprise"
+                "   3 Infomap\n"
+            #ifdef EXPERIMENTAL_FEATURES
+                "   4 Modularity (EXPERIMENTAL)\n"
+                "   5 Asymptotical Modularity (EXPERIMENTAL)\n"
+                "   6 Wonder (EXPERIMENTAL)\n"
+            #endif
+                "-m [method]:"
+                "   0 Agglomerative Optimizer\n"
+                "   1 Random\n"
+                "   2 Simulated Annealing\n"
+                "-V [report_level] ERROR=0, WARNING=1, INFO=2, DEBUG=3, DEBUG1=4, DEBUG2=5, DEBUG3=6, DEBUG4=7\n"
+                "-S [seed] specify the random seed, default time(0)\n"
+                "-b [bool] wheter to start with initial random cluster or every node in its community\n"
+                "-r [repetitions], number of repetitions of PACO, default=1\n"
+                "-p [print solution]\n"
+                "\n"
+                );
     exit(1);
 }
 
+enum error_type
+{
+    NO_ERROR = 0,
+    ERROR_TOO_MANY_OUTPUT_ARGS = 1,
+    ERROR_NOT_ENOUGH_ARGS = 2,
+    ERROR_ARG_VALUE = 3,
+    ERROR_ARG_TYPE = 4,
+    ERROR_MATRIX = 5,
+    ERROR_ARG_EMPTY=6,
+    ERROR_ARG_UNKNOWN=7
+};
+
+static const char *error_strings[] =
+{
+    "",
+    "Too many output arguments.",
+    "Not enough input arguments.",
+    "Non valid argument value.",
+    "Non valid argument type.",
+    "Non valid input adjacency matrix. PACO accepts symmetric real dense-type (n x n) matrices or sparse edges-list representation \
+    [num_edges x 3] array of edges list with edge endpoints and weight.",
+    "Expected some argument value but empty found.",
+    "Unkwown argument."
+};
+
+struct PacoParams
+{
+    OptimizerType method=MethodAgglomerative;
+    QualityType qual=QualitySurprise;
+    size_t nrep=1;      // Maximum number of consecutive repetitions to perform.
+    int rand_seed=-1; // random seed for the louvain algorithm
+    int verbosity_level=0;
+    std::string membership_file="membership.txt";
+    std::string filename="";
+    bool print_info=false;
+};
+
+/**
+ * @brief parse_command_line
+ * @param argc
+ * @param argv
+ * @param input_file_name
+ */
+PacoParams parse_command_line(int argc, char **argv)
+{
+    PacoParams params;
+
+    int i=1;
+    for(i=1; i<argc; i++)
+    {
+        if(argv[i][0] != '-')
+            break;
+        if(++i>=argc)
+            exit_with_help();
+        switch(argv[i-1][1])
+        {
+        case 'V':
+        {
+            params.verbosity_level = atoi(argv[i]);
+            if (params.verbosity_level>7)
+                params.verbosity_level=7;
+            FILELog::ReportingLevel() =  static_cast<TLogLevel>(params.verbosity_level);
+            break;
+        }
+        case 's':
+        {
+            params.rand_seed = atoi(argv[i]);
+            break;
+        }
+        case 'q':
+        {
+            switch (atoi(argv[i]))
+            {
+            case 0:
+            {
+
+                params.qual = QualitySurprise;
+                break;
+            }
+            case 1:
+            {
+                params.qual = QualitySignificance;
+                break;
+            }
+            case 2:
+            {
+                params.qual = QualityAsymptoticSurprise;
+                break;
+            }
+            case 3:
+            {
+                params.qual = QualityInfoMap;
+                break;
+            }
+            default:
+            {
+                exit_with_help();
+            }
+            }
+            break;
+        }
+        case 'r':
+        {
+            params.nrep = atoi(argv[i]);
+            break;
+        }
+        case 'o':
+        {
+            params.membership_file = std::string(argv[i]);
+            break;
+        }
+        default:
+            FILE_LOG(logERROR) << "Unknown option: " << argv[i-1][1] ;
+            exit_with_help();
+        }
+    }
+
+    // Determine filenames
+    if(i>=argc)
+        exit_with_help();
+
+    char input[1024];
+    strcpy(input, argv[i]);
+    params.filename = std::string(input);
+
+    std::ifstream is(input);
+    if (!is.good())
+    {
+        cout << std::string("File \"" + params.filename + "\" not found") << endl;
+        exit_with_help();
+    }
+    return params;
+}
 
 
 int main(int argc, char *argv[])
 {
-    // srand(time(0));
+    PacoParams pars = parse_command_line(argc,argv);
 
-    // FILELog::ReportingLevel() = logDEBUG4;// static_cast<TLogLevel>(params.verbosity);
+    // Determine file format
+    GraphC g;
+    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "net")
+        g.read_pajek(pars.filename);
+    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "adj")
+        g.read_adj_matrix(pars.filename);
+    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "gml")
+        g.read_gml(pars.filename);
+    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "ncol")
+        g.read_edge_list(pars.filename);
+    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "wncol")
+        g.read_weighted_edge_list(pars.filename);
 
-    // //    Eigen::MatrixXd W(10,10);
-    // //    W << 0, 197, 0, 0, 101, 0, 0, 130, 0, 0, 197, 0, 0, 101, 109, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 138, 0, 164, 147, 0, 101, 0, 0, 0, 143, 151, 164, 167, 105, 101, 109, 0, 0, 0, 151, 159, 172, 130, 118, 0, 0, 130, 143, 151, 0, 0, 0, 0, 101, 0, 0, 138, 151, 159, 0, 0, 0, 0, 109, 130, 0, 0, 164, 172, 0, 0, 0, 0, 122, 0, 0, 164, 167, 130, 0, 0, 0, 0, 0, 0, 0, 147, 105, 118, 101, 109, 122, 0, 0;
+    if (pars.print_info)
+        g.info();
 
-    // GraphC g;
-    // g.read_weighted_edge_list(string(argv[1]),51653);
-    // g.info();
-
-    // CommunityStructure comm(&g);
-    // comm.optimize(QualityAsymptoticSurprise,MethodAgglomerative);
-    // comm.reindex_membership();
-
-    // comm.save_membership("membership.csv",comm.get_membership());
-    // AsymptoticSurpriseFunction qual;
-    // cout << "Final quality=" << qual(g.get_igraph(),comm.get_membership(),g.get_edge_weights()) << endl;
-    //    GraphC y;
-    //    y.compute_vertex_degrees(false);
-    //    y.compute_vertex_strenghts(false);
-
-    //    GraphC x(y);
+    CommunityStructure comm(&g);
+    double quality = comm.optimize(pars.qual,pars.method,pars.nrep);
+    comm.reindex_membership();
+    comm.save_membership(pars.membership_file.c_str(),comm.get_membership());
+    cout << quality << endl;
 
     return 0;
 }
-

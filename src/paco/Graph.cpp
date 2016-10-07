@@ -365,11 +365,11 @@ bool GraphC::read_pajek(const std::string &filename)
  * @param nvertices
  * @return
  */
-bool GraphC::read_edge_list(const std::string &filename, int nvertices)
+bool GraphC::read_edge_list(const std::string &filename)
 {
     IGRAPH_TRY(igraph_destroy(&this->ig));
     FILE *f = fopen(filename.c_str(),"r");
-    IGRAPH_TRY(igraph_read_graph_edgelist(&this->ig,f,nvertices,0));
+    IGRAPH_TRY(igraph_read_graph_edgelist(&this->ig,f,0,0));
     fclose(f);
     this->_is_weighted = false;
     return true;
@@ -382,11 +382,11 @@ bool GraphC::read_edge_list(const std::string &filename, int nvertices)
  * @param edge_weights vector
  * @return
  */
-bool GraphC::read_weighted_edge_list(const std::string &filename, int nvertices)
+bool GraphC::read_weighted_edge_list(const std::string &filename)
 {
     IGRAPH_TRY(igraph_destroy(&this->ig));
     FILE *f = fopen(filename.c_str(),"r");
-    IGRAPH_TRY(igraph_read_graph_weighted_edgelist(&this->ig,f,nvertices,0,&this->edge_weights));
+    IGRAPH_TRY(igraph_read_graph_weighted_edgelist(&this->ig,f,0,0,&this->edge_weights));
     fclose(f);
     this->_is_weighted = true;
     int m = igraph_vector_size(&this->edge_weights);

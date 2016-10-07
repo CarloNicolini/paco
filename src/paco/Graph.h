@@ -61,8 +61,8 @@ public:
     const igraph_t *get_igraph() const; // allows only const copies of the pointer.
     bool read_adj_matrix(const std::string &filename);
     bool read_pajek(const std::string &filename);
-    bool read_weighted_edge_list(const std::string &filename, int nvertices);
-    bool read_edge_list(const std::string &filename, int nvertices);
+    bool read_weighted_edge_list(const std::string &filename);
+    bool read_edge_list(const std::string &filename);
     bool read_gml(const std::string &filename);
     bool read_weights_from_file(const string &filename);
     void set_edge_weights(const std::vector<igraph_real_t> &w, bool override_is_weighted=false);
