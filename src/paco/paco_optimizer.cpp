@@ -37,10 +37,10 @@ void exit_with_help()
                 "graph_file the file containing the graph. Accepted formats are pajek, graph_ml, adjacency matrix or"
                 "\nedges list (the ncol format), additionally with a third column with edge weights"
                 "options:\n"
-                "-q [quality]"
-                "   0 Binary Surprise"
-                "   1 Significance"
-                "   2 Asymptotic Surprise"
+                "-q [quality]\n"
+                "   0 Binary Surprise\n"
+                "   1 Significance\n"
+                "   2 Asymptotic Surprise\n"
                 "   3 Infomap\n"
             #ifdef EXPERIMENTAL_FEATURES
                 "   4 Modularity (EXPERIMENTAL)\n"
@@ -117,6 +117,7 @@ PacoParams parse_command_line(int argc, char **argv)
             exit_with_help();
         switch(argv[i-1][1])
         {
+        case 'v':
         case 'V':
         {
             params.verbosity_level = atoi(argv[i]);
@@ -126,11 +127,13 @@ PacoParams parse_command_line(int argc, char **argv)
             break;
         }
         case 's':
+        case 'S':
         {
             params.rand_seed = atoi(argv[i]);
             break;
         }
         case 'q':
+        case 'Q':
         {
             switch (atoi(argv[i]))
             {
@@ -162,14 +165,28 @@ PacoParams parse_command_line(int argc, char **argv)
             }
             break;
         }
+        case 'm':
+        case 'M':
+        {
+            params.method = static_cast<OptimizerType>(atoi(argv[i]));
+            break;
+        }
         case 'r':
+        case 'R':
         {
             params.nrep = atoi(argv[i]);
             break;
         }
         case 'o':
+        case 'O':
         {
             params.membership_file = std::string(argv[i]);
+            break;
+        }
+        case 'p':
+        case 'P':
+        {
+            params.print_info = (bool)atoi(argv[i]);
             break;
         }
         default:
@@ -204,19 +221,28 @@ int main(int argc, char *argv[])
     GraphC g;
     if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "net")
         g.read_pajek(pars.filename);
-    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "adj")
+    else if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "adj")
         g.read_adj_matrix(pars.filename);
-    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "gml")
+    else if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "gml")
         g.read_gml(pars.filename);
-    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "ncol")
+    else if (pars.filename.substr(pars.filename.find_last_of(".") + 1) == "ncol" || pars.filename.substr(pars.filename.find_last_of(".") + 1) == "edge")
         g.read_edge_list(pars.filename);
-    if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "wncol")
+    else if(pars.filename.substr(pars.filename.find_last_of(".") + 1) == "wncol")
         g.read_weighted_edge_list(pars.filename);
+    else
+    {
+        cerr << "Non supported graph format" << endl;
+        exit_with_help();
+    }
 
     if (pars.print_info)
+    {
+        FILELog::ReportingLevel() =  TLogLevel::logINFO;
         g.info();
+    }
 
     CommunityStructure comm(&g);
+    comm.set_random_seed(pars.rand_seed);
     double quality = comm.optimize(pars.qual,pars.method,pars.nrep);
     comm.reindex_membership();
     comm.save_membership(pars.membership_file.c_str(),comm.get_membership());
