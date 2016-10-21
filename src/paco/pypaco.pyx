@@ -24,6 +24,7 @@
 from __future__ import division
 import numpy as np
 cimport numpy as np
+from ctypes import c_double
 
 # Cython imports
 from libcpp.string cimport string
@@ -35,7 +36,10 @@ ctypedef map[string, int] params_map
 
 cdef extern from "Graph.h":
     cdef cppclass GraphC:
-        GraphC(double *A, int n, int m)
+        GraphC() except +
+        GraphC(double *A, int n, int m) except +
+        void init(const double *ewlist, int _is_weighted, int m) except +
+        void info() except+
 
 cdef extern from "Community.h":
     cdef enum QualityType:
@@ -43,38 +47,53 @@ cdef extern from "Community.h":
     cdef enum OptimizerType:
         pyOptimizerType
     cdef cppclass CommunityStructure:
-        CommunityStructure(const GraphC *)
+        CommunityStructure(const GraphC *) except +
         void set_random_seed(int n)
-        double optimize(QualityType quality, OptimizerType method, int repetitions)
+        double optimize(QualityType quality, OptimizerType method, int repetitions)  except +
         void reindex_membership()
         vector[int] get_membership_vector()
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def paco(np.ndarray[double, ndim=2, mode="c"] input not None, **kwargs):
+def paco(np.ndarray[double, ndim=2, mode="c"] graph_rep not None, **kwargs):
     """
     PACO: PArtitioning Cost Optimization
     
-    Example:
+    Example: passing graph as adjacency matrix
       import numpy as np
       from pypaco import paco
       G = nx.karate_club_graph()
       A  = nx.to_numpy_matrix(G)
       [membership,quality] = paco(A, quality=0, nreps=10)
     
+    Example: passing graph as edges list
+      import numpy as np
+      from pypaco import paco
+      G = nx.karate_club_graph()
+      E = np.array(G.edges()).astype(float64) # E must be a numpy array of doubles, not a list
+      [membership,quality] = paco(E, quality=0, nreps=10)
+
+    Example: passing graph as weighted edges list
+      import numpy as np
+      from pypaco import paco
+      G = nx.karate_club_graph()
+      E = np.array(G.edges())
+      # Generate weights on the edges, in values between 0 and 10-1
+      W = np.random.randint(10,size=[G.number_of_edges(),1])
+      EW = np.concatenate((E,W),axis=1).astype(float)
+      [membership,quality] = paco(EW, quality=2, nreps=10)
+
     Usage:
         [membership, quality] = paco(A, **kwargs)
 
     Args: 
-        input: Adjacency matrix of the graph as a numpy 2D array, symmetric, binary or weighted.
+        graph_rep: Adjacency matrix of the graph as a numpy 2D array, symmetric, binary or weighted. Otherwise an edgelist with m rows and 2 or 3 columns representing nodes indices
     Kwargs:
         quality: quality function to maximize
             0: Surprise
             1: Significance
             2: Asymptotic Surprise
             3: Infomap
-            4: Modularity (EXPERIMENTAL)
-            5: Asymptotic Modularity (EXPERIMENTAL)
 
         opt_method: Optimization method
             0: Agglomerative,
@@ -89,13 +108,13 @@ def paco(np.ndarray[double, ndim=2, mode="c"] input not None, **kwargs):
         
     Out:
         membership: a list of vertices community membership
-        surprise: the value of Surprise for the current partition
+        quality: the partition quality value
     """
     args = ['nreps','quality', 'seed', ',opt_method']
 
     args_diff = set(kwargs.keys()) - set(args)
     if args_diff:
-        raise Exception("Invalid args:" + str(tuple(args_diff)) + "as input: valid arguments are " + str(args))
+        raise Exception("Invalid args:" + str(tuple(args_diff)) + "as graph_rep: valid arguments are " + str(args))
 
     cdef params_map par
     par[str("nreps")] = kwargs.get("nreps",1)
@@ -103,12 +122,41 @@ def paco(np.ndarray[double, ndim=2, mode="c"] input not None, **kwargs):
     par[str("seed")] = kwargs.get("seed", -1)
     par[str("opt_method")] = kwargs.get("opt_method", 0)
 
-    n = input.shape[0]
-    cdef GraphC *G = new GraphC(&input[0,0], n, n)
-    cdef CommunityStructure* c = new CommunityStructure(G);
+    # Create graph instance
+    cdef GraphC *G
+
+    num_rows = graph_rep.shape[0]
+    num_cols = graph_rep.shape[1]
+    cdef np.ndarray[double, ndim=1, mode="c"] edges_list
+    cdef np.ndarray[double, ndim=1, mode="c"] weights_list
+
+    if num_cols==2 and num_rows>2:
+        # The matrix is an edgelist representation, passing a mx3 (if weighted) or mx2 (if binary) vector
+        try:
+            G = new GraphC()
+            G.init(&graph_rep[0,0], int(num_cols!=2), num_rows)
+        except RuntimeError:
+            raise
+    elif num_cols==num_rows and num_cols>2:
+        # The matrix is an adjacency matrix
+        try:
+            G = new GraphC(&graph_rep[0,0], num_cols, num_cols)
+        except RuntimeError:
+            raise 
+    # Create community structure instance
+    cdef CommunityStructure* c
+    try:
+        c = new CommunityStructure(G);
+    except RuntimeError:
+        raise 
+
     c.set_random_seed(int(par["seed"]));
 
-    finalquality = c.optimize(int(par["quality"]),int(par["opt_method"]),int(par["nreps"]))
+    try:
+        finalquality = c.optimize(int(par["quality"]),int(par["opt_method"]),int(par["nreps"]))
+    except RuntimeError:
+        raise 
+    
     c.reindex_membership()
     membership = c.get_membership_vector()
 

@@ -25,7 +25,7 @@
 
 #include <sstream>
 #include "Graph.h"
-
+#include "FileLogger.h"
 /**
  * @brief GraphC::GraphC
  */
@@ -122,6 +122,30 @@ GraphC::GraphC(const double *edges_list, const double *edges_weights, int nedges
 
 /**
  * @brief GraphC::init
+ * @param ewlist
+ * @param num_edges
+ */
+void GraphC::init(double *ewlist, int _weighted, int num_edges)
+{
+    vector<double> elist,wlist;
+    int iplus = (_weighted? 3 : 2);
+    for (int i=0; i<iplus*num_edges; i+=iplus)
+    {
+        elist.push_back(ewlist[i]);
+        elist.push_back(ewlist[i+1]);
+    }
+    for (int i=0; i<num_edges; i++)
+    {
+        if (_weighted)
+            wlist.push_back(ewlist[i]);
+        else
+            wlist.push_back(1);
+    }
+    this->init(elist.data(),wlist.data(),num_edges);
+}
+
+/**
+ * @brief GraphC::init
  * @param elist
  * @param weights
  * @param num_edges
@@ -133,11 +157,13 @@ void GraphC::init(const double *elist, const double *weights, int num_edges)
     igraph_create(&this->ig, &edges_list, 0, 0);
 
     // Assing weights
-    const vector<igraph_real_t> weights_stl(weights,weights+num_edges);
+    vector<igraph_real_t> weights_stl(num_edges,1.0);
+    if (weights!=NULL)
+        weights_stl.assign(weights, weights + num_edges);
+    
     this->set_edge_weights(weights_stl);
     igraph_vector_view(&edge_weights,edge_weights_stl.data(),edge_weights_stl.size());
     _must_delete = true;
-
     // Check for self-loops
     _is_directed = this->ig.directed;
     for (int i=0; i<num_edges*2; i+=2)
