@@ -111,7 +111,7 @@ def paco(np.ndarray[double, ndim=2, mode="c"] input not None, **kwargs):
     finalquality = c.optimize(int(par["quality"]),int(par["opt_method"]),int(par["nreps"]))
     c.reindex_membership()
     membership = c.get_membership_vector()
-    
+
     del G
     del c
 

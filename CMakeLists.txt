@@ -42,6 +42,33 @@ if(OCTAVE_SUPPORT)
     add_definitions("-DOCTAVE_SUPPORT")
 endif(OCTAVE_SUPPORT)
 
+
+# PYTHON_SUPPORT needs Cython (install it via "pip install cython")
+option(PYTHON_SUPPORT "Python support through Cython extensions" OFF)
+if(PYTHON_SUPPORT)
+    set(Python_ADDITIONAL_VERSIONS "2.7.12")
+    find_package(PythonInterp)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    find_package(PythonLibs 2.7.12 EXACT REQUIRED)
+    find_package(Numpy)
+    include_directories(${PYTHON_NUMPY_INCLUDE_DIR})
+        # Print some informations on python libraries linked and included
+        message(STATUS "Python libraries are ${PYTHON_LIBRARIES}")
+        message(STATUS "Python libraries are included in ${PYTHON_INCLUDE_DIRS}")
+        message(STATUS "Python versions found is ${PYTHONLIBS_VERSION_STRING}")
+        include_directories("${PYTHON_INCLUDE_DIR}")
+    include(UseCython)
+    include_directories("${PYTHON_INCLUDE_DIR}/numpy")
+    message(STATUS "${PYTHON_INCLUDE_DIR}/numpy")
+#    add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
+#      ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+#      ${CMAKE_CURRENT_BINARY_DIR}
+#      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+    # This definition avoids a stupid warning message
+    #add_definitions("-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION")
+endif(PYTHON_SUPPORT)
+
+
 if(SAMPLE_LANDSCAPE)
     add_definitions("-DSAMPLE_LANDSCAPE")
 endif()
