@@ -7,15 +7,13 @@
 \usepackage{amsmath,amsfonts,amssymb,amsthm}
 \usepackage{lettrine}
 \usepackage[sc]{mathpazo} % Use the Palatino font
-
+\linespread{1.12}
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
 \usepackage{graphicx}
-% \usepackage{hyperref}
-\usepackage{clrscode}
 \usepackage{minted}
 \usepackage{hyperref}
 \usepackage{url}
-\usepackage{geometry}{right=1cm,left=1cm}
+\usepackage[margin=1cm]{geometry}
 
 \title{PACO Partitioning Cost Optimization\\User Manual}
 
@@ -24,15 +22,15 @@
 \begin{document}
 \maketitle
 \tableofcontents
+\newpage
 
-\section{Compilation Instructions}
-
+\section{Introduction}
 Paco is a tool to build solvers and optimize quality functions on graphs
 for community detection. Paco comes as both a C++ library and a support
 for Matlab/Octave mex function and additionally as Python package.
 
-
-\subsection{Software requirements}
+\subsection{Compilation Instructions}
+\paragraph{Software requirements}
 \begin{itemize}
 \item A recent c++ compiler (PACO is tested on \texttt{g++>4.4} and \texttt{clang}).
  \item \texttt{igraph} libraries at version \texttt{>0.7.1} \url{http://igraph.org/c}.
@@ -41,7 +39,7 @@ for Matlab/Octave mex function and additionally as Python package.
 
 As PACO needs the \texttt{C} libraries \texttt{igraph}, you need to compile them by yourself, as the latest packaged version on Ubuntu is too old.
 To compile extract the \texttt{paco\_latest.tar.gz} archive somewhere on your computer and do:
-
+\bigbreak
 \begin{minted}[bgcolor=gray!20]{bash}
 $> cd paco
 $> mkdir build
@@ -65,8 +63,11 @@ $> cmake -DOCTAVE_SUPPORT=True ..
 and then compile the source with \texttt{make}:
 
 \begin{minted}[bgcolor=gray!20]{bash}
-$> make
+$> make -j8
 \end{minted}
+Where \texttt{-j8} is an option to make the build in parallel.
+
+Important, don't compile together with \texttt{MATLAB\_SUPPORT=True} and \texttt{OCTAVE\_SUPPORT=True} as there are problems in which \texttt{mex.h} header the system is including, eventually leading to strange bugs. Do a clean compilation every time.
 
 \subsection{Obtaining igraph in OSX}\label{obtaining-igraph-in-osx}
 
@@ -196,6 +197,7 @@ do this
 \begin{minted}[bgcolor=gray!20]{bash}
 ./paco_optimizer karate.gml
 \end{minted}
+
 \section{MATLAB}
 Here is an example on how to use PACO for MATLAB:
 
@@ -226,8 +228,8 @@ A=zeros(10,10);
 \section{Python}
 \section{MATLAB}
 Example: passing graph as adjacency matrix
-\begin{minted}[bgcolor=gray!20]{python}
 
+\begin{minted}[bgcolor=gray!20]{python}
 import numpy as np
 from pypaco import paco
 G = nx.karate_club_graph()
