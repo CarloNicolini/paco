@@ -55,7 +55,7 @@ public:
     ~GraphC();
 
     void init(const Eigen::MatrixXd &W);
-    void init(double* ewlist, int weighted, int num_edges);
+    void init(const double* ewlist, int weighted, int num_edges);
     void init(const double *elist, const double *weights, int num_edges);
     void init(const std::vector<double> &edges_list, const std::vector<double> &weights);
 

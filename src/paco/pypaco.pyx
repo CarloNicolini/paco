@@ -129,8 +129,7 @@ def paco(np.ndarray[double, ndim=2, mode="c"] graph_rep not None, **kwargs):
     num_cols = graph_rep.shape[1]
     cdef np.ndarray[double, ndim=1, mode="c"] edges_list
     cdef np.ndarray[double, ndim=1, mode="c"] weights_list
-
-    if num_cols==2 and num_rows>2:
+    if num_cols<=3 and num_rows>2:
         # The matrix is an edgelist representation, passing a mx3 (if weighted) or mx2 (if binary) vector
         try:
             G = new GraphC()
@@ -142,7 +141,7 @@ def paco(np.ndarray[double, ndim=2, mode="c"] graph_rep not None, **kwargs):
         try:
             G = new GraphC(&graph_rep[0,0], num_cols, num_cols)
         except RuntimeError:
-            raise 
+            raise
     # Create community structure instance
     cdef CommunityStructure* c
     try:

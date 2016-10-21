@@ -1,0 +1,262 @@
+\documentclass[11pt,%                        % primary font size
+              a4paper,%                     % A4
+]{article}
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{lettrine}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{graphicx}
+% \usepackage{hyperref}
+\usepackage{clrscode}
+\usepackage{minted}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{geometry}{right=1cm,left=1cm}
+
+\title{PACO Partitioning Cost Optimization\\User Manual}
+
+\author{Carlo Nicolini}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Compilation Instructions}
+
+Paco is a tool to build solvers and optimize quality functions on graphs
+for community detection. Paco comes as both a C++ library and a support
+for Matlab/Octave mex function and additionally as Python package.
+
+
+\subsection{Software requirements}
+\begin{itemize}
+\item A recent c++ compiler (PACO is tested on \texttt{g++>4.4} and \texttt{clang}).
+ \item \texttt{igraph} libraries at version \texttt{>0.7.1} \url{http://igraph.org/c}.
+\item CMAKE \texttt{>3.0} \url{http://cmake.org}.
+\end{itemize}
+
+As PACO needs the \texttt{C} libraries \texttt{igraph}, you need to compile them by yourself, as the latest packaged version on Ubuntu is too old.
+To compile extract the \texttt{paco\_latest.tar.gz} archive somewhere on your computer and do:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> cd paco
+$> mkdir build
+$> cd build
+$> cmake ..
+\end{minted}
+
+If you want to compile \texttt{paco\_mx} mex function, you need to
+enable the \texttt{MATLAB\_SUPPORT} flag. At the last step:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> cmake -DMATLAB_SUPPORT=True ..
+\end{minted}
+
+or equivalently for Octave
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> cmake -DOCTAVE_SUPPORT=True ..
+\end{minted}
+
+and then compile the source with \texttt{make}:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> make
+\end{minted}
+
+\subsection{Obtaining igraph in OSX}\label{obtaining-igraph-in-osx}
+
+We strongly suggest to obtain \texttt{igraph} in OSX using
+\textbf{Homebrew}.
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> ruby -e "$(curl -fsSL https://raw.githubusercontent.com/
+  Homebrew/install/master/install)"
+$> brew tap homebrew/science
+$> brew install igraph
+\end{minted}
+
+\subsection{Obtaining igraph in Ubuntu 12.04 or
+greater}
+
+We suggest compiling \texttt{igraph} from source, since PACO needs
+\texttt{igraph}\textgreater{}=0.7.1.
+
+Go to \url{www.igraph.org/c} and follow the documentation for the compilation using the autogen script they provide, otherwise follow the following instructions:
+
+\subsubsection{Compilation and installation of igraph on Ubuntu 12.04 or
+greater}\label{compilation-and-installation-of-igraph-on-ubuntu-12.04-or-greater}
+
+Download igraph-0.7.1 source code:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> cd
+$> wget http://igraph.org/nightly/get/c/igraph-0.7.1.tar.gz
+\end{minted}
+Extract the code under your home folder:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> tar -zxvf igraph-0.7.1.tar.gz
+\end{minted}
+Install the necessary libs, under Ubuntu:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> sudo apt-get install build-essential libxml2-dev zlib1g-dev
+\end{minted}
+Try to configure and compile igraph:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> cd igraph-0.7.1/
+$> ./configure
+$> make 
+\end{minted}
+If you have many processors on your computer, make in parallel mode,  instead of \texttt{make} just issue \texttt{make\ -j8} for example to   compile with 8 cores.
+Check if installation went fine:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> make check
+\end{minted}
+
+If tests are passed, then install it. I usually install \emph{igraph}  under \texttt{/usr/lib/}. To do that I call \texttt{make\ install} with administrator privileges.
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> sudo make install
+\end{minted}
+If you don't have administrator privileges you can compile igraph under your home folder.
+In the rest of the notes we assume that the Igraph include directory is
+\texttt{/usr/local/include/igraph}.
+
+\section{Windows support:}\label{windows-support}
+
+Despite everything should be ready to be ported happily in Windows, I
+don't have time to let the code compile smoothly on Windows. If you want
+to join me in writing PACO for Windows let me know.
+
+\section{Frequently asked questions}
+
+\subsection{QUESTION: Linking libstdc++.so.6
+problem}\label{linking-libstdc.so.6-problem}
+
+I can compile Paco for MATLAB but after calling \texttt{paco\_mx},
+MATLAB prompts me with the following error message:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+Invalid MEX-file '~/paco_mx.mexa64': /usr/local/MATLAB/R2015a/
+   bin/glnxa64/../../sys/os/glnxa64/libstdc++.so.6: version
+   `GLIBCXX_3.4.21' not found (required by ...
+\end{minted}
+
+This problem means that the \texttt{libstdc++.so.6} inside the Matlab
+library folder is pointing to a version of \texttt{libstdc++} older than
+the system one, usually stored in \texttt{/usr/lib/x86\_64} folder.
+
+To solve the issue you need to redirect the symbolic links in the MATLAB
+folder to the systemwise \texttt{libstdc++}. Hereafter we assume the
+MATLAB folder to be \texttt{/usr/local/MATLAB/R2015a} and the system to
+be some Linux variant.
+
+Two of the symlinks for libraries need to be changed:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> cd /usr/local/MATLAB/R2015a/sys/os/glnxa64
+$> ls -l
+\end{minted}
+The sym links for libstdc++.so.6 and libgfortran.so.3 should point to
+versions in /usr/lib, not local ones.
+
+Before changing this libraries, first make sure \texttt{g++-4.4} and
+\texttt{libgfortran3}are installed :
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> sudo apt-get install g++-4.4 libgfortran3
+\end{minted}
+Now, modify the symlinks:
+
+\begin{minted}[bgcolor=gray!20]{bash}
+$> sudo ln -fs /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 libgfortran.so.3
+$> sudo ln -fs /usr/lib/gcc/x86_64-linux-gnu/4.4/libstdc++.so libstdc++.so.6
+\end{minted}
+
+This command makes the \texttt{libstdc++.so.6} point to the
+\texttt{g++-4.4} \texttt{libstdc++} library.
+
+For other informations take a look at
+\url{http://dovgalecs.com/blog/matlab-glibcxx\_3-4-11-not-found/} or 
+\url{https://github.com/RobotLocomotion/drake/issues/960} which are very
+similar problems.
+
+\section{PACO Library}
+do this
+
+\section{Command line}
+\begin{minted}[bgcolor=gray!20]{bash}
+./paco_optimizer karate.gml
+\end{minted}
+\section{MATLAB}
+Here is an example on how to use PACO for MATLAB:
+
+\begin{minted}[bgcolor=gray!20]{matlab}
+addpath('YOUR_PATH_WHERE_PACO_MEX_IS_STORED');
+% now load the karate club graph,a  34x34 binary adjacency matrix
+A=load('~/karate.adj'); % load the karate club graph
+[membership, quality] = paco_mx(A); % Optimize discrete Surprise
+\end{minted}
+
+
+\section{Octave}
+\begin{minted}[bgcolor=gray!20]{matlab}
+addpath('YOUR_PATH_WHERE_PACO_MEX_IS_STORED');
+% now load the karate club graph,a  34x34 binary adjacency matrix
+A=load('~/karate.adj'); % load the karate club graph
+[membership, quality] = paco_oct(A); % Optimize discrete Surprise
+[membership, quality] = paco_oct(A,'quality',2); % Optimize Asymptotical Surprise
+[membership, quality] = paco_oct(A,'quality',2,'nrep',5); % Optimize Asymptotical Surprise, do 5 repetitions
+\end{minted}
+
+
+\section{MATLAB}
+\begin{minted}{matlab}
+A=zeros(10,10);
+}
+\end{minted}
+\section{Python}
+\section{MATLAB}
+Example: passing graph as adjacency matrix
+\begin{minted}[bgcolor=gray!20]{python}
+
+import numpy as np
+from pypaco import paco
+G = nx.karate_club_graph()
+A  = nx.to_numpy_matrix(G)
+[membership,quality] = paco(A, quality=0, nreps=10)
+\end{minted}  
+Example: passing graph as edges list
+
+\begin{minted}[bgcolor=gray!20]{python}
+import numpy as np
+from pypaco import paco
+G = nx.karate_club_graph()
+E = np.array(G.edges()).astype(float64) # E must be a numpy array of doubles, not a list
+[membership,quality] = paco(E, quality=0, nreps=10)
+\end{minted}
+
+Example: passing graph as weighted edges list
+
+\begin{minted}[bgcolor=gray!20]{python}    
+import numpy as np
+from pypaco import paco
+G = nx.karate_club_graph()
+E = np.array(G.edges())
+# Generate weights on the edges, in values between 0 and 10-1
+W = np.random.randint(10,size=[G.number_of_edges(),1])
+EW = np.concatenate((E,W),axis=1).astype(float)
+[membership,quality] = paco(EW, quality=2, nreps=10)
+\end{minted}
+
+
+
+\end{document}

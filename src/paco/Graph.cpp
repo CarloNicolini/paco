@@ -125,7 +125,7 @@ GraphC::GraphC(const double *edges_list, const double *edges_weights, int nedges
  * @param ewlist
  * @param num_edges
  */
-void GraphC::init(double *ewlist, int _weighted, int num_edges)
+void GraphC::init(const double *ewlist, int _weighted, int num_edges)
 {
     vector<double> elist,wlist;
     int iplus = (_weighted? 3 : 2);
@@ -134,10 +134,10 @@ void GraphC::init(double *ewlist, int _weighted, int num_edges)
         elist.push_back(ewlist[i]);
         elist.push_back(ewlist[i+1]);
     }
-    for (int i=0; i<num_edges; i++)
+    for (int i=0; i<iplus*num_edges; i+=iplus)
     {
         if (_weighted)
-            wlist.push_back(ewlist[i]);
+            wlist.push_back(ewlist[i+2]);
         else
             wlist.push_back(1);
     }
