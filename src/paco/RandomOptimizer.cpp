@@ -37,6 +37,10 @@
 #include "RandomOptimizer.h"
 #include <iostream>
 
+#ifdef MATLAB_SUPPORT
+#include "mexInterrupt.h"
+#endif
+
 RandomOptimizer::RandomOptimizer(const igraph_t *g, const QualityFunction &fun, const igraph_vector_t *memb, const igraph_vector_t *weights) : QualityOptimizer(g, fun, memb)
 {
     this->optimize(g,fun,memb,weights);
@@ -75,6 +79,9 @@ double RandomOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, 
 #endif
     for (int i=0; i<igraph_ecount(g); i++)
     {
+        #ifdef MATLAB_SUPPORT
+        ctrlcCheckPoint(__FILE__, __LINE__);
+        #endif
         int e = rand()%igraph_ecount(g);
         int vert1;
         int vert2;

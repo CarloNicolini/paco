@@ -39,6 +39,7 @@
 #include <sstream>
 #include <igraph.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 #include "igraph_utils.h"
 #include "Graph.h"
@@ -59,6 +60,8 @@
 #ifdef __APPLE__
 #include "mex.h"
 #endif
+
+#include "mexInterrupt.h"
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixXdCol;
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> MatrixXdRow;
@@ -347,6 +350,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
                         edges_weights.push_back(w);
                     }
                 }
+                ctrlcCheckPoint(__FILE__, __LINE__); // Interrupt here
             }
             
             G = new GraphC(edges_list.data(),edges_weights.data(),edges_weights.size());

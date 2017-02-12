@@ -40,6 +40,10 @@
 #include "SurpriseFunction.h"
 #include "AsymptoticSurpriseFunction.h"
 
+#ifdef MATLAB_SUPPORT
+#include "mexInterrupt.h"
+#endif
+
 /**
  * @brief AgglomerativeOptimizer::AgglomerativeOptimizer
  * @param g
@@ -137,6 +141,9 @@ double AgglomerativeOptimizer::optimize(const igraph_t *g, const QualityFunction
     size_t m = edges_order.size();
     for (size_t i=0; i<m; ++i)
     {
+        #ifdef MATLAB_SUPPORT
+            ctrlcCheckPoint(__FILE__, __LINE__);
+        #endif
         int e = edges_order.at(i); // edge to consider
         int vert1, vert2;
         igraph_edge(g,e,&vert1,&vert2);
