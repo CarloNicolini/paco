@@ -62,8 +62,11 @@ add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
 target_link_libraries(PACO ${IGRAPH_LIBRARIES})
 
 if(MATLAB_SUPPORT)
+    target_link_libraries(PACO ${IGRAPH_LIBRARIES} ${MATLAB_LIBRARIES})
     add_mex(paco_mx paco.cpp)
-    target_link_libraries(paco_mx PACO ${MATLAB_LIBRARIES})
+    message(STATUS "======== ${MATLAB_LIBRARIES} ======")
+    message(STATUS "======== ${MATLAB_LIBRARIES_EXTRA} ======")
+    target_link_libraries(paco_mx PACO)
 endif(MATLAB_SUPPORT)
 
 if(OCTAVE_SUPPORT)
