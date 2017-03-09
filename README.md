@@ -19,6 +19,10 @@ OPTIONAL
 ## Compilation of simple command line paco_optimizer
 In order to compile the `paco_optimizer`  command line executable you must do:
 
+    $> git clone --recursive https://gitlab.iit.it/carlonicolini/paco
+
+or otherwise if you have the tar.gz with the last release:
+
     $> tar -zxvf paco_0_10_alpha.tar.gz
     $> cd paco_0_10_alpha
     $> mkdir build
