@@ -19,9 +19,13 @@ OPTIONAL
 ## Compilation of simple command line paco_optimizer
 In order to compile the `paco_optimizer`  command line executable you must do:
 
-    $> git clone --recursive https://github.com/carlonicolini/paco
+    $> git clone --recurse-submodules https://github.com/carlonicolini/paco
+    $> cd paco
+    $> mkdir build
+    $> cmake ..
+    $> make
 
-or otherwise if you have the tar.gz with the last release:
+and you will start the compilation. Otherwise if you have the tar.gz with the last release:
 
     $> tar -zxvf paco_0_10_alpha.tar.gz
     $> cd paco_0_10_alpha
@@ -29,6 +33,9 @@ or otherwise if you have the tar.gz with the last release:
     $> cd build
     $> cmake ..
     $> make
+
+PACO supports some options for the compile-time that enable the generation of Matlab and Octave wrappers.
+To enable them, specify the option `-DMATLAB_SUPPORT` or `-DOCTAVE_SUPPORT` when you run `cmake`:
 
 ### Compilation of MATLAB mex file
 In order to compile the `paco_mx`  mex function you must do:
@@ -60,6 +67,19 @@ In order to compile the `pypaco` python module you must do:
     $> cd build
     $> cmake -DPYTHON_SUPPORT=True ..
     $> make
+
+## Specify the igraph libraries
+PACO depends heavily on igraph-0.7.1. If you didn't install the igraph 0.7.1 libraries in the standard location (for example you don't have administrative privileges for your computer), you need to specify them at Cmake time with the options
+
+    -DCMAKE_EXTRA_LIBRARIES="PATH_TO_YOUR_IGRAPH_DIRECTORY_WHERE_LIBS_ARE_STORED"
+    -DCMAKE_EXTRA_INCLUDE="PATH_TO_YOUR_IGRAPH_DIRECTORY_WHERE_INCLUDE_ARE_STORED"
+
+For example the files `libigraph.a  libigraph.la  libigraph.so  libigraph.so.0  libigraph.so.0.0.0` are stored in `$HOME/lib` and the headers files `igraph***.h` are stored in `$HOME/include/igraph`. In this cased you need to specify CMake where these two folders are in this way:
+
+    $> cmake -DCMAKE_EXTRA_LIBRARIES=$HOME/lib/ -DCMAKE_EXTRA_INCLUDES=$HOME/include ..
+
+and then run make as usual.
+
 
 # Usage of PACO
 ## Usage of command line optimizer
