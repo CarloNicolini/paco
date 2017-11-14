@@ -47,6 +47,29 @@ In order to compile the `paco_mx`  mex function you must do:
     $> cmake -DMATLAB_SUPPORT=True ..
     $> make
 
+If you have newer versions of MATLAB (>R2017a) or non-standard installations of MATLAB it may be necessary to specify the MATLAB_ROOT variable during the creation of the Makefile.
+If your installation of Matlab is `/usr/local/MATLAB/R2017b/bin/matlab` then you need to specify the MATLAB_ROOT as follows
+
+    $> cmake -DMATLAB_SUPPORT=True -DMATLAB_ROOT=/usr/local/MATLAB/R2017b ..
+    $> make
+
+You can check if Matlab is found in the output of CMake. For example this is an **healthy** output:
+
+    -- MATLAB include directory: /usr/local/MATLAB/R2016a/extern/include
+    -- Matlab include directories: /usr/local/MATLAB/R2016a/extern/include
+    -- Found components for IGRAPH
+    -- IGRAPH_INCLUDES = /usr/local/include/igraph
+    -- IGRAPH_LIBRARIES = /usr/local/lib/libigraph.so
+    -- IGRAPH_VERSION_STRING_LINE = #define IGRAPH_VERSION "0.7.1"
+    -- IGRAPH_VERSION_MAJOR_GUESS = 0
+    -- IGRAPH_VERSION_MINOR_GUESS = 7
+    -- IGRAPH_VERSION_PATCH_GUESS = 1
+    -- MEX Files extension  ".mexa64"
+    -- ======== /usr/local/MATLAB/R2016a/bin/glnxa64/libmx.so;/usr/local/MATLAB/R2016a/bin/glnxa64/libmex.so;/usr/local/MATLAB/R2016a/bin/glnxa64/libmat.so;/usr/local/MATLAB/R2016a/bin/glnxa64/libut.so ======
+    -- Configuring done
+    -- Generating done
+    -- Build files have been written to: /home/user/paco/build
+
 
 ### Compilation of OCTAVE mex file
 In order to compile the `paco_oct`  mex function you must do:
@@ -284,8 +307,40 @@ The CMAKE will then find the installed dependencies correctly.
 Despite everything should be ready to be ported in Windows, I don't have time to let the code compile smoothly on Windows and to adapt all the nitty gritty details of compilation of PACO under windows. If you want to join me in extending PACO for Windows please let me know.
 
 # FAQ
+## I can compile PACO but Matlab crashes with linker problems
+It may happen on the latest versions of Matlab (>R2017a) that you get the following error:
+
+	Invalid MEX-file '/home/user/paco_mx.mexa64':
+	Missing symbol '_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE5rfindEcm' required by
+	'/usr/lib/x86_64-linux-gnu/libigraph.so.0->/home/user/libPACO.so->/home/user/paco_mx.mexa64'
+	Missing symbol '_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc' required by
+	'/usr/lib/x86_64-linux-gnu/libigraph.so.0->/home/user/libPACO.so->/home/user/paco_mx.mexa64'
+	Missing symbol '_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm' required by
+	'/usr/lib/x86_64-linux-gnu/libigraph.so.0->/home/user/libPACO.so->/home/user/paco_mx.mexa64'
+	Missing symbol '_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE14_M_replace_auxEmmmc' required by
+	'/usr/lib/x86_64-linux-gnu/libigraph.so.0->/home/user/libPACO.so->/home/user/paco_mx.mexa64'
+	Missing symbol '_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_appendEPKcm' required by
+	'/usr/lib/x86_64-linux-gnu/libigraph.so.0->/home/user/libPACO.so->/home/user/paco_mx.mexa64'
+	Missing symbol '_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_' required by
+	'/usr/lib/x86_64-linux-gnu/libigraph.so.0->/home/user/libPACO.so->/home/user/paco_mx.mexa64'
+	Missing symbol '_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm' required by
+	'/usr/lib/x86_64-linux-gnu/libigraph.so.0->/home/user/libPACO.so->/home/user/paco_mx.mexa64'
+
+To fix this error you need to install matlab-support and rename the gcc libraries when asked:
+    
+    sudo apt-get install matlab-support 
+
 
 ## Linking libstdc++.so.6 problem
+
+0. Matlab is not finding the correct gcc libraries on Linux.
+The solution here is to install the package matlab-support
+
+    sudo apt-get install matlab-support
+
+when asked to rename the GCC libraries, press YES and continue. This will fix the uncorrect symbolic links.
+If this approach doesn't work for you, continue to the next step.
+
 
 1. I can compile PACO for MATLAB but after calling `paco_mx`, MATLAB prompts me with the following error message:
 
@@ -322,4 +377,3 @@ $> sudo ln -fs /usr/lib/gcc/x86_64-linux-gnu/4.4/libstdc++.so libstdc++.so.6
 This command makes the `libstdc++.so.6` point to the `g++-4.4` `libstdc++` library.
 
 For other informations take a look at http://dovgalecs.com/blog/matlab-glibcxx_3-4-11-not-found/ or https://github.com/RobotLocomotion/drake/issues/960 which are very similar problems.
-

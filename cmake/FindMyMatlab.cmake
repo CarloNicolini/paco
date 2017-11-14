@@ -81,7 +81,7 @@ if (WIN32)
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.${m_minor};MATLABROOT]" 
     )
   endforeach()
-  
+
   # get_filename_component doesn't handle the Wow6432Node registry issues, but find_* do
   find_path(MATLAB_BIN_DIR "matlab.exe" 
     HINTS ${_MATLAB_REGKEYS}
@@ -93,7 +93,7 @@ if (WIN32)
     set(_MATLAB_SEARCH_WIN HINTS ${_MATLAB_WIN_ROOT})
     list(APPEND _MATLAB_SEARCHES _MATLAB_SEARCH_WIN)
   endif()
-    
+
   mark_as_advanced(MATLAB_BIN_DIR)
 else()
   set(_MATLAB_UNIX_PATHS)
