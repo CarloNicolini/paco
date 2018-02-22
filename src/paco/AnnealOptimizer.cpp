@@ -37,6 +37,11 @@
 #include <iostream>
 #include "AnnealOptimizer.h"
 #include <set>
+
+#ifdef MATLAB_SUPPORT
+#include "mexInterrupt.h"
+#endif
+
 AnnealOptimizer::AnnealOptimizer(const igraph_t *g, const QualityFunction &fun,const  igraph_vector_t *memb, const igraph_vector_t *weights) : QualityOptimizer(g, fun, memb)
 {
     this->optimize(g,fun,memb,weights);
@@ -90,6 +95,10 @@ double AnnealOptimizer::optimize(const igraph_t *g, const QualityFunction &fun, 
 
     while (true)
     {
+        #ifdef MATLAB_SUPPORT
+            ctrlcCheckPoint(__FILE__, __LINE__);
+        #endif
+
         ++nstep;
         double fval = fun(g,memb);
         if (fval > best_val)

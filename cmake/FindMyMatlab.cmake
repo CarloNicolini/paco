@@ -82,6 +82,7 @@ if (WIN32)
     )
   endforeach()
   message(STATUS "${MATLAB_BIN_DIR}")
+
   # get_filename_component doesn't handle the Wow6432Node registry issues, but find_* do
   find_path(MATLAB_BIN_DIR "matlab.exe" 
     HINTS ${_MATLAB_REGKEYS}
@@ -93,7 +94,7 @@ if (WIN32)
     set(_MATLAB_SEARCH_WIN HINTS ${_MATLAB_WIN_ROOT})
     list(APPEND _MATLAB_SEARCHES _MATLAB_SEARCH_WIN)
   endif()
-    
+
   mark_as_advanced(MATLAB_BIN_DIR)
 else()
   set(_MATLAB_UNIX_PATHS)
@@ -259,6 +260,8 @@ foreach(search ${_MATLAB_SEARCHES})
     ${${search}} PATH_SUFFIXES ${_MATLABLIB})
   find_library(MATLAB_MAT_LIBRARY NAMES mat libmat
     ${${search}} PATH_SUFFIXES ${_MATLABLIB})
+  find_library(MATLAB_UT_LIBRARY NAMES ut libut
+    ${${search}} PATH_SUFFIXES ${_MATLABLIB})
     
   # Also find the extra stuff if building both architectures on the mac
   if (MATLAB_UNIVERSAL)
@@ -325,7 +328,7 @@ if(MATLAB_FOUND)
   set(MATLAB_INCLUDE_DIRS ${MATLAB_INCLUDE_DIR})
   message(STATUS "MATLAB include directory: ${MATLAB_INCLUDE_DIRS}")
   set(MATLAB_LIBRARIES
-    ${MATLAB_MX_LIBRARY} ${MATLAB_MEX_LIBRARY} ${MATLAB_MAT_LIBRARY})
+    ${MATLAB_MX_LIBRARY} ${MATLAB_MEX_LIBRARY} ${MATLAB_MAT_LIBRARY} ${MATLAB_UT_LIBRARY})
   if (MATLAB_UNIVERSAL)
     set(MATLAB_LIBRARIES_EXTRA
       ${MATLAB_MX_LIBRARY_EXTRA} ${MATLAB_MEX_LIBRARY_EXTRA}

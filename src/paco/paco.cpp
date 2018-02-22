@@ -40,12 +40,17 @@
 #include <igraph.h>
 #ifdef UNIX
 #include <sys/time.h>
+<<<<<<< HEAD
 #endif
 #ifdef WIN32
 	#ifndef strcasecmp
 		#define strcasecmp _stricmp
 	#endif
 #endif
+=======
+#include <unistd.h>
+
+>>>>>>> bbc4bcf27a1f1420de2a1129702bf4d8aff4bd97
 #include "igraph_utils.h"
 #include "Graph.h"
 #include "Community.h"
@@ -66,9 +71,13 @@
 #include "mex.h"
 #endif
 
+<<<<<<< HEAD
 #ifdef WIN32
 #include <mex.h>
 #endif
+=======
+#include "mexInterrupt.h"
+>>>>>>> bbc4bcf27a1f1420de2a1129702bf4d8aff4bd97
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixXdCol;
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> MatrixXdRow;
@@ -357,6 +366,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
                         edges_weights.push_back(w);
                     }
                 }
+                ctrlcCheckPoint(__FILE__, __LINE__); // Interrupt here
             }
             
             G = new GraphC(edges_list.data(),edges_weights.data(),edges_weights.size());
