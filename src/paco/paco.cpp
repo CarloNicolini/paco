@@ -33,24 +33,24 @@
 * https://arxiv.org/abs/1609.04316
 */
 
-
+#include <algorithm>
 #include <iostream>
 #include <string.h>
 #include <sstream>
 #include <igraph.h>
 #ifdef UNIX
 #include <sys/time.h>
-<<<<<<< HEAD
 #endif
 #ifdef WIN32
-	#ifndef strcasecmp
-		#define strcasecmp _stricmp
-	#endif
+#ifndef strcasecmp
+#define strcasecmp _stricmp
 #endif
-=======
+#endif
+
 #include <unistd.h>
 
->>>>>>> bbc4bcf27a1f1420de2a1129702bf4d8aff4bd97
+#include <Eigen/Sparse>
+
 #include "igraph_utils.h"
 #include "Graph.h"
 #include "Community.h"
@@ -71,13 +71,13 @@
 #include "mex.h"
 #endif
 
-<<<<<<< HEAD
+
 #ifdef WIN32
 #include <mex.h>
 #endif
-=======
+
 #include "mexInterrupt.h"
->>>>>>> bbc4bcf27a1f1420de2a1129702bf4d8aff4bd97
+
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixXdCol;
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> MatrixXdRow;
@@ -268,8 +268,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
     return PACO_NO_ERROR;
 }
 
-#include <algorithm>
-#include <Eigen/Sparse>
+
 void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const mxArray * inputArgs[])
 {
     PacoParams pars;
@@ -286,7 +285,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     int error_arg_pos=-1;
     error_type err = parse_args(nOutputArgs, outputArgs, nInputArgs, inputArgs, &pars, &error_arg_pos);
 
-    if (err!=NO_ERROR)
+    if (err!=PACO_NO_ERROR)
     {
         std::stringstream ss;
         ss << "Error at argument: " << error_arg_pos  << ": " << error_strings[err] ;
