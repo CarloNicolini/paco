@@ -58,7 +58,7 @@ if(EXPERIMENTAL_FEATURES)
     )
 endif()
 
-add_library(PACO SHARED ${PACO_SRCS} ${PACO_HDRS})
+add_library(PACO ${PACO_SRCS} ${PACO_HDRS})
 target_link_libraries(PACO ${IGRAPH_LIBRARIES})
 
 if(MATLAB_SUPPORT)
@@ -77,7 +77,7 @@ if(PYTHON_SUPPORT)
 endif(PYTHON_SUPPORT)
 
 add_executable(paco_optimizer paco_optimizer.cpp)
-target_link_libraries(paco_optimizer PACO)
+target_link_libraries(paco_optimizer PACO ${IGRAPH_LIBRARIES})
 
 if(COMPILE_TESTS)
     add_executable(test_ordered_membership test_ordered_membership.cpp)

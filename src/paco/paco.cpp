@@ -38,8 +38,14 @@
 #include <string.h>
 #include <sstream>
 #include <igraph.h>
+#ifdef UNIX
 #include <sys/time.h>
-
+#endif
+#ifdef WIN32
+	#ifndef strcasecmp
+		#define strcasecmp _stricmp
+	#endif
+#endif
 #include "igraph_utils.h"
 #include "Graph.h"
 #include "Community.h"
@@ -58,6 +64,10 @@
 
 #ifdef __APPLE__
 #include "mex.h"
+#endif
+
+#ifdef WIN32
+#include <mex.h>
 #endif
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixXdCol;
@@ -106,7 +116,7 @@ void printUsage()
 
 enum error_type
 {
-    NO_ERROR = 0,
+    PACO_NO_ERROR = 0,
     ERROR_TOO_MANY_OUTPUT_ARGS = 1,
     ERROR_NOT_ENOUGH_ARGS = 2,
     ERROR_ARG_VALUE = 3,
@@ -200,7 +210,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             // Parse string value inputArgs[c]
             if ( strcasecmp(cpartype,"Method")==0 )
             {
-                pars->method = static_cast<OptimizerType>(*mxGetPr(parval));
+                pars->method = static_cast<OptimizerType>((int)*mxGetPr(parval));
                 if (pars->method<0 || pars->method>3)
                 {
                     *argposerr = argcount+1;
@@ -210,7 +220,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
             }
             else if ( strcasecmp(cpartype,"Quality")==0 )
             {
-                pars->qual = static_cast<QualityType>(*mxGetPr(parval));
+                pars->qual = static_cast<QualityType>((int)*mxGetPr(parval));
                 if (pars->qual<0 || pars->qual>3)
                 {
                     *argposerr = argcount+1;
@@ -246,7 +256,7 @@ error_type parse_args(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, co
         }
         mxFree(cpartype); // free the converted argument
     }
-    return NO_ERROR;
+    return PACO_NO_ERROR;
 }
 
 #include <algorithm>

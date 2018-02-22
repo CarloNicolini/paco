@@ -38,11 +38,15 @@
 #define _ANNEALOPTIMIZER_H
 
 #include "QualityOptimizer.h"
+#include <limits>
+#ifdef WIN32
+#define NOMINMAX
+#endif
 
 class AnnealParameters
 {
 public:
-    AnnealParameters(size_t nIter=1E3, size_t maxHits=1E2, double mintemp=1E-1, double tol=1E-5, double temp=1E6, double tempscale=0.99, double minfval=std::numeric_limits<double>::max()) :
+    AnnealParameters(size_t nIter=1E3, size_t maxHits=1E2, double mintemp=1E-1, double tol=1E-5, double temp=1E6, double tempscale=0.99, double minfval=1E30) :
         nIterations(nIter),
         nHits(maxHits),
         min_temp(mintemp),

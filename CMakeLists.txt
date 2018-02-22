@@ -7,17 +7,21 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build/" CACHE PATH "Sing
 
 # Check for the support of C++11 compliant compilers
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-endif()
+# if (NOT MSVC)
+# CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+# CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+# endif (NOT MSVC)
+# if(COMPILER_SUPPORTS_CXX11)
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# elseif(COMPILER_SUPPORTS_CXX0X)
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+# else()
+        # message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+# endif()
 
+if (UNIX)
 set(CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations ${CMAKE_CXX_FLAGS}")
+endif(UNIX)
 # Specify if matlab support and python wrappers are to be compiled. Default OFF
 # MATLAB support needs MEX (Tested on Ubuntu 14.04, Matlab R2013a)
 option(MATLAB_SUPPORT "Mex with MATLAB" OFF)
@@ -27,8 +31,22 @@ option(EXPERIMENTAL_FEATURES "Enable compilation of some experimental features, 
 option(COMPILE_TESTS "Compile all debugging tests" OFF)
 
 if(MATLAB_SUPPORT)
-    find_package(MyMatlab)
-    message(STATUS "Matlab include directories: ${MATLAB_INCLUDE_DIRS}")
+	if (WIN32)
+		#set(MATLAB_ADDITIONAL_VERSIONS "R2016a=9.0.1")
+		set(MATLAB_ROOT "C:\\Program\ Files\\MATLAB\\R2016a")
+		message(STATUS "====MATLAB ROOT= ${MATLAB_ROOT}")
+		find_package(MyMatlab REQUIRED)
+		add_definitions(/DMATLAB_MEX_FILE) #define matlab macros
+		
+		add_definitions(/DMX_COMPAT_32)
+		message(STATUS ${MATLAB_INCLUDE_DIRS})
+		message(STATUS ${MATLAB_LIBRARIES})
+	elseif(UNIX)
+		find_package(MyMatlab)
+		message(STATUS "Matlab include directories: ${MATLAB_INCLUDE_DIRS}")
+	endif(WIN32)
+	
+    
     include_directories(${MATLAB_INCLUDE_DIRS})
     if (MATLAB_NOT_FOUND)
         message(FATAL "Error matlab not found")
@@ -97,7 +115,13 @@ if(PYTHON_SUPPORT)
     #add_definitions("-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION")
 endif(PYTHON_SUPPORT)
 
+if (MSVC)
+set(IGRAPH_INCLUDES "${PROJECT_SOURCE_DIR}/igraph-0.7.1-msvc/igraph-0.7.1-msvc/include")
+set(IGRAPH_LIBRARIES "${PROJECT_SOURCE_DIR}/igraph-0.7.1-msvc/igraph-0.7.1-msvc/Release/igraph.lib")
+else (MSVC)
 find_package(IGraph)
+endif(MSVC)
+
 include_directories(${IGRAPH_INCLUDES})
 
 # Add the subdirectory with the source code

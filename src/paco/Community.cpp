@@ -35,6 +35,7 @@
 
 
 #include <igraph.h>
+#include <limits>
 #include "Community.h"
 
 #include "QualityFunction.h"
@@ -52,6 +53,7 @@
 #include "AnnealOptimizer.h"
 #include "AgglomerativeOptimizer.h"
 #include "RandomOptimizer.h"
+
 
 /**
  * @brief CommunityStructure::CommunityStructure
@@ -160,15 +162,19 @@ void CommunityStructure::set_random_seed(int seed)
     if (seed<0)
     {
 #ifdef WIN32
+		/*
+		timeval startCount;
+		timeval endCount;
         QueryPerformanceCounter(&endCount);
         std::srand(startCount.QuadPart);
+		*/
 #endif
 #if defined(__linux__) || defined(__APPLE__) 
         struct timeval start;
         gettimeofday(&start, NULL);
         std::srand(start.tv_usec);
+		IGRAPH_TRY(igraph_rng_seed(&this->rng, start.tv_usec));
 #endif
-        IGRAPH_TRY(igraph_rng_seed(&this->rng,start.tv_usec));
     }
     else
     {
@@ -245,7 +251,11 @@ double CommunityStructure::optimize(QualityType qual, OptimizerType optmethod, i
 
     const igraph_vector_t *edge_weights = pgraph->get_edge_weights();
 
+#ifdef WIN32
+	double finalqual = -1E10;
+#else
     double finalqual = std::numeric_limits<double>::min();
+#endif
 
     // Select the quality function
     switch (qual)

@@ -74,7 +74,7 @@ void exit_with_help()
 
 enum error_type
 {
-    NO_ERROR = 0,
+    PACO_NO_ERROR = 0,
     ERROR_TOO_MANY_OUTPUT_ARGS = 1,
     ERROR_NOT_ENOUGH_ARGS = 2,
     ERROR_ARG_VALUE = 3,

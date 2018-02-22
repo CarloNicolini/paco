@@ -68,6 +68,12 @@ PLoS ONE 6(9): e24195
 #include "KLDivergence.h"
 #include "Surprise.h"
 
+#ifdef WIN32
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#endif
+
 using std::cerr;
 using std::endl;
 
