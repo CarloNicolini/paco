@@ -47,7 +47,11 @@
 #endif
 #endif
 
+#ifndef WIN32
 #include <unistd.h>
+#else
+#include <Windows.h>
+#endif
 
 #include <Eigen/Sparse>
 
@@ -76,7 +80,7 @@
 #include <mex.h>
 #endif
 
-#include "mexInterrupt.h"
+//#include "mexInterrupt.h"
 
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixXdCol;
@@ -295,7 +299,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
     }
 
 #ifdef _DEBUG
-    printf("[INFO] Method=%d\n[INFO] Consider_comms=%d\n[INFO] CPMgamma=%f\n[INFO] Delta=%f\n[INFO] Max_itr=%zu\n[INFO] Random_order=%d rand_seed=%d\n",pars.method, pars.consider_comms, pars.cpmgamma, pars.delta, pars.max_itr, pars.random_order, pars.rand_seed);
+    //printf("[INFO] Method=%d\n[INFO] Consider_comms=%d\n[INFO] CPMgamma=%f\n[INFO] Delta=%f\n[INFO] Max_itr=%zu\n[INFO] Random_order=%d rand_seed=%d\n",pars.method, pars.consider_comms, pars.cpmgamma, pars.delta, pars.max_itr, pars.random_order, pars.rand_seed);
 #endif
     // Get number of vertices in the network
     int N = mxGetN(inputArgs[0]); // number of columns
@@ -365,7 +369,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
                         edges_weights.push_back(w);
                     }
                 }
-                ctrlcCheckPoint(__FILE__, __LINE__); // Interrupt here
+                //ctrlcCheckPoint(__FILE__, __LINE__); // Interrupt here
             }
             
             G = new GraphC(edges_list.data(),edges_weights.data(),edges_weights.size());

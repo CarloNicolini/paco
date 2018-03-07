@@ -162,10 +162,10 @@ endif ()
 # Set the appropriate suffixes according to the platform
 if(MSVC)
   if(CMAKE_CL_64)
-    set(_MATLABLIB extern/lib/win64/microsoft)
+    set(_MATLABLIB ${MATLAB_ROOT}/extern/lib/win64/microsoft)
     set(MATLAB_MEX_EXT "mexw64")
   else()
-    set(_MATLABLIB extern/lib/win32/microsoft)
+    set(_MATLABLIB ${MATLAB_ROOT}/extern/lib/win32/microsoft)
     set(MATLAB_MEX_EXT "mexw32")
   endif()
   
