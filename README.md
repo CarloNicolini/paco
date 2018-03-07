@@ -324,7 +324,7 @@ Open the solution and compile it in Release mode with x64 architecture.
 
 - Run CMake in the PACO folder and set Visual Studio 2013 x64 toolset. Press configure, then tick the option MATLAB_SUPPORT and check that the Matlab libraries are correctly found, like in this picture
 
-![paco_cmake_settings](https://github.com/carlonicolini/paco/raw/master/docs/paco "Cmake settings")
+![paco_cmake_settings](https://raw.githubusercontent.com/CarloNicolini/paco/master/docs/paco_win64_cmake.png "Cmake settings")
 
 - Once the solution is generated, go to Visual Studio and compile the project `paco_mx`. The mex file should go under `paco/build/Release/x64/` folder.
 
