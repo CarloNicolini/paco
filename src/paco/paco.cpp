@@ -80,7 +80,7 @@
 #include <mex.h>
 #endif
 
-//#include "mexInterrupt.h"
+#include "mexInterrupt.h"
 
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> MatrixXdCol;
@@ -369,7 +369,7 @@ void mexFunction(int nOutputArgs, mxArray *outputArgs[], int nInputArgs, const m
                         edges_weights.push_back(w);
                     }
                 }
-                //ctrlcCheckPoint(__FILE__, __LINE__); // Interrupt here
+                ctrlcCheckPoint(__FILE__, __LINE__); // Interrupt here
             }
             
             G = new GraphC(edges_list.data(),edges_weights.data(),edges_weights.size());
