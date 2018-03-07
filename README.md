@@ -304,13 +304,30 @@ We strongly suggest to obtain `igraph` in OSX using **Homebrew**.
 The CMAKE will then find the installed dependencies correctly.
 
 # Windows support:
-Despite everything should be ready to be ported in Windows, I don't have time to let the code compile smoothly on Windows and to adapt all the nitty gritty details of compilation of PACO under windows. If you want to join me in extending PACO for Windows please let me know.
+The support in Windows is experimental. I've managed to compile it smoothly with the following settings:
+- Windows 7
+- CMake 3.1
+- Visual Studio 2013 (64 bit)
 
-## Experimental informations
-To compile PACO on Windows you need a pretty recent Visual Studio compiler (I'm using Visual Studio 2013).
+If you need to enable the MATLAB_SUPPORT you may need a recent version of Matlab. I'm using 
 
-1. Compile igraph-0.7.1 with x64 architecture.
-2. Compile open CMake in Windows and use Visual Studio x64
+- MATLAB R2016a
+
+this version only supports 64 bit systems, so the mex file provided is 64 bits.
+
+## Instructions for compilation on Windows
+You first need to compile the Visual Studio project 
+
+- Compile igraph-0.7.1 for Visual Studio with x64 architecture:
+1. Download it from http://igraph.org/nightly/get/msvc/igraph-0.7.1-msvc.zip and extract it in the root PACO folder.
+Open the solution and compile it in Release mode with x64 architecture.
+
+- Run CMake in the PACO folder and set Visual Studio 2013 x64 toolset. Press configure, then tick the option MATLAB_SUPPORT and check that the Matlab libraries are correctly found, like in this picture
+
+![paco_cmake_settings](https://github.com/carlonicolini/paco/raw/master/docs/paco "Cmake settings")
+
+- Once the solution is generated, go to Visual Studio and compile the project `paco_mx`. The mex file should go under `paco/build/Release/x64/` folder.
+
 
 # FAQ
 ## I can compile PACO but Matlab crashes with linker problems
