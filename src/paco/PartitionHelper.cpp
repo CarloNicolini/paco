@@ -109,7 +109,7 @@ void PartitionHelper::init(const igraph_t*graph, const igraph_vector_t *memb, co
     this->fill_communities(memb);
 
     // Initialize STL map containers with zeros except for sincomm_nvertices,sincomm_pairs with number of vertices/pairs
-    for (CommMapCIter it = communities.cbegin(); it!=communities.cend(); ++it)
+    for (CommMapCIter it = communities.begin(); it!=communities.end(); ++it)
     {
         size_t c = it->first;
         incomm_weight[c]=0;
@@ -308,7 +308,7 @@ bool PartitionHelper::merge_communities(const igraph_t *g, const igraph_vector_t
     if (!check_comm(dest_comm))
         throw std::runtime_error("Non existing destination community");
 
-    set<size_t>::const_iterator it = communities.at(source_comm).cbegin();
+    set<size_t>::const_iterator it = communities.at(source_comm).begin();
     while (it!=communities.at(source_comm).end())
     {
         size_t v = *(it++);
@@ -391,7 +391,7 @@ void PartitionHelper::print() const
     printf(ANSI_COLOR_YELLOW);
     printf("________________________________________________\n");
     printf("c\twc\tnc\tpc\t{vi...}\n________________________________________________\n");
-    for (CommMapCIter it = communities.cbegin(); it!=communities.cend(); ++it)
+    for (CommMapCIter it = communities.begin(); it!=communities.end(); ++it)
     {
         size_t c = it->first;
         if (it->second.empty())

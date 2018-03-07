@@ -306,6 +306,12 @@ The CMAKE will then find the installed dependencies correctly.
 # Windows support:
 Despite everything should be ready to be ported in Windows, I don't have time to let the code compile smoothly on Windows and to adapt all the nitty gritty details of compilation of PACO under windows. If you want to join me in extending PACO for Windows please let me know.
 
+## Experimental informations
+To compile PACO on Windows you need a pretty recent Visual Studio compiler (I'm using Visual Studio 2013).
+
+1. Compile igraph-0.7.1 with x64 architecture.
+2. Compile open CMake in Windows and use Visual Studio x64
+
 # FAQ
 ## I can compile PACO but Matlab crashes with linker problems
 It may happen on the latest versions of Matlab (>R2017a) that you get the following error:

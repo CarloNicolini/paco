@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
 
     if (pars.print_info)
     {
-        FILELog::ReportingLevel() =  TLogLevel::logINFO;
+        FILELog::ReportingLevel() =  logINFO;
         g.info();
     }
 
