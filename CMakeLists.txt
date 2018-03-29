@@ -10,6 +10,7 @@ include(CheckCXXCompilerFlag)
 
 if (UNIX)
 set(CMAKE_CXX_FLAGS "-Wall -Wno-deprecated-declarations ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif(UNIX)
 # Specify if matlab support and python wrappers are to be compiled. Default OFF
 # MATLAB support needs MEX (Tested on Ubuntu 14.04, Matlab R2013a)
