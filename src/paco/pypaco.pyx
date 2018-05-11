@@ -110,7 +110,7 @@ def paco(np.ndarray[double, ndim=2, mode="c"] graph_rep not None, **kwargs):
         membership: a list of vertices community membership
         quality: the partition quality value
     """
-    args = ['nreps','quality', 'seed', ',opt_method']
+    args = ['nreps','quality', 'seed', 'opt_method']
 
     args_diff = set(kwargs.keys()) - set(args)
     if args_diff:
