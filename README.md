@@ -22,6 +22,7 @@ In order to compile the `paco_optimizer`  command line executable you must do:
     $> git clone --recurse-submodules https://github.com/carlonicolini/paco
     $> cd paco
     $> mkdir build
+    $> cd build
     $> cmake ..
     $> make
 
