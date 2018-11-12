@@ -4,6 +4,15 @@
 PACO is a tool to build solvers and optimize quality functions on graphs for community detection.
 PACO comes as both a C++ library and a support for Matlab/Octave mex function as well as a Python library.
 
+Publications based on the use of PACO should cite: 
+
+"Modular structure of brain functional networks: breaking the resolution limit by Surprise"
+C. Nicolini and A. Bifone, Scientific Reports doi:10.1038/srep19250
+
+"Community detection in weighted brain connectivity networks beyond the resolution limit."
+Nicolini C., Bordier C., Bifone A.
+Neuroimage. 2017 Feb 1;146:28-39. doi: 10.1016/j.neuroimage.2016.11.026 *
+
 ## Requirements
 In order to compile PACO you need:
 COMPULSORY:
